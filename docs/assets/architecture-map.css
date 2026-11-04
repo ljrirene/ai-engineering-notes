@@ -1,0 +1,27 @@
+.arch-page{max-width:1220px;margin:auto;padding:34px 20px 70px;color:#16283b}
+.arch-page h1{font-size:clamp(29px,4vw,44px);line-height:1.2;letter-spacing:-.025em;margin:14px 0}
+.arch-page p{color:#41566b}.arch-note{border-left:4px solid #08727c;background:#eaf5f4;padding:11px 16px;margin:16px 0 24px;border-radius:0 9px 9px 0}
+.view-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.view-tabs button{background:#fff;border:1px solid #b7cbd5;color:#1d475c;border-radius:11px;font-size:14px}.view-tabs button.active{background:#08727c;color:#fff;border-color:#08727c}
+.arch-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:17px;align-items:start}
+.arch-diagram{background:#fff;border:1px solid #d5e0ea;border-radius:15px;overflow:auto;box-shadow:0 4px 20px rgba(24,49,78,.06)}
+.arch-diagram svg{width:100%;min-width:665px;height:auto;display:block;font-family:system-ui,'PingFang SC',sans-serif}
+.arch-panel{background:#fff;border:1px solid #d5e0ea;padding:20px;border-radius:15px;min-height:315px;box-shadow:0 4px 20px rgba(24,49,78,.06)}
+.arch-panel h2{font-size:21px;margin:0 0 10px}.arch-panel h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#08727c;margin:16px 0 3px}.arch-panel p{font-size:14px;line-height:1.68;margin:4px 0}
+.arch-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#496073;margin-top:12px}
+.arch-legend b{display:inline-block;width:11px;height:11px;vertical-align:-1px;margin-right:4px;border-radius:3px}
+.arch-links{margin-top:20px;border-top:1px solid #d5e0ea;padding-top:16px}
+.arch-node{cursor:pointer;outline:none}
+.arch-node rect{fill:#f0f6f9;stroke:#9fb8c7;stroke-width:1.5;transition:stroke-width .15s,fill .15s}
+.arch-node[data-zone="model"] rect{fill:#e5f2ff;stroke:#668fbb}
+.arch-node[data-zone="trusted"] rect{fill:#e8f7f1;stroke:#5baf99}
+.arch-node[data-zone="external"] rect{fill:#fff2e4;stroke:#cf925e}
+.arch-node[data-zone="risk"] rect{fill:#fff0f0;stroke:#c27878}
+.arch-node text{fill:#1c3446;font-size:13px;font-weight:680}
+.arch-node.selected rect,.arch-node:focus-visible rect{stroke:#006e7b;stroke-width:3.5;filter:drop-shadow(0 2px 5px rgba(0,100,110,.15))}
+.arch-node.faded{opacity:.29}.arch-edge{fill:none;stroke:#7d99aa;stroke-width:2.2;opacity:.78}
+.arch-edge.selected{stroke:#08727c;stroke-width:3.4;opacity:1}
+.arch-edge.faded{opacity:.13}
+.arch-edge-label{fill:#425c6d;font-size:11px}
+.arch-title{font-size:15px;font-weight:750;fill:#12354b}
+@media(max-width:900px){.arch-layout{grid-template-columns:1fr}.arch-panel{min-height:0}}
+
