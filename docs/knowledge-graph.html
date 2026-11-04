@@ -1,18 +1,45 @@
 ---
 layout: graph
-title: Interactive Knowledge Graph
+title: Knowledge Constellation
 permalink: /knowledge-graph.html
 ---
 <link rel="stylesheet" href="{{ '/assets/knowledge-graph.css' | relative_url }}">
 <div class="kg-root">
-<div class="kg-header"><div class="eyebrow">INTERACTIVE KNOWLEDGE CONSTELLATION</div><h1>知识星图 · Knowledge Graph</h1>
-<p class="kg-sub">把文章、概念、前置知识、岗位技能和部署模式连起来。点击节点查看明确的关系解释；可以搜索、拖动、缩放或按类型筛选。</p></div>
-<div class="kg-banner">参考 <a href="https://ljrirene.github.io/flowmind/">FlowMind · 念流</a> 的星图交互体验，但完全独立：这里只显示公开技术研究数据，不读取或同步私人念头。连线不是自动关键词匹配，而是经人工技术推理建立的 typed relation。</div>
-<div class="kg-actions"><input id="kg-search" type="search" placeholder="搜索：RAG、RL、stateful、security…" aria-label="搜索知识节点">
-<button type="button" id="kg-zoom-in">＋</button><button type="button" id="kg-zoom-out">−</button><button type="button" id="kg-reset">重置视图</button><button type="button" id="kg-clear">清除筛选</button></div>
-<div id="kg-filters" class="kg-filters" role="group" aria-label="按节点类别筛选"></div>
-<div class="kg-columns"><div class="kg-viz"><svg id="kg-svg" role="group" aria-label="文章与技术概念关系网络"></svg><span id="kg-count" class="kg-count">载入知识图谱…</span></div><aside id="kg-info" class="kg-info" aria-live="polite"></aside></div>
-<div class="kg-legend"><span><b style="background:#08727c"></b>文章</span><span><b style="background:#648bbb"></b>技术概念</span><span><b style="background:#b78348"></b>技能</span><span><b style="background:#b8759c"></b>部署</span><span><b style="background:#78975c"></b>Guide</span></div>
-<p class="kg-sub"><a href="{{ '/learning-guide/' | relative_url }}">图谱关系类型与学习方法 →</a> · <a href="{{ '/data/knowledge-graph.json' | relative_url }}">查看可审核的 JSON 关系数据 →</a></p></div>
-<script defer src="{{ '/assets/knowledge-graph.js' | relative_url }}"></script>
+  <header class="kg-hero">
+    <div class="kg-hero-top"><span class="kg-kicker"><span class="kg-live-dot"></span> THE LEARNING UNIVERSE</span><a class="kg-return" href="{{ '/archive.html' | relative_url }}">所有研究文章 ↗</a></div>
+    <h1>知识之间，<em>自有星轨。</em></h1>
+    <p>技术不是孤立的知识点。从系统原理到工程实践，沿着关联去发现下一篇值得读的研究。</p>
+    <div class="kg-overview"><span id="kg-stats">10 STUDIES · 42 NODES</span><span>CURATED CONNECTIONS · NO AI KEYWORDS</span></div>
+  </header>
+  <section class="kg-explorer" aria-label="知识关系探索器">
+    <div class="kg-toolbar">
+      <div class="kg-modes" role="group" aria-label="图谱视图模式">
+        <button type="button" class="kg-mode is-active" id="kg-mode-constellation" aria-pressed="true"><span aria-hidden="true">✦</span> 星图探索</button>
+        <button type="button" class="kg-mode" id="kg-mode-study" aria-pressed="false"><span aria-hidden="true">⊞</span> 学习地图</button>
+      </div>
+      <div class="kg-tools">
+        <label class="kg-search-wrap"><span aria-hidden="true">⌕</span><input id="kg-search" type="search" placeholder="搜索文章、概念、岗位技能..." autocomplete="off" aria-label="搜索知识节点"></label>
+        <button id="kg-reset" class="kg-icon-button" type="button" title="适配全图" aria-label="适配全图">⌖</button>
+        <button id="kg-zoom-in" class="kg-icon-button" type="button" title="放大" aria-label="放大">＋</button>
+        <button id="kg-zoom-out" class="kg-icon-button" type="button" title="缩小" aria-label="缩小">−</button>
+      </div>
+    </div>
+    <div class="kg-filters" id="kg-filters" role="group" aria-label="按知识节点类型筛选"></div>
+    <div class="kg-stage">
+      <div class="kg-canvas" id="kg-canvas">
+        <svg id="kg-svg" role="img" aria-label="交互式知识星图：点击节点查看关联"></svg>
+        <div class="kg-stage-head"><span class="kg-stage-pill"><span class="kg-pulse"></span> <span id="kg-current-mode">CONSTELLATION MODE</span></span><span id="kg-count">正在准备知识关系…</span></div>
+        <div class="kg-stage-hint">✦ 拖拽节点 · 滚轮/双指缩放 · 点击探索关联</div>
+      </div>
+      <aside class="kg-info" id="kg-info" aria-live="polite"></aside>
+    </div>
+    <div class="kg-footer">
+      <div class="kg-legend"><span><i class="lg-article"></i>研究文章</span><span><i class="lg-concept"></i>核心概念</span><span><i class="lg-skill"></i>岗位能力</span><span><i class="lg-deployment"></i>部署路径</span><span><i class="lg-guide"></i>方法论</span></div>
+      <button type="button" id="kg-clear" class="kg-clear">清除筛选与高亮 ↗</button>
+    </div>
+  </section>
+  <section class="kg-below"><div><span class="kg-kicker">HOW TO READ THE MAP</span><h2>由连接，理解系统。</h2><p>粗细和颜色代表不同的语义关系，不是文章推荐排名。默认只展示紧密的概念网络；切换学习地图可探索岗位能力、部署路径与方法论。点击节点可以查看关系原因，直接跳转研究正文和交互架构图。</p></div><div class="kg-source"><div class="kg-source-label">SOURCE OF TRUTH</div><a href="{{ '/data/knowledge-graph.json' | relative_url }}">查看可审计图谱 JSON ↗</a><a href="{{ '/learning-guide/' | relative_url }}">阅读 Learning Guide ↗</a><a href="https://ljrirene.github.io/flowmind/">灵感：FlowMind · 念流 ↗</a><small>公开技术资料构建 · 不连接私人 FlowMind 数据</small></div></section>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" defer></script>
+<script src="{{ '/assets/knowledge-graph.js' | relative_url }}" defer></script>
 
