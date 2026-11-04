@@ -1,5 +1,15 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guard Threshold Lab · AI Engineering Notes</title>
-<link rel="stylesheet" href="../assets/site.css"><style>.meter{height:10px;background:#28394b;border-radius:99px;overflow:hidden;margin-top:13px}.meter span{height:100%;display:block;background:#62d9bc;width:0;transition:width .16s}.explain{background:#122638;border:1px solid #284459;padding:18px;border-radius:12px}.num{font-size:42px;font-weight:800;color:#62d9bc}.controls{padding:24px;border:1px solid #26384e;border-radius:18px;background:#111e2d}.conf{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.conf div{border:1px solid #2a445b;border-radius:12px;padding:18px}.conf strong{display:block;font-size:25px;color:#edf3fa}.small{font-size:13px;color:#a8b8c9}</style></head><body>
+<link rel="stylesheet" href="../assets/site.css"><style>
+.meter{height:10px;background:#deebf1;border-radius:99px;overflow:hidden;margin-top:13px}
+.meter span{height:100%;display:block;background:#08727c;width:0;transition:width .16s}
+.explain{background:#eaf5f6;border:1px solid #c6dfe1;padding:18px;border-radius:12px}
+.num{font-size:42px;font-weight:800;color:#075660}
+.controls{padding:24px;border:1px solid #d5e0ea;border-radius:18px;background:#fff;box-shadow:0 6px 25px rgba(24,49,78,.06)}
+.conf{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.conf div{border:1px solid #d5e0ea;border-radius:12px;padding:18px;background:#fff}
+.conf strong{display:block;font-size:25px;color:#16283b}
+.small{font-size:13px;color:#4b6075}
+</style></head><body>
 <header class="bar"><a class="brand" href="../">◆ AI Engineering Notes</a><nav><a href="../">首页</a><a href="https://github.com/ljrirene/ai-engineering-notes">Source</a></nav></header>
 <main class="lab"><div class="eyebrow">INTERACTIVE LAB · SYNTHETIC DATA ONLY · NO API</div><h1>Guard Threshold Explorer</h1><p class="muted">调整检测阈值，观察漏报与误报之间的权衡。这是一组确定性的合成分数，不是 BrowseSafe++ 的实验分布，也不代表真实 Guard Model 性能。</p>
 <div class="controls"><label for="threshold"><b>Detection threshold τ</b> <span id="t" class="num">0.50</span></label><input id="threshold" class="control" type="range" min="0" max="100" value="50" step="1"><p class="muted">分数 ≥ τ → 预测为注入攻击。数据：200 个正常页面 + 25 个攻击页面。</p><button id="reset" type="button">重置 0.50</button></div>
