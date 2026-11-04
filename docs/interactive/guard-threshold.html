@@ -1,0 +1,27 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guard Threshold Lab · AI Engineering Notes</title>
+<link rel="stylesheet" href="../assets/site.css"><style>.meter{height:10px;background:#28394b;border-radius:99px;overflow:hidden;margin-top:13px}.meter span{height:100%;display:block;background:#62d9bc;width:0;transition:width .16s}.explain{background:#122638;border:1px solid #284459;padding:18px;border-radius:12px}.num{font-size:42px;font-weight:800;color:#62d9bc}.controls{padding:24px;border:1px solid #26384e;border-radius:18px;background:#111e2d}.conf{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.conf div{border:1px solid #2a445b;border-radius:12px;padding:18px}.conf strong{display:block;font-size:25px;color:#edf3fa}.small{font-size:13px;color:#a8b8c9}</style></head><body>
+<header class="bar"><a class="brand" href="../">◆ AI Engineering Notes</a><nav><a href="../">首页</a><a href="https://github.com/ljrirene/ai-engineering-notes">Source</a></nav></header>
+<main class="lab"><div class="eyebrow">INTERACTIVE LAB · SYNTHETIC DATA ONLY · NO API</div><h1>Guard Threshold Explorer</h1><p class="muted">调整检测阈值，观察漏报与误报之间的权衡。这是一组确定性的合成分数，不是 BrowseSafe++ 的实验分布，也不代表真实 Guard Model 性能。</p>
+<div class="controls"><label for="threshold"><b>Detection threshold τ</b> <span id="t" class="num">0.50</span></label><input id="threshold" class="control" type="range" min="0" max="100" value="50" step="1"><p class="muted">分数 ≥ τ → 预测为注入攻击。数据：200 个正常页面 + 25 个攻击页面。</p><button id="reset" type="button">重置 0.50</button></div>
+<h2>Classification Metrics</h2><div class="grid2">
+<div class="stat"><span class="small">Precision</span><br><b id="precision">—</b><div class="meter"><span id="mp"></span></div></div>
+<div class="stat"><span class="small">Recall / TPR</span><br><b id="recall">—</b><div class="meter"><span id="mr"></span></div></div>
+<div class="stat"><span class="small">False Positive Rate</span><br><b id="fpr">—</b><div class="meter"><span id="mf"></span></div></div>
+<div class="stat"><span class="small">F1 Score</span><br><b id="f1">—</b><div class="meter"><span id="m1"></span></div></div></div>
+<h2>Confusion Matrix</h2><div class="conf"><div><span class="small">True Positives</span><strong id="tp">—</strong></div><div><span class="small">False Positives</span><strong id="fp">—</strong></div><div><span class="small">False Negatives</span><strong id="fn">—</strong></div><div><span class="small">True Negatives</span><strong id="tn">—</strong></div></div>
+<h2>What to learn</h2><div class="explain"><p>低阈值通常增加 Recall，也可能增加 FPR；高阈值通常减少误报但使更多攻击漏检。<b>没有一种单一阈值可以代替外部的权限控制。</b></p><p>将实验结果换算为企业运维工作量：如果每天 100,000 个正常片段、FPR 为 1%，理论上会有约 1,000 次误报。实际部署还应测量检测器延迟、跨语言泛化、Calibration 和 Adaptive Attacks。</p><p><a href="../notes/2026/11/2026-11-04-onprem-prompt-injection/">返回完整深读 →</a></p></div>
+</main><script>
+(function(){
+var samples=[];
+for(var i=0;i<200;i++){var a=((i*73+19)%211)/210; samples.push({label:0,score:Math.min(.98,Math.max(.01,0.09+0.60*a))});}
+for(var j=0;j<25;j++){var b=((j*41+7)%29)/28; samples.push({label:1,score:Math.min(.99,0.30+0.68*b)});}
+var slider=document.getElementById('threshold');
+function put(id,val){document.getElementById(id).textContent=val;}
+function metric(key,bar,val){put(key,(100*val).toFixed(1)+'%');document.getElementById(bar).style.width=(100*val)+'%';}
+function render(){var t=Number(slider.value)/100,tp=0,fp=0,tn=0,fn=0;for(var k=0;k<samples.length;k++){var s=samples[k],p=s.score>=t;if(p&&s.label)tp++;else if(p)fp++;else if(s.label)fn++;else tn++;}
+var precision=(tp+fp?tp/(tp+fp):0),recall=tp/(tp+fn),fpr=fp/(fp+tn),f1=(precision+recall?2*precision*recall/(precision+recall):0);
+put('t',t.toFixed(2));put('tp',tp);put('fp',fp);put('tn',tn);put('fn',fn);metric('precision','mp',precision);metric('recall','mr',recall);metric('fpr','mf',fpr);metric('f1','m1',f1);}
+slider.addEventListener('input',render);document.getElementById('reset').addEventListener('click',function(){slider.value=50;render()});render();
+})();
+</script></body></html>
+

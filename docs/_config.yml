@@ -1,0 +1,9 @@
+title: AI Engineering Notes
+description: First-principles research in on-prem and controlled hybrid AI systems
+baseurl: "/ai-engineering-notes"
+url: "https://ljrirene.github.io"
+markdown: kramdown
+highlighter: rouge
+exclude:
+  - README.md
+
