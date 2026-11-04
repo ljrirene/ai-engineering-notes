@@ -1,0 +1,635 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-04",
+  "disclaimer": "Manually curated from public research notes. Keyword coverage is NOT semantic assessment.",
+  "questions": [
+    {
+      "id": "q-01",
+      "doc": "a-replayssm",
+      "level": "机制",
+      "q": "为什么 SSM 在 Decode 阶段可能受 HBM 带宽限制？ReplaySSM 主要减少了什么？",
+      "hint": "区分每 token 的状态计算与把大规模 recurrent state 写回 HBM。",
+      "answer": "传统 recurrent SSM 每生成一个 token 都可能读写完整状态，吞吐受状态 I/O 和显存带宽限制。ReplaySSM 保存周期性 checkpoint 与近期输入，在部分步骤通过输入 replay 计算输出，降低大状态写回频率，以重放计算和 buffer 管理成本换带宽。",
+      "terms": [
+        [
+          "状态",
+          "state",
+          "recurrent"
+        ],
+        [
+          "带宽",
+          "hbm",
+          "显存"
+        ],
+        [
+          "重放",
+          "replay",
+          "缓冲",
+          "buffer"
+        ],
+        [
+          "写回",
+          "checkpoint",
+          "缓存"
+        ]
+      ],
+      "trap": "减少状态写回不等于免费减少所有计算，也不能直接套用到纯 Transformer KV Cache。"
+    },
+    {
+      "id": "q-02",
+      "doc": "a-replayssm",
+      "level": "设计",
+      "q": "把 ReplaySSM 的 replay window 越调越大，一定越快吗？为什么？",
+      "hint": "考虑完整状态写回次数与重复重放运算之间的曲线。",
+      "answer": "不一定。更大的窗口降低 checkpoint 更新频率，却增加 replay 计算与 buffered inputs 的内存/管理开销，也影响回滚和数值误差传播。应按 batch、模型状态结构与目标硬件测吞吐、HBM 流量与输出一致性。",
+      "terms": [
+        [
+          "窗口",
+          "window"
+        ],
+        [
+          "写回",
+          "状态",
+          "checkpoint"
+        ],
+        [
+          "计算",
+          "replay",
+          "重放"
+        ],
+        [
+          "正确",
+          "误差",
+          "精度",
+          "吞吐"
+        ]
+      ],
+      "trap": "不能把论文特定 batch 的加速直接当作所有 GPU 的结果。"
+    },
+    {
+      "id": "q-03",
+      "doc": "a-space",
+      "level": "机制",
+      "q": "为什么仅有 Agent Prompt Guard，仍然需要独立执行沙箱和网络出口控制？",
+      "hint": "模型判断与操作系统权限能否等价？",
+      "answer": "Prompt Guard 只可能降低接收恶意指令的概率，不能成为强制操作授权。独立微虚拟机隔离进程/文件系统；沙箱外的 Policy/Egress Gateway 限制网络出口，短期 scoped credentials 和审计控制影响范围。",
+      "terms": [
+        [
+          "guard",
+          "检测",
+          "prompt"
+        ],
+        [
+          "沙箱",
+          "隔离",
+          "microvm",
+          "sandbox"
+        ],
+        [
+          "出口",
+          "网络",
+          "egress"
+        ],
+        [
+          "权限",
+          "策略",
+          "policy",
+          "授权"
+        ]
+      ],
+      "trap": "Firecracker 隔离也不意味着攻击面为零；VM 内的网络规则不应是唯一安全保障。"
+    },
+    {
+      "id": "q-04",
+      "doc": "a-space",
+      "level": "设计",
+      "q": "请把 Planner、MCP/Tool Client、Runtime 和 Policy Enforcement 的职责分开。",
+      "hint": "谁决定下一步动作，谁执行，谁有权拒绝？",
+      "answer": "Planner/LLM 产生工具执行意图；MCP/Tool Client 把意图转换成工具协议请求；Runtime/Sandbox 具体执行操作并提供隔离；独立 Policy Enforcement 按身份、Scope、资源和网络约束放行或拒绝，审计记录结果。",
+      "terms": [
+        [
+          "planner",
+          "llm",
+          "模型",
+          "计划"
+        ],
+        [
+          "mcp",
+          "client",
+          "工具"
+        ],
+        [
+          "runtime",
+          "sandbox",
+          "执行"
+        ],
+        [
+          "policy",
+          "授权",
+          "权限",
+          "策略"
+        ]
+      ],
+      "trap": "LLM 提示词约束不是不可绕过的权限检查。"
+    },
+    {
+      "id": "q-05",
+      "doc": "a-retrieval",
+      "level": "机制",
+      "q": "为什么召回了 Gold Passage，RAG 仍可能给出错误答案？",
+      "hint": "单独一段的语义相关性，与完整的证据集合是同一件事吗？",
+      "answer": "Gold Passage 可能有局部答案，却缺少版本、定义、例外条款、上下文依赖或表格结构。Recall@K 不等于 Evidence Coverage，也不保证生成模型忠于证据；还需要上下文恢复、多片段证据检查、权限过滤和引用校验。",
+      "terms": [
+        [
+          "上下文",
+          "语境",
+          "context"
+        ],
+        [
+          "证据",
+          "evidence",
+          "片段"
+        ],
+        [
+          "版本",
+          "例外",
+          "范围",
+          "定义"
+        ],
+        [
+          "引用",
+          "正确",
+          "citation"
+        ]
+      ],
+      "trap": "不要因为 Retriever 召回了某段文字，就推断生成答案必然正确。"
+    },
+    {
+      "id": "q-06",
+      "doc": "a-retrieval",
+      "level": "设计",
+      "q": "Late Interaction / ColBERT 的 MaxSim 相比单向量检索改善什么，付出什么成本？",
+      "hint": "Query 中每个 token 都能从文档 token 找到局部匹配。",
+      "answer": "单向量把整段信息压缩到一个 embedding，可能丢失细粒度约束。Late Interaction 以每个 query token 对文档 token/patch 的最佳相似度聚合分数，保留局部匹配；但需更大的多向量索引、聚合计算、内存与 Serving 延迟预算。",
+      "terms": [
+        [
+          "token",
+          "局部",
+          "多向量"
+        ],
+        [
+          "maxsim",
+          "相似"
+        ],
+        [
+          "索引",
+          "存储",
+          "内存"
+        ],
+        [
+          "计算",
+          "延迟",
+          "成本"
+        ]
+      ],
+      "trap": "局部相关性更高不代表已经解决跨文档授权或答案真实性。"
+    },
+    {
+      "id": "q-07",
+      "doc": "a-orchestrator",
+      "level": "机制",
+      "q": "Thin Orchestrator 为什么应把领域推理交给 Specialist Agent？",
+      "hint": "哪些部分应由确定性代码管理，而不是让一个大模型在一个上下文里全做？",
+      "answer": "薄 Orchestrator 负责路由、收集必要字段、确定性工作流、策略与不变量检查；Specialist Agent 在领域隔离上下文里推理。这样减少长上下文干扰、跨领域规则串线，并允许对控制流单独测试和回退。",
+      "terms": [
+        [
+          "路由",
+          "router"
+        ],
+        [
+          "specialist",
+          "领域",
+          "专家"
+        ],
+        [
+          "确定性",
+          "规则",
+          "状态机"
+        ],
+        [
+          "上下文",
+          "context",
+          "隔离"
+        ]
+      ],
+      "trap": "薄 Orchestrator 不是不需要 LLM，而是限制它负责的控制职责。"
+    },
+    {
+      "id": "q-08",
+      "doc": "a-orchestrator",
+      "level": "设计",
+      "q": "两个 Agent 同时修改共享 Workspace，如何避免 Lost Update？Outbox 又解决什么？",
+      "hint": "提交时能否只检查一次旧 HEAD 后直接覆盖？",
+      "answer": "让每个 Agent 在独立工作区编辑；提交时使用原子比较并交换（CAS）验证 expected head，冲突则 rebase/retry。与提交同事务记录 Outbox 事件，下游消费者使用幂等 ID 处理，避免已提交但事件丢失或重复触发。",
+      "terms": [
+        [
+          "cas",
+          "版本",
+          "head",
+          "冲突"
+        ],
+        [
+          "原子",
+          "事务",
+          "并发"
+        ],
+        [
+          "outbox",
+          "事件"
+        ],
+        [
+          "幂等",
+          "重复",
+          "retry",
+          "重试"
+        ]
+      ],
+      "trap": "普通 read-then-write 的进程内 if 检查，不是可靠的跨进程原子 CAS。"
+    },
+    {
+      "id": "q-09",
+      "doc": "a-decision",
+      "level": "机制",
+      "q": "为什么某些分类/路由任务不需要 LLM 自回归生成标签文本？",
+      "hint": "分辨生成 token、选项打分和共享前向表示。",
+      "answer": "明确候选标签的任务可以基于一个共享表示做有限选项 Score/Readout，省去多步 decode 与非结构化输出解析开销。不同 Decision Model 的实现可不同，必须对照规则和小型分类器，而不是认为专用模型一定更快或更好。",
+      "terms": [
+        [
+          "分类",
+          "路由",
+          "标签"
+        ],
+        [
+          "生成",
+          "decode",
+          "token"
+        ],
+        [
+          "score",
+          "readout",
+          "前向"
+        ],
+        [
+          "延迟",
+          "解析",
+          "成本"
+        ]
+      ],
+      "trap": "不能把所有 Decision Model 统一当作固定 Softmax Head。"
+    },
+    {
+      "id": "q-10",
+      "doc": "a-decision",
+      "level": "设计",
+      "q": "为什么分类 Accuracy 高，仍不能直接用模型置信度控制高风险动作？",
+      "hint": "Prediction correctness 和 Probability Calibration 不一样。",
+      "answer": "Accuracy 只说明标签命中率；Calibration 检查预测为 0.8 的样本是否约 80% 正确。分布漂移可破坏校准，所以应测 ECE/Brier/可靠性曲线，并以独立的硬策略边界决定是否执行高风险操作；低置信度可升级人工。",
+      "terms": [
+        [
+          "accuracy",
+          "准确率"
+        ],
+        [
+          "校准",
+          "calibration",
+          "概率"
+        ],
+        [
+          "漂移",
+          "ece",
+          "brier"
+        ],
+        [
+          "策略",
+          "授权",
+          "人工",
+          "阈值"
+        ]
+      ],
+      "trap": "经过温度校准的模型置信度也不是交易权限。"
+    },
+    {
+      "id": "q-11",
+      "doc": "a-repair",
+      "level": "机制",
+      "q": "为什么 GPU Node NotReady 时不应该立刻自动重启？",
+      "hint": "症状、原因证据和具有破坏性的动作是否可以等同？",
+      "answer": "NotReady 是状态症状，可能由网络、驱动、PCIe、ECC 或存储引起。应收集 DCGM/Xid/ECC 等原始证据，经 Evidence Gate、故障映射和 Policy Consent 后选择最轻修复，并在动作后重新验证节点健康。",
+      "terms": [
+        [
+          "notready",
+          "症状"
+        ],
+        [
+          "证据",
+          "xid",
+          "ecc",
+          "dcgm"
+        ],
+        [
+          "审批",
+          "policy",
+          "门禁",
+          "策略"
+        ],
+        [
+          "复验",
+          "验证",
+          "revalidate"
+        ]
+      ],
+      "trap": "重启成功并不能证明原本故障原因被准确诊断。"
+    },
+    {
+      "id": "q-12",
+      "doc": "a-repair",
+      "level": "设计",
+      "q": "如果 100 台 GPU 节点几乎同时 NotReady，自动修复系统应怎样防止雪崩？",
+      "hint": "把单节点故障视角提高到整群故障域。",
+      "answer": "短时间大规模故障更可能来自共享网络或存储。系统应进行跨节点相关性分析，触发 Circuit Breaker 停止批量破坏性动作，限制并发预算，要求人工调查，随后小批量、有观测的恢复并复验。",
+      "terms": [
+        [
+          "相关",
+          "共同",
+          "网络",
+          "存储"
+        ],
+        [
+          "熔断",
+          "circuit breaker"
+        ],
+        [
+          "并发",
+          "预算",
+          "限制"
+        ],
+        [
+          "人工",
+          "复验",
+          "分阶段"
+        ]
+      ],
+      "trap": "不能对每台节点无限次自动 reboot/reprovision。"
+    },
+    {
+      "id": "q-13",
+      "doc": "a-sticky",
+      "level": "机制",
+      "q": "流式 ASR 为什么需要 Sticky Session，而普通随机负载均衡可能造成什么问题？",
+      "hint": "后续 Audio Chunk 是否独立于此前 Decoder/VAD 状态？",
+      "answer": "流式 ASR 中间的 Decoder State、VAD 和分段偏移与 Session 强相关；随机均衡可能让后续 Chunk 落在没有历史状态的副本，造成漏词、重复或上下文错位。Sticky Routing 将同一 Session ID 固定到同一个 Worker。",
+      "terms": [
+        [
+          "session",
+          "会话"
+        ],
+        [
+          "state",
+          "状态",
+          "decoder",
+          "vad"
+        ],
+        [
+          "路由",
+          "亲和",
+          "sticky"
+        ],
+        [
+          "chunk",
+          "丢失",
+          "重复"
+        ]
+      ],
+      "trap": "Sticky 不保证容器永远可用，也不自动支持状态迁移。"
+    },
+    {
+      "id": "q-14",
+      "doc": "a-sticky",
+      "level": "设计",
+      "q": "Sticky Session 的 Worker 崩溃或 Drain 时，怎样设计恢复和扩容？",
+      "hint": "路由、身份、热状态、租约和客户端重传。",
+      "answer": "路由层维护 Session→Worker 映射与 TTL/Lease；Drain 要有 Grace Period。故障后要么从持久 checkpoint/offset 恢复，要么明确返回 Session Lost 并让客户端按序号重新发送；扩缩容不能只用 QPS，还需考虑 Active Session 与内存。",
+      "terms": [
+        [
+          "lease",
+          "ttl",
+          "会话",
+          "session"
+        ],
+        [
+          "checkpoint",
+          "offset",
+          "重放",
+          "恢复"
+        ],
+        [
+          "drain",
+          "grace",
+          "故障"
+        ],
+        [
+          "内存",
+          "并发",
+          "扩缩容"
+        ]
+      ],
+      "trap": "不要假设热 GPU Decoder State 可以零成本跨实例复制。"
+    },
+    {
+      "id": "q-15",
+      "doc": "a-shadow",
+      "level": "机制",
+      "q": "Shadow Traffic 与 Canary Deployment 的本质区别是什么？",
+      "hint": "新模型的输出是否会直接影响生产用户？",
+      "answer": "Shadow Traffic 镜像真实输入给候选版本，但候选响应不返回用户，主要用于安全的指标评估；Canary 真正将小部分用户路由到新版本并使用其响应，所以具有有限的生产风险。Shadow 的结果应先过评测门再考虑 Canary。",
+      "terms": [
+        [
+          "shadow",
+          "镜像"
+        ],
+        [
+          "canary",
+          "灰度"
+        ],
+        [
+          "用户",
+          "响应",
+          "可见"
+        ],
+        [
+          "评测",
+          "风险",
+          "gate"
+        ]
+      ],
+      "trap": "影子流量不等于真实生产体验，也不是 Canary 的替代品。"
+    },
+    {
+      "id": "q-16",
+      "doc": "a-shadow",
+      "level": "设计",
+      "q": "Shadow Candidate 太慢，为什么可能拖垮生产代理？如何设计有界镜像？",
+      "hint": "大 Body 的 Streaming Fork、Backpressure 与内存预算。",
+      "answer": "若复制流量给慢消费者且镜像队列无上限，Proxy 会累积 Body/Buffer 甚至反压正式生产请求。应为每个镜像设置有界缓冲、进程级预算与 Best-effort Drop；慢镜像可被取消，主请求不得被阻塞，同时测 Mirror Drop Rate 以识别采样偏差。",
+      "terms": [
+        [
+          "缓冲",
+          "buffer",
+          "队列",
+          "内存"
+        ],
+        [
+          "背压",
+          "backpressure",
+          "阻塞"
+        ],
+        [
+          "丢弃",
+          "drop",
+          "取消"
+        ],
+        [
+          "镜像",
+          "mirror",
+          "生产"
+        ]
+      ],
+      "trap": "丢弃更多慢候选请求会造成评测偏差，不能只看成功镜像样本。"
+    },
+    {
+      "id": "q-17",
+      "doc": "a-browsesafe",
+      "level": "机制",
+      "q": "Prompt Injection 的根源为什么不是“系统提示词不够强”？",
+      "hint": "不可信检索内容与有权指挥 Tool Execution 的身份能否混淆？",
+      "answer": "攻击根源是把不可信页面、RAG 文档或工具返回中的文本提升为指令权威。Guard 可以辅助识别，但真正控制工具操作的权限必须在独立 Policy Engine 和执行环境，区分身份、内容来源和数据/指令信任等级。",
+      "terms": [
+        [
+          "不可信",
+          "内容",
+          "数据"
+        ],
+        [
+          "指令",
+          "权限",
+          "信任"
+        ],
+        [
+          "guard",
+          "检测"
+        ],
+        [
+          "policy",
+          "执行",
+          "授权"
+        ]
+      ],
+      "trap": "“请忽略恶意指令”的 System Prompt 不能替代沙箱和工具授权。"
+    },
+    {
+      "id": "q-18",
+      "doc": "a-browsesafe",
+      "level": "设计",
+      "q": "为什么 Guard 的 Accuracy 很高，企业中仍可能造成大量误报？",
+      "hint": "真实世界干净页面和攻击页面的基数是否接近？",
+      "answer": "企业真实页面中攻击比例通常很低。即使 FPR 只有 1%，若每天检测 100,000 个正常片段仍有约 1,000 个误报；只报告 Accuracy 会掩盖基数效应。应测 Precision/Recall/FPR、Adaptive Attack、长上下文、多语种及运营负担。",
+      "terms": [
+        [
+          "fpr",
+          "误报"
+        ],
+        [
+          "基数",
+          "比例",
+          "正常"
+        ],
+        [
+          "precision",
+          "recall",
+          "准确率"
+        ],
+        [
+          "运营",
+          "审查",
+          "人工",
+          "成本"
+        ]
+      ],
+      "trap": "分类器分数无法取代强制执行层的授权拒绝。"
+    },
+    {
+      "id": "q-19",
+      "doc": "a-spindle",
+      "level": "机制",
+      "q": "为什么 Agentic RL 的 Rollout/Sampler 和 Trainer 值得解耦？",
+      "hint": "Decode/环境等待与反向传播的资源瓶颈不同。",
+      "answer": "Sampler 进行长 Decode、工具和环境 I/O，并发与 token throughput 重要；Trainer 执行梯度、优化器状态和通信，计算与显存/带宽性质不同。分离资源池可独立扩容，减少互相等待，但引入版本管理、网络和同步开销。",
+      "terms": [
+        [
+          "sampler",
+          "rollout",
+          "采样"
+        ],
+        [
+          "trainer",
+          "训练",
+          "梯度"
+        ],
+        [
+          "资源",
+          "解耦",
+          "gpu"
+        ],
+        [
+          "同步",
+          "网络",
+          "成本"
+        ]
+      ],
+      "trap": "解耦不是无条件更好，低负载时协调成本可能超过收益。"
+    },
+    {
+      "id": "q-20",
+      "doc": "a-spindle",
+      "level": "设计",
+      "q": "Disaggregated RL 如何处理旧版本 Rollout、权重同步和数值不一致？",
+      "hint": "Policy Staleness、Version Tagging、Train/Serve Numerics。",
+      "answer": "每条 Rollout/Trajectory 要记录生成时的 Policy/Checkpoint Version；Trainer 根据算法容忍的 Staleness 范围选择接受、重算或丢弃。权重同步需有版本和原子切换；Train/Serve 的 MoE Routing、Precision 与采样数值差异会影响学习正确性，因此要建立对照和一致性测试。",
+      "terms": [
+        [
+          "staleness",
+          "旧版本",
+          "过期"
+        ],
+        [
+          "policy",
+          "权重",
+          "checkpoint"
+        ],
+        [
+          "version",
+          "版本",
+          "同步"
+        ],
+        [
+          "数值",
+          "moe",
+          "精度",
+          "一致"
+        ]
+      ],
+      "trap": "仅观察 Loss 下降无法证明跨引擎的 Rollout 正确。"
+    }
+  ]
+}
+

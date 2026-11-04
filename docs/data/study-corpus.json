@@ -1,0 +1,596 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-04",
+  "scope": "Public AI Engineering Research Library only; no private FlowMind notes or account sources",
+  "documents": [
+    {
+      "id": "a-replayssm",
+      "title": "ReplaySSM：缓存 SSM 输入，而不是每步写状态",
+      "label": "ReplaySSM",
+      "date": "2026-10-31",
+      "url": "/notes/2026/10/2026-10-31-onprem-replayssm/",
+      "visual": "/interactive/2026-10-31-replayssm-map.html",
+      "description": "用输入重放减少 SSM 状态的 HBM 写回。",
+      "track": "onprem"
+    },
+    {
+      "id": "a-space",
+      "title": "Perplexity SPACE：Agent 执行沙箱为什么需要独立信任边界",
+      "label": "SPACE Sandbox",
+      "date": "2026-10-31",
+      "url": "/notes/2026/10/2026-10-31-hybrid-space/",
+      "visual": "/interactive/2026-10-31-space-map.html",
+      "description": "Agent 执行隔离、MicroVM 和网络出口治理。",
+      "track": "hybrid"
+    },
+    {
+      "id": "a-retrieval",
+      "title": "RAG 检索进阶：Contextual Embedding 与 Late Interaction / ColBERT",
+      "label": "Contextual Embeddings / Multi-vector",
+      "date": "2026-11-01",
+      "url": "/notes/2026/11/2026-11-01-onprem-retrieval/",
+      "visual": "/interactive/2026-11-01-retrieval-map.html",
+      "description": "语境恢复与 Token 级证据匹配。",
+      "track": "onprem"
+    },
+    {
+      "id": "a-orchestrator",
+      "title": "Thin Orchestrator × Git Workspace：多 Agent 为什么要分离推理与共享状态",
+      "label": "Thin Orchestrator / Workspace",
+      "date": "2026-11-01",
+      "url": "/notes/2026/11/2026-11-01-hybrid-agents/",
+      "visual": "/interactive/2026-11-01-agents-map.html",
+      "description": "确定性路由、专家 Agent 和 Git 并发控制。",
+      "track": "hybrid"
+    },
+    {
+      "id": "a-decision",
+      "title": "Decision Models：为什么分类不一定需要生成 Token",
+      "label": "Decision Models",
+      "date": "2026-11-02",
+      "url": "/notes/2026/11/2026-11-02-onprem-decision-models/",
+      "visual": "/interactive/2026-11-02-decisions-map.html",
+      "description": "一次前向计算与校准式分类路由。",
+      "track": "onprem"
+    },
+    {
+      "id": "a-repair",
+      "title": "Together AI GPU Auto-repair：基于证据的修复与熔断",
+      "label": "GPU Auto-repair",
+      "date": "2026-11-02",
+      "url": "/notes/2026/11/2026-11-02-hybrid-gpu-auto-repair/",
+      "visual": "/interactive/2026-11-02-gpu-repair-map.html",
+      "description": "证据驱动的 GPU 修复、复验和熔断。",
+      "track": "hybrid"
+    },
+    {
+      "id": "a-sticky",
+      "title": "Sticky Sessions：流式 ASR / Stateful Inference 的路由与扩缩容",
+      "label": "Sticky Sessions",
+      "date": "2026-11-03",
+      "url": "/notes/2026/11/2026-11-03-onprem-sticky-sessions/",
+      "visual": "/interactive/2026-11-03-sticky-map.html",
+      "description": "流式 ASR、Decoder State 与会话亲和。",
+      "track": "onprem"
+    },
+    {
+      "id": "a-shadow",
+      "title": "Shadow Traffic / Endpoint Candidates：模型上线前怎样安全比较",
+      "label": "Shadow Traffic",
+      "date": "2026-11-03",
+      "url": "/notes/2026/11/2026-11-03-hybrid-shadow-traffic/",
+      "visual": "/interactive/2026-11-03-shadow-map.html",
+      "description": "无损流量镜像、有界缓冲与灰度发布。",
+      "track": "hybrid"
+    },
+    {
+      "id": "a-browsesafe",
+      "title": "BrowseSafe++：从 Prompt Injection 检测到可信执行边界",
+      "label": "BrowseSafe++",
+      "date": "2026-11-04",
+      "url": "/notes/2026/11/2026-11-04-onprem-prompt-injection/",
+      "visual": "/interactive/agent-security-map.html",
+      "description": "Prompt Injection 检测与独立授权边界。",
+      "track": "onprem"
+    },
+    {
+      "id": "a-spindle",
+      "title": "Spindle：为什么 RL Post-training 要解耦 Trainer 与 Inference？",
+      "label": "Spindle RL",
+      "date": "2026-11-04",
+      "url": "/notes/2026/11/2026-11-04-hybrid-spindle/",
+      "visual": "/interactive/rl-infra-map.html",
+      "description": "Trainer / Sampler 解耦及权重同步。",
+      "track": "hybrid"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "a-replayssm-0-0",
+      "docId": "a-replayssm",
+      "heading": "研究概览",
+      "text": "2026-10-31 的历史精读专题（2026-11-04 重新整理） · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。"
+    },
+    {
+      "id": "a-replayssm-1-1",
+      "docId": "a-replayssm",
+      "heading": "筛选依据与原始资料",
+      "text": "- ReplaySSM: Cache SSM Inputs, Not State — Ze-Wei Liou 等，2026-10-09 原始 arXiv 论文。\n- 作者开源实现 Johnny-Liou/ReplaySSM — vLLM、Mamba-2、Gated DeltaNet 相关实现/适配。部署前核对分支和许可证。\n\n为何进入 10 月 31 日榜单：这是一项具有机制解释和明确性能结果的推理引擎优化，不只是模型排行榜：优化对象从 LLM 计算切换到循环状态在 HBM 中的写回成本。对 ML Systems/Inference Engineer 的面试价值高于一般模型发布消息。"
+    },
+    {
+      "id": "a-replayssm-2-2",
+      "docId": "a-replayssm",
+      "heading": "First Principles：状态 I/O 为什么会比计算贵？",
+      "text": "对 recurrent SSM，可抽象为 h_t = F(h_(t-1),u_t)，y_t = G(h_t)。传统实现每个 token 均读取、计算、写入完整的状态 h_t。若每请求状态大小为 S bytes、batch 为 B、生成 T tokens，忽略缓存与 kernel 融合时状态读写主导的近似流量是 2BST；这只是教学上界式的模型，不代表设备实测。\n\nReplaySSM 将状态表示为一个周期更新的 checkpoint C 及尚未合并的近期输入 u_(k+1..t)：\n- 输出计算可由 C 与近期输入 replay/组合，避免每一步将巨大状态落盘 HBM；\n- 窗口边界将输入批量折叠入 C；\n- Speculative decoding 拒绝 token 后回滚 buffer 指针，而不是恢复多个完整 recurrent state；\n- 低精度输出计算路径与高精度 recurrent checkpoint 路径可分离，减少量化误差向后传播。\n\n论文在 batch size 256 的四种混合模型上报告 vLLM 相比调优基线标准解码 1.20–1.47× 提升，120B 级两模型 speculative decoding 吞吐约 1.8×；这些是论文指定设置的数据，不能线性外推到 RTX 单卡。"
+    },
+    {
+      "id": "a-replayssm-3-3",
+      "docId": "a-replayssm",
+      "heading": "设计取舍与失败模式",
+      "text": "- 更长 replay window 减少状态写回，却可能增加重放计算和输入 buffer 成本；最优窗口需按模型状态结构、batch、序列长度测量。\n- Kernel 的输出应与原始模型在误差容忍范围内一致；量化 state 的低精度版本不能反向污染高精度 recurrent update。\n- 只有 Mamba/SSM/GDN 等依赖 recurrent state 的路径明显受益；纯 Transformer KV Cache 不可直接照搬。\n- Prefix caching 与 speculative rollback 的状态一致性检查比跑通单个 sample 更关键。"
+    },
+    {
+      "id": "a-replayssm-4-4",
+      "docId": "a-replayssm",
+      "heading": "On-prem 与 Controlled Hybrid",
+      "text": "· 维度 · On-prem · Controlled Hybrid ·\n\n· 适用性 · vLLM 等推理引擎合适模型上的 kernel/状态优化 · 云托管 SSM Serving 可在流量大时进一步压榨 HBM · \n · 内存 · 关注 batch × recurrent state × 缓冲窗口 · 同时关注跨服务权重/状态迁移成本 · \n · 数据边界 · token 与 state 全留内网 · 仅允许批准的请求、模型与数据出域 · \n · 风险 · 自定义 kernel 版本兼容、回滚 · 服务升级/跨版本 state ABI 不兼容 ·"
+    },
+    {
+      "id": "a-replayssm-5-5",
+      "docId": "a-replayssm",
+      "heading": "30–60 分钟可复现实验（不依赖云 API）",
+      "text": "写一个 NumPy toy recurrence：逐步更新 h；每隔 K 步固化一次 checkpoint，其间保存输入；验证 replay 输出与 eager 输出在 float64 下几乎相同。分别记录每生成 token 的“完整状态写回次数”和 replay 运算次数，绘制 K={1,4,8,16,32} 的权衡曲线。注意 toy 不能证明真实 GPU 加速。"
+    },
+    {
+      "id": "a-replayssm-6-6",
+      "docId": "a-replayssm",
+      "heading": "求职与知识沉淀",
+      "text": "面试问题：Explain why a recurrent model can be bandwidth-bound during decode; design rollback for speculative decoding without copying an entire state.核心：①减少 HBM I/O 常比减少 FLOPs 更有效；②状态表示能决定回滚复杂度；③精度正确性与吞吐要一起测。\n\n未覆盖：没有本地 96GB GPU Benchmark，也没有独立复现实验结果；候选排名依据是当期选题主题，非能追溯的完整搜索清单。"
+    },
+    {
+      "id": "a-space-0-7",
+      "docId": "a-space",
+      "heading": "研究概览",
+      "text": "2026-10-31 的历史精读专题（2026-11-04 重新整理） · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。"
+    },
+    {
+      "id": "a-space-1-8",
+      "docId": "a-space",
+      "heading": "选题筛选与一手资料",
+      "text": "- SPACE 开源仓库 — Perplexity，2026-10-15 宣布开源。项目提供管理沙箱的 API、模板、进程与生命周期能力。\n- Escaping SPACE: Part I — Perplexity Research，2026-09-23；讨论 VM 隔离、网络出口规则及攻击测试。\n- SPACE First Sandbox — 最小本地功能路径。\n\n入选原因：从“模型怎么规划工具调用”深入到“工具实际在什么权限域执行”，可迁移到任何 Agent Runtime，求职价值在 Agent Security、Infra、Cloud Native 和 MCP 工具隔离。"
+    },
+    {
+      "id": "a-space-2-9",
+      "docId": "a-space",
+      "heading": "First Principles：Planner、Execution、Policy 是三件事",
+      "text": "Agent Planner 输出的是执行意图，不是系统权限。MCP Client 或工具执行器负责请求，独立运行时负责创建隔离环境；Policy Enforcement Point 则检查 RBAC、网络出口、操作范围、配额与审计。\n\n以 SPACE 为例，每个执行任务可在 Firecracker microVM 中运行。管理面创建模板/沙箱，数据面创建 Command Session、接收输出。Application 决定执行什么；SPACE 不是开源版的完整 Perplexity Computer，也不负责模型的语义正确性。\n\n独立隔离的重要性：即使沙箱内部有 root 权限，也不意味着能访问宿主 root。网络出口必须在 VM 外实施，不能只依赖 Guest 的 iptables。可见的 Egress 控制至少区分 DNS、SNI、HTTP Host、共享 CDN、多租户反向代理、重定向和非 HTTP 协议；基于 hostname 的 allowlist 不是充分的端到端身份验证。"
+    },
+    {
+      "id": "a-space-3-10",
+      "docId": "a-space",
+      "heading": "已公开研究的安全提醒",
+      "text": "早期 Escaping SPACE 研究涉及宿主逃逸与网络策略绕过，后续修复后重复测试没有成功获取目标回调；报告仅覆盖被测配置和尝试预算，不是“微虚拟机不可攻破”的证明。特别需要区分网络隔离、凭据保护和模型 Prompt Injection 三种威胁模型。"
+    },
+    {
+      "id": "a-space-4-11",
+      "docId": "a-space",
+      "heading": "On-prem / Hybrid 部署判断",
+      "text": "· 层 · On-prem · Controlled Hybrid ·\n\n· Planner · 本地 LLM 与 Orchestrator · 可保留本地规划层 · \n · Execution · 内网 Linux/KVM，受控 VM 集群 · 云端微 VM 仅处理获批数据 · \n · Credential · Broker 发短期 scoped token · 出域前剥离内部凭据；Egress 受 Policy Gateway 控制 · \n · Audit · 本地 Trace/不可篡改日志 · 跨域统一请求 ID、租户和数据分类 · \n · 限制 · 本地 Kind 教程仍需 KVM、容器/网络组件 · 云节点跨境、延迟、成本、供应链必须审查 ·\n\n实际部署条件：SPACE 的本地参考部署要求 Linux 与虚拟化支持，不能仅以拥有 GPU 推理主机作为“可直接上生产”的充分条件。证据与执行结果需要独立持久化，流式命令输出不等于可靠审计日志。"
+    },
+    {
+      "id": "a-space-5-12",
+      "docId": "a-space",
+      "heading": "30–60 分钟实验",
+      "text": "无需运行真实未知代码。构造一个 mock Tool Executor，分别测试四项策略：允许读取临时工作目录、拒绝读取宿主 secret、拒绝未知出口域名、拒绝超出 scope 的删除。使用普通 Python subprocess 在演示环境中模拟授权逻辑，并注明不是安全沙箱。进阶再用 SPACE 官方本地安装文档验证真实 VM 分离。"
+    },
+    {
+      "id": "a-space-6-13",
+      "docId": "a-space",
+      "heading": "系统设计面试",
+      "text": "Design an isolated execution plane for autonomous coding agents. 要覆盖：Planner/Policy/Runtime 分层、微 VM 生命周期、网络 Egress、Secret Broker、审计、Snapshot/Resume、单租户隔离、故障恢复。三个收获：①模型不拥有执行权限；②沙箱和出口策略必须分开；③可回放的审计是系统功能，而非“模型自述”。"
+    },
+    {
+      "id": "a-retrieval-0-14",
+      "docId": "a-retrieval",
+      "heading": "研究概览",
+      "text": "2026-11-01 的历史精读专题（2026-11-04 重新整理） · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。"
+    },
+    {
+      "id": "a-retrieval-1-15",
+      "docId": "a-retrieval",
+      "heading": "主文章与来源",
+      "text": "- Contextual embedding beyond the gold passage — Perplexity 与 turbopuffer，2026-09-30。\n- Multimodal embeddings beyond a single vector — Perplexity Research，2026-10-07。\n- pplx-embed-v2-late 技术报告 arXiv:2610.29523 — 论文版本需以 arXiv 为准。\n\n入选原因：这两项研究共同挑战传统“每段文档一个 embedding + top-k”的简化假设。检索不好可能来自缺乏上下文、视觉页面信息丢失或 query 与 doc 表示过度压缩；大模型未必能弥补候选证据缺失。"
+    },
+    {
+      "id": "a-retrieval-2-16",
+      "docId": "a-retrieval",
+      "heading": "1. 为什么 Gold Passage 不够？",
+      "text": "传统检索数据常把问题映射到一个包含答案的黄金片段，但真实企业问答需要理解适用范围、版本、章节表格、定义前提。比如“本季度费用是否需要审批”的答案在一段，审批适用范围在另一段；单段相关性不代表答案可验证。Contextual Embedding 的目标是表示该片段在整份文档中的含义，而非单独编码断裂的句子。\n\nPerplexity 描述由查询感知的上下文压缩教师产生 token 级软相关监督，并蒸馏到无需查询时重新跑全文的 Contextual Encoder。它的优势必须通过长文档证据恢复评价而不仅是 Recall@K 测量。"
+    },
+    {
+      "id": "a-retrieval-3-17",
+      "docId": "a-retrieval",
+      "heading": "2. Multi-vector / Late Interaction 的机制",
+      "text": "单向量 Dense Retrieval：score(q,d) ≈ cos(e(q),e(d))，极省索引与 online 计算，但细粒度相似度被压缩。\n\nLate Interaction 的经典 MaxSim：\n\\[\ns(q,d) = \\sum_{i \\in q} \\max_{j \\in d} \\langle \\mathbf{q}_i, \\mathbf{d}_j\\rangle\n\\]\n其中 query 的不同 token 各自从文档 token/patch 寻找最佳匹配；保留局部证据，提高多条件问题的匹配表达力，但向量数量、存储/传输和聚合计算显著增加。\n\nPerplexity 报告的 pplx-embed-v2-late 提供 0.6B 与 9B 两种大小，跨尺寸共享嵌入空间：9B 离线编码文档，0.6B 在线编码 query。这是 Offline Indexing vs Online Serving 不对称设计的典型案例。官方也描述直接检索 PDF 渲染页面，而不依赖 OCR 文本的视觉检索路径；不意味着完全不需要文字 OCR，因为引用定位、精确数字和后续解析仍会受益于文字。"
+    },
+    {
+      "id": "a-retrieval-4-18",
+      "docId": "a-retrieval",
+      "heading": "3. 运行架构、资源与失效",
+      "text": "- 传统 Chunker → Dense Embedding → ANN，可以作为高召回 First Stage；Late Interaction 可作为 Second Stage 或适配专门的 MaxSim 检索引擎。\n- 多向量索引容量近似 O(D × tokens_per_doc × dim × bytes_per_dim)，远高于单向量；须测索引 build、显存/内存、P95 延迟与更新成本。\n- 常见失败：PDF 页眉误匹配、公式与图表 patch 误召回、跨语种查询漂移、标题/正文版本混淆、单份文档切分导致引用粒度失真。\n- 多文档冲突仍需要版本优先级、权限过滤和证据核验，Embedding 本身不能解决授权或事实判断。"
+    },
+    {
+      "id": "a-retrieval-5-19",
+      "docId": "a-retrieval",
+      "heading": "4. 部署对照",
+      "text": "· 维度 · On-prem · Controlled Hybrid ·\n\n· 建索引 · 本地 GPU 批量离线编码，权限标签不脱离片段 · 只迁移获准文档或单独处理公开语料 · \n · 在线检索 · 小型 Query Encoder + Token-level Rerank · 云端只处理已许可查询；敏感用户问题留内网 · \n · 算力 · 避免默认 9B Query Encoder 的在线成本 · 可用云端大批量离线 indexing · \n · 安全 · ANN 前后都实施 ACL，不能“检索后再随便裁剪” · 不能认为 embedding 自动脱敏 · \n · 衡量 · Evidence Recall@K、Citation accuracy、Latency · 同时测网络出域和成本 ·"
+    },
+    {
+      "id": "a-retrieval-6-20",
+      "docId": "a-retrieval",
+      "heading": "30–60 分钟可操作实验",
+      "text": "制作 30 个含有标题、例外条款、交叉引用的合成段落和 10 个多条件 query；先用 TF-IDF/cosine 作为单向量基线，再用 token TF-IDF 的 MaxSim 做模拟 late interaction。测 Recall@3 与 Evidence Coverage，不用闭源模型 API。模拟 token vector 不等于复现 Perplexity 模型性能。"
+    },
+    {
+      "id": "a-retrieval-7-21",
+      "docId": "a-retrieval",
+      "heading": "面试与延伸",
+      "text": "Why can high passage recall coexist with wrong answers? Design permission-aware multi-vector RAG for scanned PDFs with 10M pages. 三个关键点：检索目标是证据集合，不只是 gold chunk；离线文档编码与在线 query 编码资源约束不同；精度、授权和引用必须独立评估。"
+    },
+    {
+      "id": "a-orchestrator-0-22",
+      "docId": "a-orchestrator",
+      "heading": "研究概览",
+      "text": "2026-11-01 的历史精读专题（2026-11-04 重新整理） · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。"
+    },
+    {
+      "id": "a-orchestrator-1-23",
+      "docId": "a-orchestrator",
+      "heading": "原始来源与筛选理由",
+      "text": "- The Thin Orchestrator: How We Made Our AI Agents More Reliable by Giving the Router Less to Do — Meta Engineering，2026-10-19。\n- Building shared workspaces for people and agents — Perplexity Research，2026-10-12。\n\n合并为一个专题的原因：Meta 解决 Agent 之间的职责与上下文隔离；Perplexity 解决跨 Agent、跨会话的状态一致性。底层都是把“LLM 的不确定推理”从“必须确定性的系统边界”中分离，比各讲一篇 Agent 产品更新更有工程迁移价值。"
+    },
+    {
+      "id": "a-orchestrator-2-24",
+      "docId": "a-orchestrator",
+      "heading": "1. Thin Orchestrator：路由不等于领域推理",
+      "text": "Meta 的数据流程代理早期将多个数据源规则、配置模式及代码生成逻辑塞入一个 Agent，导致上下文干扰。后续改用薄 Orchestrator：只负责目标识别、必要字段收集、预检查、确定性的 Workflow 顺序和错误回退，将领域决策交给隔离的 Specialist Agent。Meta 文章报告一个约 1,300 行 Orchestrator 路由 20 多类工作流到 14 个 Specialist；这些数字来自原团队，不代表一般企业最优规模。\n\n只有 D 中需要语言模型的领域推理。若可靠性检查也完全委托 LLM，就无法保证每次执行同样的不变量。"
+    },
+    {
+      "id": "a-orchestrator-3-25",
+      "docId": "a-orchestrator",
+      "heading": "2. Shared Workspace：长期 Agent 是并发系统",
+      "text": "多个 Agent 操作共享文件时，简单共享目录会遇到 Lost Update。Perplexity 采用 Git 基础语义管理持久化项目：\n- 每个 Agent 在独立、可抛弃的沙箱内修改文件；\n- 提交时检查 expected head 是否等于最新 head（类似 compare-and-swap）；\n- Stale Base 返回冲突，调用方重新获取最新版本并重放自己的编辑；\n- 每次接受提交同时记录 Outbox，触发下游 Indexing/解析任务，做到可追踪。\n\n文章报告实际生产提交低于 2% 因 stale base 被拒，Median 提交时间小于 1.7s；是特定系统的官方数据。Outbox 需要关注 At-least-once 投递与幂等处理，否则重复消费会触发两次外部工具动作。"
+    },
+    {
+      "id": "a-orchestrator-4-26",
+      "docId": "a-orchestrator",
+      "heading": "3. 参考接口与强一致性边界",
+      "text": "这是教学伪代码，实际实现需要数据库事务/原子 CAS、可靠日志、冲突合并和防重复幂等 Key；单纯进程内检查后写入并不具备并发原子性。"
+    },
+    {
+      "id": "a-orchestrator-5-27",
+      "docId": "a-orchestrator",
+      "heading": "4. 两条部署路径",
+      "text": "· 层 · On-prem · Controlled Hybrid ·\n\n· Orchestrator · 本地确定性 FSM + Scope Gateway · 控制层继续留内网 · \n · Specialist · 自托管 LLM、分域工具和工作区 · 外部 Agent 只处理获批脱敏任务 · \n · Workspace · Git/Object Store 内网持久化 · 可用区域限定对象存储和短期沙箱 · \n · Concurrency · CAS head + retry + idempotent outbox · 增加跨域网络分区/重放保障 · \n · 安全 · 工作区 ACL、审计变更与来源 · 不要把共享 Git repo 当作权限模型 ·"
+    },
+    {
+      "id": "a-orchestrator-6-28",
+      "docId": "a-orchestrator",
+      "heading": "30–60 分钟实验",
+      "text": "用 Python 模拟两个 Agent 读取同一个 head；A 成功提交，B 的旧 head 失败；让 B rebase 并重试，验证最终两个文件改动都存在。再人为重复发送同一个 outbox 消息，使用事件 ID 防止下游重复处理。全部在本地完成。"
+    },
+    {
+      "id": "a-orchestrator-7-29",
+      "docId": "a-orchestrator",
+      "heading": "面试与总结",
+      "text": "Design a reliable multi-agent workflow system supporting concurrent edits. 面试至少覆盖确定性控制、上下文隔离、MVCC/乐观锁、Outbox、任务幂等、工具权限、失败恢复。核心结论：①LLM 不应决策系统不变量；②Agent 的临时运行环境与持久状态必须分离；③长期 Agent 的协作本质是并发写入和一致性问题。"
+    },
+    {
+      "id": "a-decision-0-30",
+      "docId": "a-decision",
+      "heading": "研究概览",
+      "text": "2026-11-02 历史精读（2026-11-04 重新整理）。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。"
+    },
+    {
+      "id": "a-decision-1-31",
+      "docId": "a-decision",
+      "heading": "选题理由与原始出处",
+      "text": "- Oumi: How to Build a Decision Model Like Jev — Oumi，2026-10-19。\n- Lumma-Fev-v2 — FrontiersMind，2026-10-29。\n- Baseten: Decisions for a penny: joey-1 — Baseten，2026-10-29。\n\n为何入选：跨 Oumi、独立开源模型和 Baseten 的同向证据表明“生成文本”不一定是分类/路由的合适计算接口。模型层决策、Calibration、Latency 与基础设施关系紧密，是 Agent Router/Model Systems 高价值话题。"
+    },
+    {
+      "id": "a-decision-2-32",
+      "docId": "a-decision",
+      "heading": "1. 生成式分类的成本从哪里来？",
+      "text": "传统提示：给定消息，让 LLM 生成一个诸如 billing、account 的标签。即使只输出几个 token，也要走一次或多次自回归 Decode，并处理格式、拒答、多余解释及解析错误。\n\nDecision Model 的关键不是“分类结果更短”，而是将问题转成一组候选选项的一次 Forward Score。可用概率记为：\n\\[\nP(y=k \\mid x)=\\frac{e^{z_k / T}}{\\sum_j e^{z_j / T}}\n\\]\n其中 z_k 是选择头或保留 token 的 logit，T 可用于后训练温度校准。不同模型可能采用不同 Readout Strategy；不能把全部模型理解为固定 Softmax Head。\n\n多个相关问题可共享同一个输入 state / 前缀，提高高频决策效率。Oumi 文章强调树状/共享输入计算和概率校准；Baseten 报告 joey-1 为 2B、来源于 Qwen3.5-2B Post-training，报告某配置下 P50 约 20ms。这些均属于供应商实验，需要按照输入长度和硬件重新验证。"
+    },
+    {
+      "id": "a-decision-3-33",
+      "docId": "a-decision",
+      "heading": "2. Why Calibration Is Not Accuracy",
+      "text": "- Accuracy = 正确分类的比例；仅表明标签选择对错。\n- Confidence Calibration：预测 0.8 的样本，大约 80% 应正确；可通过 Reliability Diagram、ECE、Brier Score 评估。\n- Selective Prediction：当最高分低于 τ 时送人工或更大型模型；目标是限制错误成本，不是单独追求准确率。\n- 分布漂移：如新产品术语、跨语言、政策更新，可能使一个已校准模型失效。\n\nBaseline 的必要性：规则/关键词、scikit-learn TF-IDF + LogisticRegression、轻量 Sentence Transformer 分类与生成式 LLM 均应是对照。小模型专用微调可能优于通用 Decision Model；应依据标签可得性、再训练频率判断。"
+    },
+    {
+      "id": "a-decision-5-34",
+      "docId": "a-decision",
+      "heading": "4. On-prem vs Controlled Hybrid",
+      "text": "· 问题 · On-prem · Controlled Hybrid ·\n\n· 模型/许可证 · 核实开放权重和商用许可证，本地推理可基于可用 Backbone · 部分 API 版本仅服务商可执行，不能作为离线可用的证明 · \n · 时延 · 小模型可与 Gateway 共址，测端到端 P50/P99 · API 网络 RTT 可能超过模型计算耗时 · \n · 数据边界 · 文本保留内网，拒绝权限旁路 · 只出域批准字段，不等于“无数据保留”即可自由使用 · \n · 验证 · Confusion Matrix + Calibration + Drift · 加测 Cost、RTO、供应商限额与回退 · \n · 资源 · 需要核实实际 FP16/量化占用与并发 · 可能以供应商托管方式提升峰值弹性 ·"
+    },
+    {
+      "id": "a-decision-6-35",
+      "docId": "a-decision",
+      "heading": "30–60 分钟自托管实验",
+      "text": "用 sklearn 自带分类数据或合成 77 类客服意图，比较 LogisticRegression 及本地已授权小模型的标签准确率、Brier Score、端到端延迟。对所有预测的置信度做 temperature scaling（使用单独的 validation set）；画 reliability curve，并测试低置信度升级策略。不能把类数多误解释为一定需要 LLM。"
+    },
+    {
+      "id": "a-decision-7-36",
+      "docId": "a-decision",
+      "heading": "Interview Takeaways",
+      "text": "Design a low-latency, high-volume classifier and policy router. 论述 one-pass readout、Batching、Calibration、Decision Cost、Hard Policy Boundary 与 Drift。三条结论：①分类不必输出完整自然语言；②概率是否可靠与分类准确率是两件事；③授权永远不能由模型的 Confidence 替代。未独立复现 Baseten 的延迟数据。"
+    },
+    {
+      "id": "a-repair-0-37",
+      "docId": "a-repair",
+      "heading": "研究概览",
+      "text": "2026-11-02 历史精读（2026-11-04 重新整理）。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。"
+    },
+    {
+      "id": "a-repair-1-38",
+      "docId": "a-repair",
+      "heading": "一手资料与入选原因",
+      "text": "- Auto repair for Together GPU Clusters: from GPU fault to healthy node — Together AI，2026-10-27。\n\n为何入选：从“有监控会告警”推进到带证据、审批、修复动作、复验和集群级熔断的 Closed-loop GPU Infra。涉及真实的可靠性和安全设计，技能迁移性高；比介绍增加多少 GPU 容量的新闻更适合 ML Infra 工程深读。"
+    },
+    {
+      "id": "a-repair-2-39",
+      "docId": "a-repair",
+      "heading": "1. 检测不等于执行修复",
+      "text": "一台 GPU 节点 NotReady 不意味着 GPU 已坏。共享网络波动、Driver Crash、PCIe Link、ECC Error、Storage Readonly 都可能造成类似症状；应保留原始机器证据。\n\nTogether 的公开框架从 Guest VM 与 Host 两面收集故障：如 DCGM、Xid、ECC、Node Problem Detector、IB 网络 Link。告警分离为 Observed 与 Actionable：所有故障可以留下记录，但只有具有合适动作映射、且满足策略和授权的告警才能生成修复。\n\n核心策略：No node repair without a failed health check. 修复必须具有可解释关联证据，并对不确定信号保守处理。"
+    },
+    {
+      "id": "a-repair-3-40",
+      "docId": "a-repair",
+      "heading": "2. Repair State Machine",
+      "text": "Together 的设计允许每种 Error/Xid 配置批准范围，并为修复提供 Wait-for-idle。轻至重通常是 Reboot → Quick Reprovision → Host Migration → Remove/RMA（人工发起），每一级在特定条件下有限重试。动作越重，越可能丢失本地临时数据或消耗新宿主 Capacity。"
+    },
+    {
+      "id": "a-repair-4-41",
+      "docId": "a-repair",
+      "heading": "3. 为什么需要 Circuit Breaker？",
+      "text": "单节点 Reboot 可能有效，但如果 100 台主机在 30 秒内都 NotReady，就更像共享网络/存储故障。此时自动对每台进行重建可能从可恢复故障变成灾难。\n\n必须具备：信号持续时间阈值、冷却期、并发预算、集群级突发熔断、每个修复仅作用于一个目标、幂等 ID、统一修复日志、复验失败后退出池。这些设计的权衡是“自动化恢复速度”与“错误自动化的破坏半径”。"
+    },
+    {
+      "id": "a-repair-5-42",
+      "docId": "a-repair",
+      "heading": "4. 部署边界",
+      "text": "· 维度 · On-prem · Controlled Hybrid ·\n\n· Signals · DCGM、Kernel/Xid、OS、Scheduler、网络设备 · Cloud Provider Host telemetry 可补强 · \n · Actuator · 内部 CMDB/审批、K8s/Slurm、硬件运维 · 按节点/错误类型授权云端修复 · \n · Safety · Drain 时评估正在运行的 LLM replicas/Training Jobs · 增加 Capacity Reservation 与成本门槛 · \n · State · DB 事务/幂等修复 Record；必须可审计 · 多区/多控制器竞争需 Single Writer/CAS · \n · 复验 · GPU 健康/通信/NCCL/存储测试 · 物理机复验与客户 VM 复验边界可能不同 ·\n\n对于纯 On-prem，硬件修复必须与数据中心/运维责任划分相匹配，无法把 Together 的云平台直接复制成一个脚本。"
+    },
+    {
+      "id": "a-repair-6-43",
+      "docId": "a-repair",
+      "heading": "30–60 分钟实验",
+      "text": "创建 10 个模拟节点状态，注入单 Xid、偶发网络毛刺与 6 节点同时 NotReady 三种情形。实现最小 FSM：Evidence Gate → Per-fault Consent → Concurrency Budget → Circuit Breaker → Verify，单元测试要求：无证据不修；同一个 request ID 不执行第二次；相关故障风暴下自动修复为零；复验失败不得标记 Healthy。"
+    },
+    {
+      "id": "a-repair-7-44",
+      "docId": "a-repair",
+      "heading": "系统设计面试",
+      "text": "How would you auto-remediate GPU failures without causing cascading outages? 重点：Evidence, Idempotency, Fault-domain Correlation, Policy Gates, Blast Radius, Safe Rejoin。三个结论：检测与动作需要证据隔离；复杂故障风暴应默认停止破坏性修复；动作后复验才能闭环。"
+    },
+    {
+      "id": "a-sticky-0-45",
+      "docId": "a-sticky",
+      "heading": "研究概览",
+      "text": "2026-11-03 历史精读（2026-11-04 重新整理）。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。"
+    },
+    {
+      "id": "a-sticky-1-46",
+      "docId": "a-sticky",
+      "heading": "原始资料与选题原因",
+      "text": "- Serverless routing made sticky — Modal，2026-10-20。\n\n为什么值得学：标准无状态负载均衡默认任一副本可以处理新请求，但长流式 ASR、Voice Agent、Game Session、KV/Decoder State 等工作负载必须保留 session continuity。Session Routing 横跨推理、调度、认证、容错，具有比普通 Serverless 产品介绍更广泛的 ML Platform 价值。"
+    },
+    {
+      "id": "a-sticky-2-47",
+      "docId": "a-sticky",
+      "heading": "1. Stateless 和 Stateful 的分界",
+      "text": "对无状态函数，每个请求只依赖请求自身；负载均衡器可选任意实例。但流式识别的中间信息包括 VAD Segments、Decoder Hidden State、Speaker diarization Cache 和已输出片段偏移。若同一流中第 8 个 chunk 送到不认识前 7 个 chunk 的容器，推理质量可能改变，甚至重复或丢失部分 Transcript。\n\nSticky Session 的约束是：同一个 Session ID 在其有效期内应路由到同一个 Container。Modal 文中使用 @modal.sessioned() 与生命周期管理实现该路由语义。会话固定≠长连接永久不断开：HTTP/WS 重连后仍需正确鉴权和状态定位，故障时要恢复、重建或明确失败。"
+    },
+    {
+      "id": "a-sticky-3-48",
+      "docId": "a-sticky",
+      "heading": "2. 生命周期的四层状态",
+      "text": "- Identity：Session token / lease / expiration；不能信任用户随意声明的 Container ID。\n- Placement：Session → Worker Mapping；可能由 Proxy 或分布式 KV 管理。\n- State：热的 Decoder/KV Cache 放于 GPU/CPU 内存；Snapshot 才支持迁移后的部分恢复。\n- Scaling：Worker 数量按照 Active Sessions/Memory 而不是单纯 QPS；Idle Timeout 回收孤儿会话。\n\n::: note\n工程推导：当实例 Drain 时，不应随便让新的 Chunk 落在另一节点继续；应设置 Session Grace Period、客户端恢复协议、重试的序列号和幂等控制。"
+    },
+    {
+      "id": "a-sticky-4-49",
+      "docId": "a-sticky",
+      "heading": "3. 权衡",
+      "text": "- Affinity 改善正确性但可能让热点会话集中在单 GPU；\n- Streaming state 常无法即时序列化，Container 故障仍可能要求用户重开 Session；\n- 无状态扩容简单，Stateful 扩容应处理冷热 Session 差异与 TTL；\n- 路由表一致性与实例生命周期控制必须明确，尤其部署在多 Proxy、多副本环境时。"
+    },
+    {
+      "id": "a-sticky-5-50",
+      "docId": "a-sticky",
+      "heading": "4. On-prem / Hybrid",
+      "text": "· 层 · On-prem · Controlled Hybrid ·\n\n· Router · 内部 LB + Redis/etcd 映射或 Session-aware Proxy · Modal sessioned 服务提供参考 · \n · State · GPU 热状态不跨网迁移；定期持久化必要偏移 · 跨域迁移需审批 Session Data · \n · 失效 · 进程重启需要客户端重放/恢复点 · 云端实例重建需要明确 RTO · \n · 安全 · Token 有过期、续期、防重放、访问隔离 · 会议音频等敏感内容不默认出域 · \n · 衡量 · Session-level WER/RTF、失败重连恢复时间、GPU 内存 · 另测跨域成本与网络抖动 ·"
+    },
+    {
+      "id": "a-sticky-6-51",
+      "docId": "a-sticky",
+      "heading": "30–60 分钟实验",
+      "text": "Python 模拟三个 Worker，随机 LB 让同一 Session 分散到不同实例，触发 unknown_session；改为哈希路由并维护 TTL，测试同一 Session 的 100 个 Chunk 被同一 Worker 连续接收。注入 Worker 故障，返回明确的 Session Lost 错误并要求从客户端标记的 Offset 重传。该实验模拟路由语义，不等于真实 ASR Benchmark。"
+    },
+    {
+      "id": "a-sticky-7-52",
+      "docId": "a-sticky",
+      "heading": "求职考点与总结",
+      "text": "Design a multi-tenant streaming ASR system on autoscaled GPUs. 要说清 Session Affinity、State Placement、Consistent Hashing、Lease、Idle Eviction、Failover、Graceful Drain 与 Observability。三个要点：正确性依赖 session continuity；状态与运行实例生命周期需要明确关系；扩容指标应考虑并发 Session 与显存。"
+    },
+    {
+      "id": "a-shadow-0-53",
+      "docId": "a-shadow",
+      "heading": "研究概览",
+      "text": "2026-11-03 历史精读（2026-11-04 重新整理）。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。"
+    },
+    {
+      "id": "a-shadow-1-54",
+      "docId": "a-shadow",
+      "heading": "原始资料与筛选理由",
+      "text": "- Endpoint Candidates: evaluate and promote inference endpoints — Modal，2026-10-12。\n\n入选原因：模型发布的核心难点不是“把新权重加载起来”，而是如何在不影响现有服务的前提下，用真实流量比较质量、延迟和成本。本文还公开了 Production Proxy 镜像请求在慢消费者下的缓冲设计，具有可验证的系统实现细节。"
+    },
+    {
+      "id": "a-shadow-2-55",
+      "docId": "a-shadow",
+      "heading": "1. Shadow 与 Canary 是两回事",
+      "text": "Shadow Traffic：复制真实请求给候选版本，但候选响应不回传给用户；只收集独立指标。Canary Rollout：真的将少部分用户请求交给新版本并让其结果可见，存在用户风险。前者用于获得上线前证据，后者用于有限半径放量测试。不能把 Shadow 胜出直接当成 Canary 成功证明。"
+    },
+    {
+      "id": "a-shadow-3-56",
+      "docId": "a-shadow",
+      "heading": "2. 为什么镜像可能破坏生产？",
+      "text": "大型流式 Body 被多路 Fork 后，如果每个 Candidate 消费速度不同，Proxy 可能累积大量内存、产生 Backpressure，进一步拖慢生产。Modal 的文章描述基于 Pingora 的代理将输入流复制到每个镜像独立的有界缓冲，慢镜像超出限额时只取消镜像而继续主流量；还对进程内保留的请求 Body 设全局预算，共享 Chunk 按最后一个消费者释放后才计入内存回收。\n\n因此 “Mirroring is best-effort” 是合理契约，但意味着日志中可能存在样本选择偏差：特别慢的 Candidate 或大型请求更可能被丢弃，造成评测结果过度乐观。必须计数 Mirror Drop Rate、Dropped Request Size、Input Distribution 和与生产数据的可比性。"
+    },
+    {
+      "id": "a-shadow-4-57",
+      "docId": "a-shadow",
+      "heading": "3. 如何搭建可信评测？",
+      "text": "- Quality：基于黄金测试集或可审计评价的任务成功率、Output Consistency、Safety Pass Rate。\n- Performance：相同输入长度 Bucket 的 P50/P95 TTFT、TPS、E2E Latency。\n- Infrastructure：Replica Memory、GPU Busy、Queue Depth、Mirror Drop。\n- Operational：模型版本 SHA、Tokenizer Template、Parser/Tool Schema、Rollback Method。\n- Governance：日志/Prompt 中是否包含敏感数据，未经许可不能复制给外部 Shadow Endpoint。\n\n至少要区分 Offline Benchmark、Shadow Production Replay 和 Canary 真实反馈，每个阶段的数据来源与风险不同。"
+    },
+    {
+      "id": "a-shadow-5-58",
+      "docId": "a-shadow",
+      "heading": "4. 两种落地",
+      "text": "· 层 · On-prem · Controlled Hybrid ·\n\n· Mirror Proxy · Envoy/Nginx/自研 Streaming Fork, bounded buffers · Cloud Candidate 用相同原则 · \n · Candidate · 同内网不同权重或 engine，独立 GPU 资源 · 云端候选仅允许获批流量 · \n · Gate · CI + Eval Pipeline + 人工放行 · 加入法律/数据出口审批 · \n · Canary · Ingress 细粒度路由 + 快速 Rollback · 跨境会话状态/网络 RTO 风险 · \n · Metrics · Shadow Drop、TTFT、Quality、Cost · 额外观测 egress/云费用 ·"
+    },
+    {
+      "id": "a-shadow-6-59",
+      "docId": "a-shadow",
+      "heading": "30–60 分钟本地实验",
+      "text": "用 asyncio 模拟每 20ms 输入 100 个请求 Chunk，并 Fork 给一个快速消费者及一个慢速消费者；每镜像设置 buffer 上限 5，若溢出仅取消慢消费者，要求主生产路径的完成时间与无镜像接近。增加一个进程级总预算并输出 Mirror Cancel Rate。使用合成文本，不需要真实生产日志或闭源 API。"
+    },
+    {
+      "id": "a-shadow-7-60",
+      "docId": "a-shadow",
+      "heading": "求职与总结",
+      "text": "Design a safe model release platform for a high-throughput inference endpoint. 必答：Control vs Data Plane、Traffic Mirroring、Backpressure、Bounded Memory、Shadow Bias、Canary、SLO Gate 与 Rollback。核心：镜像不等于放量；代理不可让慢镜像影响生产；上线证据必须兼顾质量、延迟与数据合规。"
+    },
+    {
+      "id": "a-browsesafe-0-61",
+      "docId": "a-browsesafe",
+      "heading": "研究概览",
+      "text": "研究日期：2026-11-04 · 部署主线：On-prem / Self-hosted · 目标岗位：Applied AI、Agent Infrastructure、AI Security\n交互式架构拆解： 点击查看 Agent Security 信任边界图。支持正常请求、攻击阻断与受控 Hybrid 三种视图；点击任意组件阅读输入输出、风险和信任边界。"
+    },
+    {
+      "id": "a-browsesafe-1-62",
+      "docId": "a-browsesafe",
+      "heading": "一手来源与证据",
+      "text": "- Perplexity，Building stronger defenses for real-world prompt injection；博客于 2026-11-02 发布，项目公布了训练/测试数据、Guard、Leaderboard 与 Adaptive Evaluation。\n- Perplexity，BrowseSafe++ Project / Leaderboard；项目主页更新和统计可能随时间变化。\n- BrowseSafe++ SDK；以对应版本的 LICENSE 和 README 为准。\n\n证据声明：数据规模和模型效果属于原团队报告。本文中的企业系统架构与实验为独立工程推导，不代表 Perplexity 官方建议，也不是银行环境实测。"
+    },
+    {
+      "id": "a-browsesafe-2-63",
+      "docId": "a-browsesafe",
+      "heading": "1. 为什么今天学它？",
+      "text": "Prompt Injection 的根源不是“提示词写得不够严”，而是不可信内容被赋予了不应有的指令权威。对于具有 Retrieval、File Reading、Tool Execution 能力的 Agent，系统是否遵守用户权限必须由执行边界决定，不能寄希望于模型始终识别恶意文本。BrowseSafe++ 的价值是把这个问题变成可以系统测量的检测与自适应评测问题。\n\nPerplexity 报告 38,675 对攻击/干净页面、24 种攻击类型、80 种语言，并提供 HTML、Markdown、Accessibility Tree、Screenshot 等不同浏览器视图。这类成对数据适合测试检测器是否只抓住了无关的文本表面特征。"
+    },
+    {
+      "id": "a-browsesafe-3-64",
+      "docId": "a-browsesafe",
+      "heading": "2. First Principles：数据为什么会“升级”为指令？",
+      "text": "文档中的一句“忽略以前的指令”只是数据，绝不能获得 System/Developer 指令等级。即使 Guard 漏检，Policy Engine 仍应实施 RBAC、数据分类、工具白名单、网络出口控制和审计。\n\n1. 攻击者控制低信任输入：网页、PDF、工具结果或共享文件。\n2. 低信任内容被载入模型上下文。\n3. 模型把内容中的行动要求当成授权指令。\n4. Agent 生成越权工具调用；若执行层缺少强制授权，攻击成功。\n\n防御应横跨 Data → Model → Tool Policy → Runtime，而不是只放一个“不要被注入”的 System Prompt。"
+    },
+    {
+      "id": "a-browsesafe-4-65",
+      "docId": "a-browsesafe",
+      "heading": "3. 检测指标：为什么 Accuracy 会误导？",
+      "text": "Guard 模型可以输出风险分数 p(x)，再通过阈值 τ 判定是否拦截。阈值越低通常 Recall 越高，但误报也可能增多。\n\n- Precision = TP / (TP + FP)\n- Recall = TP / (TP + FN)\n- FPR = FP / (FP + TN)\n- F1 = 2 × Precision × Recall / (Precision + Recall)\n\n假设 100,000 个正常文档片段、误报率 1%，单日可能触发约 1,000 次错误拦截或复核。这是用于说明运维成本的假设，而不是 BrowseSafe++ 测量值。\n\n成对 Attack/Control 数据很重要：如果攻击页面和干净页面只差注入部分，检测器误抓住领域术语、网页样式的风险更容易被观察。但它仍可能利用攻击长度、格式等统计特征，因而跨语言、跨格式与新攻击家族评测很必要。"
+    },
+    {
+      "id": "a-browsesafe-5-66",
+      "docId": "a-browsesafe",
+      "heading": "4. Adaptive Attack 改变了什么？",
+      "text": "固定测试只衡量一次输入的攻击成功率；现实攻击者可以根据失败结果改写页面。BrowseSafe-Adapt 为每个任务设置目标、Sandbox 和 Verifier；失败后由 Critic/Attacker 修改注入并再次执行，最多达到设定预算。\n\n- Static ASR：固定初始攻击的一次成功比例。\n- Adaptive ASR(K)：至多 K 次尝试中取得成功的任务比例。\n\n项目报告某些开源模型在首轮成功率较低的情况下，在最多 64 次调整之后出现显著更高的成功率。这些数字是特定实验设置中的指标，不是模型在实际环境中的漏洞发生率。攻击预算必须作为 Benchmark 的一部分披露。"
+    },
+    {
+      "id": "a-browsesafe-6-67",
+      "docId": "a-browsesafe",
+      "heading": "5. 完全本地与受控 Hybrid 的部署分析",
+      "text": "· 层次 · On-prem · Controlled Hybrid ·\n\n· 文件与检索 · 留内网；权限感知 · 敏感内容不出域 · \n · Guard · 可在本地 GPU/CPU 部署轻量分类器 · 外部 Guard 仅对经批准的非敏感内容使用 · \n · LLM · 开源权重模型、本地 Serving · 本地为主；获准范围才外发 · \n · Tool Policy · 独立于 LLM 的内部授权层 · 外部 Tool 仍需经企业 Policy Gateway · \n · Runtime · 本地 Sandbox、出口白名单 · 远程 Sandbox 采用短期身份、最小权限及审计 · \n · 回退 · Guard 不可用时高风险动作拒绝或人工审批 · 出域不可用时本地退化或拒绝 ·\n\n参数量小不等于即插即用：需要核实 Guard 权重许可证、中文/扫描 PDF 泛化、实际框架版本、峰值显存和推理时延。SDK 的授权范围与数据集/隐藏测试集的使用限制应分别核查。绝不把嵌入向量或模型输入默认视作脱敏数据。"
+    },
+    {
+      "id": "a-browsesafe-7-68",
+      "docId": "a-browsesafe",
+      "heading": "6. 实践：Guard Threshold 与真实安全边界",
+      "text": "交互练习：Guard Threshold Explorer。它用纯合成数据演示阈值、Recall、Precision 与 FPR 的权衡；所有数据只在浏览器内生成，不请求 API。\n\n30–60 分钟进阶实践：建立 20 对来自合成企业制度的 clean/attacked 文档，包含中文、英文、系统指令伪装、正常引用“ignore previous instructions”术语的文章，分别测试 Regex Baseline 和本地小分类器；报告逐类型的 FPR、Recall，并验证即使 Guard 关闭，越权 Tool Call 仍被 Policy Engine 拒绝。"
+    },
+    {
+      "id": "a-browsesafe-8-69",
+      "docId": "a-browsesafe",
+      "heading": "7. 工程面试思考",
+      "text": "Design a secure enterprise RAG Agent that reads untrusted files and executes tools.\n\n必须区分 Detector、Harness、MCP Client/Server、Policy Enforcement Point、Sandbox 与 Audit。讨论信任边界、越权风险、误报成本、攻击者适应性，以及“Guard 不可用”时的明确安全策略。"
+    },
+    {
+      "id": "a-browsesafe-9-70",
+      "docId": "a-browsesafe",
+      "heading": "8. 知识沉淀与限制",
+      "text": "1. Prompt Injection 是跨信任边界的指令提升，不仅是文本质量问题。\n2. 检测准确性与执行授权属于不同的安全层；概率模型不承担最终授权。\n3. Adaptive Evaluation 比固定攻击集更接近持续变化的威胁模型，但必须报告尝试预算。\n\n本期未对内部 PDF 或中文制度执行独立测试，也未验证足够广泛的 X/LinkedIn 独立社区共识。未来研究：Guard 的 Dataset Shift、工具参数级授权及可审计拒绝策略。"
+    },
+    {
+      "id": "a-spindle-0-71",
+      "docId": "a-spindle",
+      "heading": "研究概览",
+      "text": "研究日期：2026-11-04 · 主要路径：Controlled Hybrid · 目标岗位：Research Engineering、ML Systems、AI Infrastructure\n交互式架构拆解： 点击查看 RL Post-training 系统图。支持 Monolithic、Disaggregated 与 Controlled Hybrid 切换；点击节点查看 Trainer、Sampler、Checkpoint 等职责及失败模式。"
+    },
+    {
+      "id": "a-spindle-1-72",
+      "docId": "a-spindle",
+      "heading": "一手来源",
+      "text": "- Modal，Introducing our Training API，2026-10-22；作者 Kailash Ranganathan、Micah Yong。\n- Spindle GitHub，公开实现与部署说明；Modal 服务依赖以当前项目文档为准。\n- Fireworks AI，Reinforcement learning: Why alignment of numerics and MoE routing matter，2026-09-30。\n\n证据声明：吞吐和成本数字为原团队的内部实验报告；本文架构对比、实践和安全建议是独立归纳，非真实环境复现。"
+    },
+    {
+      "id": "a-spindle-2-73",
+      "docId": "a-spindle",
+      "heading": "1. 两种不同的 GPU 工作负载",
+      "text": "SFT 主要消费已有的监督样本并更新模型；Agentic RL 则经常要求模型先执行一段包含多次工具交互的 Rollout，再计算 Reward、Advantage 和梯度更新。两部分的主要资源瓶颈不同：\n\n- Sampling / Rollouts：长 Decode、Tool I/O、异步等待；追求 token throughput 与并发。\n- Trainer：Forward、Backward、Optimizer State；追求稳定、高效的矩阵计算与通信。\n\n在一个串行系统中，Sampler 等 Trainer、Trainer 又等环境反馈，GPU 可能周期性空闲。解耦意味着可以独立扩容两种资源，而不必按相同 GPU 型号/配置绑定。\n\n但系统额外引入网络、版本管理、失败恢复与梯度/推理数值一致性问题。因此解耦只有在吞吐收益超过协调开销时才值得。"
+    },
+    {
+      "id": "a-spindle-3-74",
+      "docId": "a-spindle",
+      "heading": "2. 为什么 RL 不仅是一个 Trainer？",
+      "text": "一个简化的 RL 优化目标是最大化 E[R(τ)]，其中 τ 是模型执行轨迹。实际实现还需处理：\n\n1. Trajectory 分组和 Tool Observations。\n2. Reward 可信度、Reward Hacking 与结果可验证性。\n3. Behavior Policy Version 与 Trainer 当前参数版本。\n4. Rollout、训练数据、Checkpoint 的可追溯关系。\n5. Trainer 和 Sampler 采用不同 Kernel/Precision 时的 Token Logprob 差异。\n\n对于 PPO 类目标，概率比率 r = π_current(a · s) / π_behavior(a · s) 对新旧策略的差距敏感。如果异步采样产生太旧的 Trajectory，训练可能不再满足近似 On-policy 的假设。Policy Staleness 是算法问题与分布式系统问题的交界处。"
+    },
+    {
+      "id": "a-spindle-4-75",
+      "docId": "a-spindle",
+      "heading": "3. Spindle 的多租户设计",
+      "text": "Spindle 是 Modal 发布的开源、Tinker-compatible Training API Server，使用其云端资源管理和服务原语。它包括 Trainer Engines、Inference Pools、Multi-LoRA、批次调度、异步 Checkpoint 与 Delta Weight Synchronization 等功能。对真实 Agentic RL 来说，多个实验共享一组基础 GPU 可以填补 Trainer 等待 Rollout 的空窗。\n\nLoRA 用低秩更新表示 W = W₀ + BA。在 Multi-LoRA 情况下，基础权重 W₀ 可共享，而不同实验维护自己的 Adapter、梯度和 Optimizer State。共享基础权重不等于共享训练状态；租户隔离和实验可复现性仍需独立保证。\n\nModal 报告的一个多客户端实验中，Trainer Busy Time 为：\n\n· Clients · Busy Time（官方报告） ·\n\n· 1 · 37.0% · \n · 2 · 70.0% · \n · 4 · 87.7% ·\n\n增加 Client 可改善 Aggregate Utilization，但过高并发可能造成 Thrashing、排队以及每个 Client 完成时间变长。不能将 GPU Busy Time 当作训练质量或单实验速度的直接证明。"
+    },
+    {
+      "id": "a-spindle-5-76",
+      "docId": "a-spindle",
+      "heading": "4. Numerical Correctness：Fireworks 的补充证据",
+      "text": "Trainer 与推理引擎即使使用相同权重，也可能因 Kernel、精度、MoE Routing 或 Aggregation Order 差异而给出不同 Logprobs。Fireworks 记录了在某组 GLM 5.2 RL 实验中数值不一致伴随训练 Reward 崩溃，而经对齐后改善稳定性的案例。研究团队指出，某些 MoE 的 Expert Output Aggregation 不一致甚至能在专家路由相同时引入误差。\n\n因此，系统需要同时记录：\n- Tokenizer/Chat Template/Token IDs；\n- Policy Checkpoint SHA；\n- Rollout Engine 与 Trainer Engine 版本；\n- Logprob Difference、KL、Loss、Reward 与梯度诊断。\n\n这可以防止把系统数值错误误诊为“Reward 设计不好”或者“Learning Rate 不合适”。"
+    },
+    {
+      "id": "a-spindle-6-77",
+      "docId": "a-spindle",
+      "heading": "5. 现实部署对照",
+      "text": "· 问题 · On-prem · Controlled Hybrid ·\n\n· 数据及 Rollout · 全部内网；有权限的合成/脱敏训练集 · 只允许经审批可出域的数据与工具结果 · \n · Serving/Sampling · 自托管模型推理 · 受控云 GPU 推理池可弹性扩容 · \n · Trainer · 本地 GPU、训练框架和调度器 · 外部受控 Trainer；需版本和通信治理 · \n · Checkpoints · 内部对象存储与备份 · 必须审批远程保存与复制、限制访问 · \n · 网络及身份 · 内部 RBAC 与服务账户 · 双向身份、最小权限、传输加密、统一 Trace · \n · 硬件限制 · 96GB 级单卡可从小模型 LoRA 开始；不能直接复制多 H200/B200 实验 · 可用更大 GPU 池，但有成本、数据边界和供应商依赖 · \n · 回退 · 停止训练、恢复上一已验证 Checkpoint · 断网时停止外部执行，不把敏感数据降级外发 ·\n\n关键限制：Spindle 虽开源，但它的参考部署建立在 Modal 资源原语上，不等同于银行离线环境一键安装。若要完全 On-prem，需要选用/搭建本地 Control Plane、Scheduler、Trainer、Sampler 与状态存储。许可证和模型权重授权应按具体版本复核。\n\n纯外部闭源 API-only 路线不具备控制 GPU Kernel、Trainer Engine 和调度器的能力，不能直接替代本方案。"
+    },
+    {
+      "id": "a-spindle-7-78",
+      "docId": "a-spindle",
+      "heading": "6. 30–60 分钟实验",
+      "text": "可先模拟 Trainer 共享的时间线：每个客户端的 Rollout 用不同等待时间，Trainer 每次只处理一个 Training Step。比较 1/2/4/8 Clients 的：\n\n- Utilization = Trainer Busy Time / Wall-clock Time；\n- Aggregate Updates/sec；\n- 每客户端完成时间 P50/P95；\n- Ready Queue 等待时间。\n\n不要把 Python 时间模拟直接解释为真实 GPU Benchmark。进阶：使用独立 GPU 环境和小模型 LoRA，记录真实 Policy Version、Checkpoint 与 Logprob Parity。"
+    },
+    {
+      "id": "a-spindle-8-79",
+      "docId": "a-spindle",
+      "heading": "7. 求职系统设计",
+      "text": "Design a multi-tenant RL post-training platform for tool-using agents.\n\n面试必须覆盖：多租户隔离、异步 Rollout、Weight Sync、Policy Lag、Sampler/Trainer 数值一致性、Checkpoint、失败恢复、GPU 成本、数据治理以及训练质量评测。Training API 是执行抽象，不是 PPO/GRPO 算法本身。"
+    },
+    {
+      "id": "a-spindle-9-80",
+      "docId": "a-spindle",
+      "heading": "8. 三条知识沉淀",
+      "text": "1. Rollout 与 Training 具有不同资源特征；独立扩缩容可能提高总体效率。\n2. Multi-LoRA 共享 Base Model，但 Gradient/Optimizer/Checkpoint 必须隔离。\n3. 更高的 GPU 利用率不是目的；单位有效实验成本、正确性和可复现性才是目标。\n\n本期未获得足够可靠的跨组织独立复现与 X/LinkedIn 专业共识。后续重点：Policy Staleness 容忍上限、MoE 数值对齐和实际租户公平性。"
+    }
+  ]
+}
+
