@@ -66,6 +66,7 @@ FlowMind 的个人念头存在用户自己的浏览器中；此公开技术图�
 
 任何来自论文和供应商的 benchmark 应明确标注来源与范围，不能宣称为本地实测。图谱中 typed edge 表示编辑者基于公开资料建立的工程联系，而非因果已经独立验证。严禁上传私人、公司内部或需要特殊许可的数据。
 
-[查看历史全部文章]({{ '/archive.html' | relative_url }}) · [查看本次全库初查]({{ '/audits/2026-11-04-initial-audit/' | relative_url }})
+[阅读问答质量检查]({{ '/audits/2026-11-04-study-qa-audit/' | relative_url }}) · [查看历史全部文章]({{ '/archive.html' | relative_url }}) · [查看本次全库初查]({{ '/audits/2026-11-04-initial-audit/' | relative_url }})
+
 
 
