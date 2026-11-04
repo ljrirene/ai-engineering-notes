@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: graph
 title: Interactive Knowledge Graph
 permalink: /knowledge-graph.html
 ---
@@ -11,7 +11,7 @@ permalink: /knowledge-graph.html
 <div class="kg-actions"><input id="kg-search" type="search" placeholder="搜索：RAG、RL、stateful、security…" aria-label="搜索知识节点">
 <button type="button" id="kg-zoom-in">＋</button><button type="button" id="kg-zoom-out">−</button><button type="button" id="kg-reset">重置视图</button><button type="button" id="kg-clear">清除筛选</button></div>
 <div id="kg-filters" class="kg-filters" role="group" aria-label="按节点类别筛选"></div>
-<div class="kg-columns"><div class="kg-viz"><svg id="kg-svg" role="img" aria-label="文章与技术概念关系网络"></svg><span id="kg-count" class="kg-count">载入知识图谱…</span></div><aside id="kg-info" class="kg-info" aria-live="polite"></aside></div>
+<div class="kg-columns"><div class="kg-viz"><svg id="kg-svg" role="group" aria-label="文章与技术概念关系网络"></svg><span id="kg-count" class="kg-count">载入知识图谱…</span></div><aside id="kg-info" class="kg-info" aria-live="polite"></aside></div>
 <div class="kg-legend"><span><b style="background:#08727c"></b>文章</span><span><b style="background:#648bbb"></b>技术概念</span><span><b style="background:#b78348"></b>技能</span><span><b style="background:#b8759c"></b>部署</span><span><b style="background:#78975c"></b>Guide</span></div>
 <p class="kg-sub"><a href="{{ '/learning-guide/' | relative_url }}">图谱关系类型与学习方法 →</a> · <a href="{{ '/data/knowledge-graph.json' | relative_url }}">查看可审核的 JSON 关系数据 →</a></p></div>
 <script defer src="{{ '/assets/knowledge-graph.js' | relative_url }}"></script>
