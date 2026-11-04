@@ -10,6 +10,8 @@ permalink: /notes/2026/11/2026-11-04-hybrid-spindle/
 
 > **研究日期**：2026-11-04 · **主要路径**：Controlled Hybrid · **目标岗位**：Research Engineering、ML Systems、AI Infrastructure
 
+> **交互式架构拆解：** [点击查看 RL Post-training 系统图]({{ '/interactive/rl-infra-map.html' | relative_url }})。支持 Monolithic、Disaggregated 与 Controlled Hybrid 切换；点击节点查看 Trainer、Sampler、Checkpoint 等职责及失败模式。
+
 ## 一手来源
 
 - **Modal**，*[Introducing our Training API](https://modal.com/blog/introducing-training-api)*，2026-10-22；作者 Kailash Ranganathan、Micah Yong。

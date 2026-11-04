@@ -12,6 +12,13 @@ title: Home
 <a class="card" href="{{ '/notes/2026/11/2026-11-04-onprem-prompt-injection/' | relative_url }}"><span class="tag">A · On-prem · Security</span><h2>BrowseSafe++：从 Prompt Injection 检测到可信执行边界</h2><p>Matched pairs、FPR、Adaptive Attacks、Guard 与 Policy 的职责边界。</p><time>2026-11-04</time></a>
 <a class="card" href="{{ '/notes/2026/11/2026-11-04-hybrid-spindle/' | relative_url }}"><span class="tag">B · Hybrid · Training</span><h2>Spindle：RL Rollout 与 Trainer 的解耦架构</h2><p>Policy Staleness、Multi-LoRA、共享 GPU 调度与训练成本。</p><time>2026-11-04</time></a>
 </section>
+
+<h2 class="section-title">Explore the Architecture</h2>
+<p class="muted">点击节点追踪数据流、失败路径与安全边界；可切换部署和系统设计方案。</p>
+<section class="cards">
+<a class="card" href="{{ '/interactive/agent-security-map.html' | relative_url }}"><span class="tag">INTERACTIVE MAP · AGENT SECURITY</span><h2>可点击的 Prompt Injection 信任边界图</h2><p>正常路径 / 攻击拦截 / Controlled Hybrid。选择节点，理解 Guard、LLM、Policy 与 Sandbox 的不同职责。</p></a>
+<a class="card" href="{{ '/interactive/rl-infra-map.html' | relative_url }}"><span class="tag">INTERACTIVE MAP · RL SYSTEMS</span><h2>RL Post-training 架构拆解图</h2><p>Monolithic / Disaggregated / Hybrid。探索 Sampler、Trainer、权重同步、Checkpoint 和策略过期。</p></a>
+</section>
 <h2 class="section-title">Interactive Practice</h2>
 <a class="card" href="{{ '/interactive/guard-threshold.html' | relative_url }}"><span class="tag">LAB · NO API REQUIRED</span><h2>Guard Threshold Explorer</h2><p>调节检测阈值，观察 Precision、Recall、False Positive Rate 的相互制约。教学数据完全合成、浏览器内计算。</p></a>
 <p style="margin-top:38px"><a href="{{ '/archive.html' | relative_url }}">浏览完整归档 →</a>　 ·　 <a href="https://github.com/ljrirene/ai-engineering-notes">查看源码与版本历史 →</a></p>

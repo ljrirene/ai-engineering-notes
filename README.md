@@ -10,6 +10,8 @@
 
 - [Research site (GitHub Pages)](https://ljrirene.github.io/ai-engineering-notes/) — 需要在仓库 Settings → Pages 启用 main /docs 才会发布。
 - [Archive](docs/archive.md)
+- [Interactive Agent Security architecture](docs/interactive/agent-security-map.html) — clickable trust boundaries, normal/attack/hybrid
+- [Interactive RL Infrastructure architecture](docs/interactive/rl-infra-map.html) — monolithic/disaggregated/hybrid
 - [Interactive guard-threshold lab](docs/interactive/guard-threshold.html)
 - [Latest On-prem: Prompt Injection & BrowseSafe++](docs/notes/2026/11/2026-11-04-onprem-prompt-injection.md)
 - [Latest Hybrid: Disaggregated RL & Spindle](docs/notes/2026/11/2026-11-04-hybrid-spindle.md)

@@ -10,6 +10,8 @@ permalink: /notes/2026/11/2026-11-04-onprem-prompt-injection/
 
 > **研究日期**：2026-11-04 · **部署主线**：On-prem / Self-hosted · **目标岗位**：Applied AI、Agent Infrastructure、AI Security
 
+> **交互式架构拆解：** [点击查看 Agent Security 信任边界图]({{ '/interactive/agent-security-map.html' | relative_url }})。支持正常请求、攻击阻断与受控 Hybrid 三种视图；点击任意组件阅读输入输出、风险和信任边界。
+
 ## 一手来源与证据
 
 - **Perplexity**，*[Building stronger defenses for real-world prompt injection](https://www.perplexity.ai/hub/blog/browsesafe-plus-plus)*；博客于 2026-11-02 发布，项目公布了训练/测试数据、Guard、Leaderboard 与 Adaptive Evaluation。
