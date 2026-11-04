@@ -8,6 +8,10 @@
 
 ## Browse
 
+- [**Interactive Knowledge Graph**](https://ljrirene.github.io/ai-engineering-notes/knowledge-graph.html): connections between research articles, technical concepts, job skills and deployment modes.
+- [**Learning Guide**](https://ljrirene.github.io/ai-engineering-notes/learning-guide/): one deep article every three days, with an architectural interactive diagram and full-library checks before methodology changes.
+
+
 - **Historical archive restored (Oct 31–Nov 3):** eight full research notes and eight interactive architecture maps. [Browse all](docs/archive.md).
 - [Selection methodology and reconstructed history](docs/selection-history.md)
 
@@ -39,5 +43,6 @@
 ## Privacy and Security
 
 仅使用公开的一手技术资料与合成示例；禁止提交企业机密、生产内网地址、凭据、个人数据、未公开架构、受版权限制的全文或敏感附件。公开资料中的模型性能数据属于来源作者声称，非独立复现。
+
 
 

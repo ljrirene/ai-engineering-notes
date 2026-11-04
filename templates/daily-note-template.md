@@ -48,3 +48,15 @@ permalink: /notes/YYYY/MM/YYYY-MM-DD-slug/
 ## 社区反馈
 仅记录可核实的技术讨论；未知则明确说明。
 
+
+## Knowledge Graph entry & guide check
+
+- Article node ID (stable):
+- Related concepts and typed edges (with explicit reasons):
+- Related historical articles (why are they connected?):
+- Job skills:
+- Deployment constraints:
+- Knowledge map JSON updated: `docs/data/knowledge-graph.json`
+- New guide implications / whole-library audit outcome:
+- Linked interactive map (2+ architectural views; component details; keyboard support):
+
