@@ -1,0 +1,800 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-04",
+  "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons.",
+  "nodes": [
+    {
+      "id": "a-replayssm",
+      "label": "ReplaySSM",
+      "kind": "article",
+      "date": "2026-10-31",
+      "track": "onprem",
+      "description": "用输入重放减少 SSM 状态的 HBM 写回。",
+      "url": "/notes/2026/10/2026-10-31-onprem-replayssm/",
+      "visual": "/interactive/2026-10-31-replayssm-map.html"
+    },
+    {
+      "id": "a-space",
+      "label": "SPACE Sandbox",
+      "kind": "article",
+      "date": "2026-10-31",
+      "track": "hybrid",
+      "description": "Agent 执行隔离、MicroVM 和网络出口治理。",
+      "url": "/notes/2026/10/2026-10-31-hybrid-space/",
+      "visual": "/interactive/2026-10-31-space-map.html"
+    },
+    {
+      "id": "a-retrieval",
+      "label": "Contextual Embeddings / Multi-vector",
+      "kind": "article",
+      "date": "2026-11-01",
+      "track": "onprem",
+      "description": "语境恢复与 Token 级证据匹配。",
+      "url": "/notes/2026/11/2026-11-01-onprem-retrieval/",
+      "visual": "/interactive/2026-11-01-retrieval-map.html"
+    },
+    {
+      "id": "a-orchestrator",
+      "label": "Thin Orchestrator / Workspace",
+      "kind": "article",
+      "date": "2026-11-01",
+      "track": "hybrid",
+      "description": "确定性路由、专家 Agent 和 Git 并发控制。",
+      "url": "/notes/2026/11/2026-11-01-hybrid-agents/",
+      "visual": "/interactive/2026-11-01-agents-map.html"
+    },
+    {
+      "id": "a-decision",
+      "label": "Decision Models",
+      "kind": "article",
+      "date": "2026-11-02",
+      "track": "onprem",
+      "description": "一次前向计算与校准式分类路由。",
+      "url": "/notes/2026/11/2026-11-02-onprem-decision-models/",
+      "visual": "/interactive/2026-11-02-decisions-map.html"
+    },
+    {
+      "id": "a-repair",
+      "label": "GPU Auto-repair",
+      "kind": "article",
+      "date": "2026-11-02",
+      "track": "hybrid",
+      "description": "证据驱动的 GPU 修复、复验和熔断。",
+      "url": "/notes/2026/11/2026-11-02-hybrid-gpu-auto-repair/",
+      "visual": "/interactive/2026-11-02-gpu-repair-map.html"
+    },
+    {
+      "id": "a-sticky",
+      "label": "Sticky Sessions",
+      "kind": "article",
+      "date": "2026-11-03",
+      "track": "onprem",
+      "description": "流式 ASR、Decoder State 与会话亲和。",
+      "url": "/notes/2026/11/2026-11-03-onprem-sticky-sessions/",
+      "visual": "/interactive/2026-11-03-sticky-map.html"
+    },
+    {
+      "id": "a-shadow",
+      "label": "Shadow Traffic",
+      "kind": "article",
+      "date": "2026-11-03",
+      "track": "hybrid",
+      "description": "无损流量镜像、有界缓冲与灰度发布。",
+      "url": "/notes/2026/11/2026-11-03-hybrid-shadow-traffic/",
+      "visual": "/interactive/2026-11-03-shadow-map.html"
+    },
+    {
+      "id": "a-browsesafe",
+      "label": "BrowseSafe++",
+      "kind": "article",
+      "date": "2026-11-04",
+      "track": "onprem",
+      "description": "Prompt Injection 检测与独立授权边界。",
+      "url": "/notes/2026/11/2026-11-04-onprem-prompt-injection/",
+      "visual": "/interactive/agent-security-map.html"
+    },
+    {
+      "id": "a-spindle",
+      "label": "Spindle RL",
+      "kind": "article",
+      "date": "2026-11-04",
+      "track": "hybrid",
+      "description": "Trainer / Sampler 解耦及权重同步。",
+      "url": "/notes/2026/11/2026-11-04-hybrid-spindle/",
+      "visual": "/interactive/rl-infra-map.html"
+    },
+    {
+      "id": "c-bandwidth",
+      "label": "HBM bandwidth",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：HBM bandwidth"
+    },
+    {
+      "id": "c-state",
+      "label": "Stateful inference",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Stateful inference"
+    },
+    {
+      "id": "c-rollback",
+      "label": "Speculative rollback",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Speculative rollback"
+    },
+    {
+      "id": "c-sandbox",
+      "label": "Execution sandbox",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Execution sandbox"
+    },
+    {
+      "id": "c-egress",
+      "label": "Network egress",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Network egress"
+    },
+    {
+      "id": "c-policy",
+      "label": "Policy enforcement",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Policy enforcement"
+    },
+    {
+      "id": "c-context",
+      "label": "Context engineering",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Context engineering"
+    },
+    {
+      "id": "c-late",
+      "label": "Late interaction / MaxSim",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Late interaction / MaxSim"
+    },
+    {
+      "id": "c-evidence",
+      "label": "Evidence retrieval",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Evidence retrieval"
+    },
+    {
+      "id": "c-workspace",
+      "label": "Versioned workspace",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Versioned workspace"
+    },
+    {
+      "id": "c-concurrency",
+      "label": "Concurrency control",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Concurrency control"
+    },
+    {
+      "id": "c-routing",
+      "label": "Decision routing",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Decision routing"
+    },
+    {
+      "id": "c-calibration",
+      "label": "Confidence calibration",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Confidence calibration"
+    },
+    {
+      "id": "c-health",
+      "label": "GPU health evidence",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：GPU health evidence"
+    },
+    {
+      "id": "c-breaker",
+      "label": "Circuit breaker",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Circuit breaker"
+    },
+    {
+      "id": "c-affinity",
+      "label": "Session affinity",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Session affinity"
+    },
+    {
+      "id": "c-mirror",
+      "label": "Traffic mirroring",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Traffic mirroring"
+    },
+    {
+      "id": "c-evaluation",
+      "label": "Evaluation gates",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Evaluation gates"
+    },
+    {
+      "id": "c-rl",
+      "label": "Disaggregated RL",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Disaggregated RL"
+    },
+    {
+      "id": "c-sync",
+      "label": "Weight synchronization",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Weight synchronization"
+    },
+    {
+      "id": "c-injection",
+      "label": "Prompt injection",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Prompt injection"
+    },
+    {
+      "id": "c-trust",
+      "label": "Trust boundary",
+      "kind": "concept",
+      "description": "跨文章可重用的系统概念：Trust boundary"
+    },
+    {
+      "id": "s-ml",
+      "label": "ML Systems",
+      "kind": "skill",
+      "description": "岗位能力：ML Systems"
+    },
+    {
+      "id": "s-agent",
+      "label": "Agent Infrastructure",
+      "kind": "skill",
+      "description": "岗位能力：Agent Infrastructure"
+    },
+    {
+      "id": "s-sec",
+      "label": "AI Security",
+      "kind": "skill",
+      "description": "岗位能力：AI Security"
+    },
+    {
+      "id": "s-dist",
+      "label": "Distributed Systems",
+      "kind": "skill",
+      "description": "岗位能力：Distributed Systems"
+    },
+    {
+      "id": "s-rag",
+      "label": "RAG / Search",
+      "kind": "skill",
+      "description": "岗位能力：RAG / Search"
+    },
+    {
+      "id": "s-eval",
+      "label": "Evaluation Engineering",
+      "kind": "skill",
+      "description": "岗位能力：Evaluation Engineering"
+    },
+    {
+      "id": "s-sre",
+      "label": "AI Platform SRE",
+      "kind": "skill",
+      "description": "岗位能力：AI Platform SRE"
+    },
+    {
+      "id": "d-onprem",
+      "label": "On-prem",
+      "kind": "deployment",
+      "description": "在本地受控环境部署与运行"
+    },
+    {
+      "id": "d-hybrid",
+      "label": "Controlled Hybrid",
+      "kind": "deployment",
+      "description": "仅通过批准的数据边界使用外部资源"
+    },
+    {
+      "id": "g-guide",
+      "label": "Learning Guide",
+      "kind": "guide",
+      "description": "三天一篇、先检索后筛选、方法更新前检查全部旧文。",
+      "url": "/learning-guide/"
+    }
+  ],
+  "edges": [
+    {
+      "source": "a-replayssm",
+      "target": "c-bandwidth",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "c-state",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "c-rollback",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "s-ml",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-space",
+      "target": "c-sandbox",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-space",
+      "target": "c-egress",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-space",
+      "target": "c-policy",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-space",
+      "target": "c-trust",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-space",
+      "target": "s-agent",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-space",
+      "target": "s-sec",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-space",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-space",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "c-context",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "c-late",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "c-evidence",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "s-rag",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "c-workspace",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "c-concurrency",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "c-routing",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "s-agent",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-decision",
+      "target": "c-routing",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-decision",
+      "target": "c-calibration",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-decision",
+      "target": "s-ml",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-decision",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-decision",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-decision",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-repair",
+      "target": "c-health",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-repair",
+      "target": "c-breaker",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-repair",
+      "target": "c-policy",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-repair",
+      "target": "s-sre",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-repair",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-repair",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-repair",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "c-state",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "c-affinity",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "s-ml",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-sticky",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "c-mirror",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "c-evaluation",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "s-sre",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "c-injection",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "c-policy",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "c-trust",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "s-sec",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "s-agent",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-browsesafe",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "c-rl",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "c-sync",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "c-concurrency",
+      "type": "explains",
+      "reason": "该文章分析此概念的机制、限制与工程取舍。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "s-ml",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "该主题帮助锻炼该岗位能力。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "该研究在历史精读中归属的主部署路径；正文同时比较另一种部署。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "本技术笔记遵循共同研究、实验与证据审查方法。"
+    },
+    {
+      "source": "a-replayssm",
+      "target": "a-sticky",
+      "type": "shares-core-problem",
+      "reason": "都在解决有状态推理的不同成本：状态存储与会话调度。"
+    },
+    {
+      "source": "a-space",
+      "target": "a-browsesafe",
+      "type": "complements",
+      "reason": "沙箱执行隔离与注入检测相辅相成，不能互相取代。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "a-browsesafe",
+      "type": "complements",
+      "reason": "确定性调度和安全策略使 Agent 受控。"
+    },
+    {
+      "source": "a-retrieval",
+      "target": "a-browsesafe",
+      "type": "complements",
+      "reason": "检索提高证据完整性，但外部文档也可能是注入载体。"
+    },
+    {
+      "source": "a-orchestrator",
+      "target": "a-decision",
+      "type": "extends",
+      "reason": "决策模型可作为薄编排器的选择与路由组件。"
+    },
+    {
+      "source": "a-repair",
+      "target": "a-shadow",
+      "type": "shares-core-problem",
+      "reason": "两者都要求可靠的上线/修复门禁和有限操作半径。"
+    },
+    {
+      "source": "a-shadow",
+      "target": "a-sticky",
+      "type": "complements",
+      "reason": "对流式有状态服务进行镜像灰度需要保护会话连续性。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "a-orchestrator",
+      "type": "shares-core-problem",
+      "reason": "不同系统都需要异步协调、任务隔离和版本一致性。"
+    },
+    {
+      "source": "a-spindle",
+      "target": "a-replayssm",
+      "type": "shares-core-problem",
+      "reason": "资源/I-O 和计算解耦分别用于训练系统和推理系统。"
+    },
+    {
+      "source": "c-state",
+      "target": "c-affinity",
+      "type": "prerequisite",
+      "reason": "有状态推理是会话亲和技术的前提。"
+    },
+    {
+      "source": "c-trust",
+      "target": "c-injection",
+      "type": "prerequisite",
+      "reason": "先确定信任等级才能定义注入威胁。"
+    },
+    {
+      "source": "c-sandbox",
+      "target": "c-egress",
+      "type": "complements",
+      "reason": "文件与进程隔离并不能替代网络出口治理。"
+    },
+    {
+      "source": "c-rl",
+      "target": "c-sync",
+      "type": "complements",
+      "reason": "Sampler 与 Trainer 解耦后需要同步权重和版本。"
+    },
+    {
+      "source": "c-evaluation",
+      "target": "c-mirror",
+      "type": "prerequisite",
+      "reason": "Shadow 请求需要评测标准才有上线价值。"
+    },
+    {
+      "source": "c-health",
+      "target": "c-breaker",
+      "type": "complements",
+      "reason": "故障证据与熔断预算共同避免破坏性批量修复。"
+    },
+    {
+      "source": "c-routing",
+      "target": "c-calibration",
+      "type": "complements",
+      "reason": "校准概率帮助决策升级阈值，不能替代硬授权。"
+    }
+  ]
+}
