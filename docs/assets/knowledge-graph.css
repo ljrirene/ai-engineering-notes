@@ -76,6 +76,12 @@
 .kg-node:hover .kg-halo,.kg-node.focused .kg-halo{opacity:.46}
 .kg-link{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;stroke-width:1.15;opacity:.23}
 .kg-link.strong{stroke-width:1.75;opacity:.34}
+.kg-link.deployment-link{stroke:#a56b96;stroke-width:1.8;stroke-dasharray:5 7;opacity:.43}
+.kg-link.deployment-link.highlight{stroke:#a56b96;stroke-width:3.4;stroke-dasharray:none;opacity:1}
+.kg-node[data-kind=deployment] .kg-halo{opacity:.34}
+.kg-node[data-kind=deployment] .kg-ring{stroke-width:2;opacity:.75}
+.kg-node[data-kind=deployment] .kg-core{stroke-width:2.8}
+.kg-node[data-kind=deployment] .kg-label{opacity:1;font-size:12px;font-weight:850;fill:#8a5680}
 .kg-link.highlight{stroke-width:2.55;opacity:.98;filter:drop-shadow(0 0 4px rgba(20,129,137,.21))}
 .kg-link.faded{opacity:.025}
 .kg-cluster-label{font-size:10px;font-weight:800;letter-spacing:.19em;fill:#8fa7b4;opacity:.65;pointer-events:none}
@@ -85,4 +91,5 @@
 @media(max-width:860px){.kg-stage{grid-template-columns:1fr}.kg-canvas{height:565px;border-right:0;border-bottom:1px solid #e7edf1}.kg-info{max-height:none;min-height:140px}.kg-toolbar{flex-direction:column;align-items:stretch}.kg-tools{justify-content:space-between}.kg-search-wrap{flex:1}.kg-overview{margin-bottom:12px}}
 @media(max-width:550px){.kg-root{padding:8px 0 60px}.kg-hero{padding:10px 17px 15px}.kg-hero h1{font-size:38px}.kg-hero p{font-size:14px}.kg-explorer{border-radius:16px}.kg-toolbar{padding:12px}.kg-mode{flex:1;padding:8px 10px}.kg-modes{display:flex}.kg-tools{gap:4px}.kg-search-wrap input{min-width:0;width:100%;font-size:12px}.kg-icon-button{width:34px;height:36px}.kg-filters{padding:4px 12px 12px}.kg-canvas{height:450px}.kg-stage-hint{font-size:10px;bottom:11px;left:10px}.kg-stage-head{left:11px;right:11px;top:12px}#kg-count{font-size:10px}.kg-info{padding:20px}.kg-footer{flex-direction:column;align-items:flex-start}.kg-below{grid-template-columns:1fr;gap:13px;margin:26px 10px}.kg-source{padding:18px}}
 @media(prefers-reduced-motion:reduce){.kg-node .kg-label,.kg-link{transition:none!important}}
+
 
