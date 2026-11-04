@@ -1,8 +1,18 @@
 {
   "schemaVersion": 1,
   "updatedAt": "2026-11-04",
-  "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons.",
+  "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
+    {
+      "id": "a-superagent",
+      "label": "DeepSeek Super-agent",
+      "kind": "article",
+      "date": "2026-11-04",
+      "track": "cross-deployment",
+      "description": "事件驱动、跨 Session Router/Worker、Thread 订阅、Chain of Recall、持久状态与外部 Watchdog 的目标架构；公开研究原型非生产产品。",
+      "url": "/notes/2026/11/2026-11-04-cross-deployment-superagent/",
+      "visual": "/interactive/2026-11-04-superagent-map.html"
+    },
     {
       "id": "a-replayssm",
       "label": "ReplaySSM",
@@ -295,6 +305,36 @@
       "kind": "guide",
       "description": "三天一篇、先检索后筛选、方法更新前检查全部旧文。",
       "url": "/learning-guide/"
+    },
+    {
+      "id": "c-event-trigger",
+      "label": "Event-driven triggers",
+      "kind": "concept",
+      "description": "程序化 Admission + 语义评估，将事件视为候选而不是自动执行权限。"
+    },
+    {
+      "id": "c-chain-recall",
+      "label": "Chain of Recall",
+      "kind": "concept",
+      "description": "通过 Trigger→Thread→Ticket 等稳定对象 ID 多跳恢复历史上下文。"
+    },
+    {
+      "id": "c-watchdog",
+      "label": "External Watchdog",
+      "kind": "concept",
+      "description": "独立于 Agent 主循环的健康和任务进展监督；不是不受控的自动修复。"
+    },
+    {
+      "id": "c-mandate",
+      "label": "Ticket / Mandate",
+      "kind": "concept",
+      "description": "记录任务所有权、允许的执行范围和 Policy Version 的持久授权对象。"
+    },
+    {
+      "id": "c-async-react",
+      "label": "Async ReAct",
+      "kind": "concept",
+      "description": "耗时操作 start/stop 与完成事件，解耦前台对话和后台执行。"
     }
   ],
   "edges": [
@@ -795,6 +835,157 @@
       "target": "c-calibration",
       "type": "complements",
       "reason": "校准概率帮助决策升级阈值，不能替代硬授权。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-event-trigger",
+      "type": "explains",
+      "reason": "从 IM/GitHub/CI Trigger 开始，程序化过滤后才语义评估和路由。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-chain-recall",
+      "type": "explains",
+      "reason": "按稳定对象 ID 多跳恢复跨会话历史，与单纯文本搜索不同。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-watchdog",
+      "type": "explains",
+      "reason": "讨论主 Agent Loop 外的独立健康/进展监督与恢复。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-mandate",
+      "type": "explains",
+      "reason": "任务接受时冻结 Mandate/Policy Version，消息直通不产生新授权。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-async-react",
+      "type": "explains",
+      "reason": "将耗时工具分离为可独立完成或取消的后台作业。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-routing",
+      "type": "explains",
+      "reason": "Router 负责新任务和跨任务协调，已订阅 Follow-up 快速直通 Worker。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-context",
+      "type": "explains",
+      "reason": "明确区分 Token Window 的缓存与真实工作上下文及持久状态。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-concurrency",
+      "type": "explains",
+      "reason": "并发 Worker 和 Slot/Retry/Cancel 是多任务可靠性机制。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-policy",
+      "type": "explains",
+      "reason": "Admission Table/Allowlist/Observe/Audit 形成控制面约束。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "c-workspace",
+      "type": "explains",
+      "reason": "每个 Ticket 的 Worker Session 和独立目录保持上下文局部性。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "a-orchestrator",
+      "type": "extends",
+      "reason": "从 Thin Orchestrator 单次工作流进一步扩展到长期在线、多通道、可恢复的事件驱动任务协调。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "a-space",
+      "type": "complements",
+      "reason": "Super-agent 原型的 OS User 工具执行不构成安全沙箱；SPACE 的隔离/出口治理补充硬执行边界。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "a-browsesafe",
+      "type": "complements",
+      "reason": "长期事件订阅可输送不可信文本；Prompt Injection 识别与 Mandate 授权必须分别建立。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "a-decision",
+      "type": "complements",
+      "reason": "Decision Model 可优化 Router 的语义分类成本，但不能代替 Source Admission 和授权。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "s-agent",
+      "type": "supports-skill",
+      "reason": "涉及 Actor/Scope、Agent 控制面、Worker Runtime、可恢复事件路由。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "涉及事件总线、订阅、幂等 Outbox、持久状态和恢复语义。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "s-sec",
+      "type": "supports-skill",
+      "reason": "Source Admission、Policy Version、Mandate 和执行隔离的权限设计。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "同一方案可全部在内网部署 Router、Worker、持久 Store 与受限执行环境。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "受控混合可将授权的非敏感任务外包，但云端不能直接获取内网 Root/Secret。"
+    },
+    {
+      "source": "a-superagent",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "依照一手来源、原型与设计差异、On-prem/Hybrid 的研究方法。"
+    },
+    {
+      "source": "c-event-trigger",
+      "target": "c-mandate",
+      "type": "prerequisite",
+      "reason": "区分 Trigger 与经过准入评估产生的授权 Mandate，避免消息直通隐式扩权。"
+    },
+    {
+      "source": "c-context",
+      "target": "c-chain-recall",
+      "type": "prerequisite",
+      "reason": "理解上下文生命周期与窗口预算后，才能讨论基于对象 ID 的多跳召回。"
+    },
+    {
+      "source": "c-watchdog",
+      "target": "c-breaker",
+      "type": "complements",
+      "reason": "长期 Agent 的主动恢复也应受熔断/限流/审批门禁约束。"
+    },
+    {
+      "source": "c-async-react",
+      "target": "c-concurrency",
+      "type": "complements",
+      "reason": "异步工具作业需要在 Worker Slot、任务取消和恢复策略内协调。"
+    },
+    {
+      "source": "c-mandate",
+      "target": "c-trust",
+      "type": "complements",
+      "reason": "权限范围与不可信 Source 内容的信任等级必须分别检查。"
     }
   ]
 }
+

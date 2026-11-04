@@ -32,3 +32,12 @@ permalink: /selection-history/
 ## 关于未入选候选
 已知研究过程中参考过额外文章，例如 Modal 的 10 月 GPU/VM 平台更新、Legora Agent Evaluation、Perplexity 相关模型/产品公告、Together 的容量扩张消息等。但**不能在缺少原始筛选记录时，将它们伪称为某一天被明确淘汰的候选或赋予编造的分数**。后续每天的研究会在当期同步保存候选名单、发布时间与入/落选理由，形成真正可审计的选择链。
 
+
+## 2026-11-04 · 用户指定的补充专题（不计入自动三天一期）
+
+- **指定资料**：[DeepSeek Harness：《Super-agent 设计探索》](https://mp.weixin.qq.com/s/zoS7GlReWPhfCjENGxXCdg)，2026-10-31；[官方研究原型](https://github.com/deepseek-ai/dsh-superagent-prototype)，为设计/原型阅读的主要证据。
+- **补充理由**：既有 [Thin Orchestrator]({{ '/notes/2026/11/2026-11-01-hybrid-agents/' | relative_url }}) 主要讨论专门 Agent 路由和共享工作区；DeepSeek 进一步覆盖跨渠道 Event Admission、Thread 路由、Context Chain、Async ReAct、Watchdog、持久 Mandate。属于清晰的知识扩展，而不是对旧文章同题重复。
+- **局限及可核实批评**：原型自称非生产级、与设计文章并非完全一致；[独立评论](https://blog.vonng.com/ai/ds-super-agent/) 主张工作 Context/授权边界必须显式，而不是让单入口 Router 猜测。实验负载较简化，不能证明真实大型软件项目的任务质量。
+- **筛选性质**：本条由用户明确指定查找并加入，**没有进行常规 10+ 候选开放竞争筛选**，不应编造其它候选或落选排名。
+- **交付**：[研究全文]({{ '/notes/2026/11/2026-11-04-cross-deployment-superagent/' | relative_url }}) · [交互架构图]({{ '/interactive/2026-11-04-superagent-map.html' | relative_url }}) · [知识星图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
+

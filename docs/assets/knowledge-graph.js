@@ -9,7 +9,7 @@ const labels={article:'研究文章',concept:'核心概念',skill:'岗位能力'
 let data;
 try{const r=await fetch('./data/knowledge-graph.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){info.textContent='知识图谱数据加载失败：'+e.message;return;}
 const sourceNodes=data.nodes.map(n=>({...n})),sourceEdges=data.edges.map(e=>({...e})),byNode=new Map(sourceNodes.map(n=>[n.id,n]));
-const articleCluster={'a-replayssm':'serving','a-sticky':'serving','a-decision':'serving','a-space':'agent','a-browsesafe':'agent','a-orchestrator':'agent','a-retrieval':'retrieval','a-shadow':'retrieval','a-repair':'platform','a-spindle':'platform'};
+const articleCluster={'a-replayssm':'serving','a-sticky':'serving','a-decision':'serving','a-space':'agent','a-browsesafe':'agent','a-orchestrator':'agent','a-superagent':'agent','a-retrieval':'retrieval','a-shadow':'retrieval','a-repair':'platform','a-spindle':'platform'};
 const hubs={serving:{x:250,y:235,title:'INFERENCE & SERVING'},agent:{x:815,y:220,title:'AGENTS & SECURITY'},retrieval:{x:245,y:555,title:'RETRIEVAL & EVALUATION'},platform:{x:825,y:550,title:'PLATFORM & TRAINING'}};
 const counts=new Map();
 sourceNodes.forEach(n=>counts.set(n.id,0));
@@ -101,7 +101,7 @@ function showDetails(){
  info.replaceChildren();
  const n=byNode.get(selected);
  if(!n){block(info,'div','THE CONNECTIONS','kg-kind');const ill=block(info,'div','','kg-info-illustration');ill.setAttribute('aria-hidden','true');block(info,'h2','从一个知识点出发');block(info,'p','点亮任意一颗星，沿着弧线探索它的前置概念、技术实现与能力关联。');block(info,'p','默认星图展示最重要的研究关系；想看到岗位能力与部署路径，请切换「学习地图」。');return;}
- block(info,'div',labels[n.kind]||n.kind,'kg-kind');block(info,'h2',n.label);if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':'Controlled Hybrid'),'kg-meta');block(info,'p',n.description||'');
+ block(info,'div',labels[n.kind]||n.kind,'kg-kind');block(info,'h2',n.label);if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':n.track==='hybrid'?'Controlled Hybrid':'On-prem / Controlled Hybrid'),'kg-meta');block(info,'p',n.description||'');
  for(const [url,label] of [[n.url,'阅读完整研究 ↗'],[n.visual,'打开交互架构图 ↗']]){const path=safeUrl(url);if(path){const a=block(info,'a',label,'kg-read');a.href=path;}}
  const related=sourceEdges.filter(e=>e.source===n.id||e.target===n.id).map(e=>({...e,other:byNode.get(e.source===n.id?e.target:e.source)})).filter(e=>e.other);
  block(info,'h3','RELATED KNOWLEDGE · '+related.length);
@@ -124,4 +124,5 @@ byId('kg-reset').onclick=()=>root.transition().duration(550).call(zoom.transform
 root.on('click',event=>{if(event.target===svg||event.target.closest('.kg-background')){selected=null;renderFocus();showDetails();}});
 updateFilters();render();root.call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));
 })();
+
 

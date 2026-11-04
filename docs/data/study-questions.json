@@ -629,6 +629,109 @@
         ]
       ],
       "trap": "仅观察 Loss 下降无法证明跨引擎的 Rollout 正确。"
+    },
+    {
+      "id": "q-21",
+      "doc": "a-superagent",
+      "level": "机制",
+      "q": "DeepSeek Super-agent 中，为什么新 Trigger 要先经过 Admission Gate，而已订阅 Thread 的 Follow-up 可以直达 Worker？",
+      "hint": "区分“新任务准入决策”和“已有 Ticket 接收上下文”，它们的权限语义不同。",
+      "answer": "新 Trigger 必须校验 Source、Actor、Receiving Scope 和 Policy/Accept Mode，然后 Router 才能创建带 Mandate 的 Ticket。已有 Thread 的 Follow-up 可由程序快速发送给订阅 Worker，减少 Router 的重复推理；但这只是一条 Context Delivery，不能赋予 Ticket 超出原 Mandate 的新权限。",
+      "terms": [
+        [
+          "trigger",
+          "事件",
+          "source"
+        ],
+        [
+          "gate",
+          "admission",
+          "准入",
+          "策略"
+        ],
+        [
+          "thread",
+          "订阅",
+          "直通",
+          "follow-up"
+        ],
+        [
+          "mandate",
+          "授权",
+          "范围",
+          "scope"
+        ]
+      ],
+      "trap": "把订阅消息当作用户新的授权，是容易造成 Privilege Escalation 的设计错误。"
+    },
+    {
+      "id": "q-22",
+      "doc": "a-superagent",
+      "level": "原理",
+      "q": "Inline & Spill、Chain of Recall 如何帮助一个长期运行的 Router 恢复跨会话上下文？它与 RAG 有什么不同？",
+      "hint": "Token Window 是临时缓存；持久任务状态应该保留稳定对象 ID 与引用关系。",
+      "answer": "Inline 把近期最可能用到的对象 ID、摘要和局部信息送入有限上下文窗口；Spill 把低频完整历史保存在窗口之外；Chain of Recall 从 Trigger、Thread、Ticket、Worker 等稳定对象 ID 逐跳检索，按需恢复先前任务。传统 RAG 多围绕语义匹配文档片段，本机制更强调对象关系、版本和上下文归属，但两者可以互补。",
+      "terms": [
+        [
+          "inline",
+          "内联",
+          "缓存"
+        ],
+        [
+          "spill",
+          "溢出",
+          "窗口外"
+        ],
+        [
+          "chain",
+          "召回",
+          "id",
+          "对象"
+        ],
+        [
+          "rag",
+          "检索",
+          "语义",
+          "关系"
+        ]
+      ],
+      "trap": "不能把模型上下文窗口等同于业务状态存储，亦不能由模糊向量相似度推断执行权限。"
+    },
+    {
+      "id": "q-23",
+      "doc": "a-superagent",
+      "level": "系统设计",
+      "q": "你要把 DeepSeek Super-agent 原型部署到受限企业环境：哪些安全与持久性问题不能仅依赖它的 Worker Directory 和命令禁用名单解决？",
+      "hint": "阅读官方 prototype 的 Execution/Authorization 文档：Worker 使用什么 OS 身份？谁验证 Mandate？Watchdog 能做什么？",
+      "answer": "官方研究原型的 Worker Shell 使用操作者 OS User；工作目录和 blocked-command Wrapper 只是默认控制，不是沙箱。企业环境应另设独立 Service Account/VM 或 Container 隔离、最小权限、Secret Broker、网络出口策略、每次 Tool Action 的 Mandate 校验、Policy Version 重验、审计/Outbox、幂等恢复、Watchdog 的熔断与人工审批。若云端 Agent Loop 控制内网环境，还要有明确数据出口与强制工具代理边界。",
+      "terms": [
+        [
+          "os",
+          "账户",
+          "身份",
+          "user"
+        ],
+        [
+          "沙箱",
+          "隔离",
+          "vm",
+          "container"
+        ],
+        [
+          "mandate",
+          "授权",
+          "policy",
+          "权限"
+        ],
+        [
+          "outbox",
+          "watchdog",
+          "熔断",
+          "审计",
+          "恢复"
+        ]
+      ],
+      "trap": "不能把一个能够访问宿主用户文件的原型直接宣称为生产级、零信任 Agent 平台。"
     }
   ]
 }
