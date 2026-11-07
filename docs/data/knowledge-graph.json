@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04",
+  "updatedAt": "2026-11-07",
   "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
     {
@@ -335,6 +335,40 @@
       "label": "Async ReAct",
       "kind": "concept",
       "description": "耗时操作 start/stop 与完成事件，解耦前台对话和后台执行。"
+    },
+    {
+      "id": "a-paged-experts",
+      "label": "Paged Experts / MoE Paging",
+      "kind": "article",
+      "date": "2026-11-07",
+      "track": "cross-deployment",
+      "description": "SGLang route-aware MoE expert paging: pinned host store, GPU residency, LRU, multi-wave execution, quantization correctness.",
+      "url": "/notes/2026/11/2026-11-07-paged-experts/",
+      "visual": "/interactive/2026-11-07-paged-experts-map.html"
+    },
+    {
+      "id": "c-expert-paging",
+      "label": "MoE Expert Paging",
+      "kind": "concept",
+      "description": "按 Router Top-k 专家访问模式只搬未驻留的专家权重。"
+    },
+    {
+      "id": "c-residency",
+      "label": "GPU Expert Residency",
+      "kind": "concept",
+      "description": "专家 ID 到 GPU slot 的映射、LRU 与换页。"
+    },
+    {
+      "id": "c-pcie",
+      "label": "PCIe H2D Transfer",
+      "kind": "concept",
+      "description": "Pinned Host RAM 与 GPU 间的数据传输带宽、延迟与同步。"
+    },
+    {
+      "id": "c-quant-contract",
+      "label": "Quantized Expert Contract",
+      "kind": "concept",
+      "description": "权重、scales、zero-points、runner、repack 必须共同分页且数值一致。"
     }
   ],
   "edges": [
@@ -985,7 +1019,114 @@
       "target": "c-trust",
       "type": "complements",
       "reason": "权限范围与不可信 Source 内容的信任等级必须分别检查。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-expert-paging",
+      "type": "explains",
+      "reason": "文章解释路由感知的按需专家权重换页，与固定 CPU offload 对照。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-residency",
+      "type": "explains",
+      "reason": "解释 LRU Slot、GPU 命中、Miss、Multi-wave 和 CUDA Graph 的状态一致性。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-pcie",
+      "type": "explains",
+      "reason": "讨论 H2D 传输的有效带宽、PCIe x8/x16 与 Pinned Host RAM 约束。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-quant-contract",
+      "type": "explains",
+      "reason": "通过 #45787 的量化参数漏页故障解释正确性边界。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-bandwidth",
+      "type": "explains",
+      "reason": "GPU HBM 容量与 PCIe 带宽共同决定分页的容量/速度取舍。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "c-concurrency",
+      "type": "explains",
+      "reason": "并发路由专家集合超过 K 会导致额外 Wave 与 Thrashing。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "a-replayssm",
+      "type": "shares-core-problem",
+      "reason": "两者都减少模型执行中的内存/带宽瓶颈，但 ReplaySSM 管 recurrent state，Paged Experts 管 MoE expert weights。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "a-sticky",
+      "type": "complements",
+      "reason": "Sticky Session 管请求到有状态副本的亲和性；Expert Residency 管同一 GPU 内权重工作集。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "a-shadow",
+      "type": "complements",
+      "reason": "可用 Shadow/Canary 在启用分页前对照延迟、logprob 与故障回退。"
+    },
+    {
+      "source": "c-bandwidth",
+      "target": "c-pcie",
+      "type": "prerequisite",
+      "reason": "理解内存层次带宽后，才能估算跨 PCIe H2D Page-in 成本。"
+    },
+    {
+      "source": "c-expert-paging",
+      "target": "c-residency",
+      "type": "prerequisite",
+      "reason": "先理解为什么只搬激活专家，才能设计驻留槽和淘汰策略。"
+    },
+    {
+      "source": "c-residency",
+      "target": "c-quant-contract",
+      "type": "complements",
+      "reason": "驻留映射必须同时涵盖所有量化权重与元数据。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "s-ml",
+      "type": "supports-skill",
+      "reason": "涉及 MoE 计算、CUDA Graph、GPU HBM/PCIe 和量化正确性。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "涉及缓存一致性、并发调度、工作集与故障恢复。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "s-sre",
+      "type": "supports-skill",
+      "reason": "涉及 TTFT/TPOT/SLO、OOM、回滚与容量预算。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "可在完全自托管单 GPU + 本地 Host RAM 运行；权重和请求不必出域。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "只将合规获批任务送往受控云实例；分页仍在同一节点的 RAM↔GPU 发生。"
+    },
+    {
+      "source": "a-paged-experts",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "遵循一手证据、可复现 Mock、双部署边界与旧文关联审计。"
     }
   ]
 }
-

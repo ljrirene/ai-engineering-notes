@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04",
+  "updatedAt": "2026-11-07",
   "disclaimer": "Manually curated from public research notes. Keyword coverage is NOT semantic assessment.",
   "questions": [
     {
@@ -732,7 +732,105 @@
         ]
       ],
       "trap": "不能把一个能够访问宿主用户文件的原型直接宣称为生产级、零信任 Agent 平台。"
+    },
+    {
+      "id": "q-24",
+      "doc": "a-paged-experts",
+      "level": "机制",
+      "q": "为什么 Paged Experts 能在 MoE 模型超出 VRAM 时仍让专家计算留在 GPU？它与 CPU MoE、固定 CPU offload 有何区别？",
+      "hint": "从 Router 的 top-k 稀疏激活、Pinned Host Store 和 GPU Residency Slot 入手。",
+      "answer": "MoE 每个 token 只路由到少量专家。Paged Experts 在 pinned host RAM 保存完整专家权重，在 GPU 放 K 个专家槽，命中直接计算，缺失时仅搬路由需要的专家并用 GPU Fused MoE Kernel 执行。CPU MoE 在 CPU 上计算部分专家；固定 offload 可能每步搬预设权重，不利用本步稀疏路由。收益取决于 PCIe、K/E、命中率与并发。",
+      "trap": "不能把‘最高 30×’当成相对调优 llama.cpp 的通用速度；也不能把权重分页等同 KV Cache 分页。",
+      "terms": [
+        [
+          "top-k",
+          "router",
+          "稀疏",
+          "专家"
+        ],
+        [
+          "host",
+          "pinned",
+          "内存"
+        ],
+        [
+          "gpu",
+          "slot",
+          "residency",
+          "驻留"
+        ],
+        [
+          "offload",
+          "cpu",
+          "搬运",
+          "计算"
+        ]
+      ]
+    },
+    {
+      "id": "q-25",
+      "doc": "a-paged-experts",
+      "level": "系统设计",
+      "q": "在 K=24、E=128、top_k=4 的单卡 MoE 服务上，为什么并发增加可能让 Paged Experts 比调优的 CPU MoE 更慢？如何观测与缓解？",
+      "hint": "关注一个 batch 中专家 ID 的并集、K 个 GPU Slot 与 multi-wave。",
+      "answer": "多个请求的 top-k 专家并集可能远大于 K，导致一个 step 需要多个 wave、频繁 eviction/H2D 传输，GPU 等待与 P95 ITL 增加。记录每层 miss ratio、bytes H2D、waves/step、TTFT/TPOT、PCIe 与 pinned RAM；通过并发 admission、K/KV 预算、热专家局部性、fallback 和流量分桶缓解。不能只测单请求 tok/s。",
+      "trap": "增加 batch 并不保证 GPU 吞吐线性上升；只加大 K 可能挤占 KV cache 并导致 OOM。",
+      "terms": [
+        [
+          "并发",
+          "batch",
+          "concurrency"
+        ],
+        [
+          "k",
+          "slot",
+          "驻留"
+        ],
+        [
+          "wave",
+          "thrash",
+          "换页"
+        ],
+        [
+          "ttft",
+          "tp ot",
+          "itl",
+          "延迟",
+          "指标"
+        ]
+      ]
+    },
+    {
+      "id": "q-26",
+      "doc": "a-paged-experts",
+      "level": "正确性",
+      "q": "为什么量化 MoE Expert Paging 不能只搬主权重？如何设计正确性 Oracle？",
+      "hint": "PR #45787 中 AWQ zero-points 没分页时产生了什么现象？",
+      "answer": "量化推理依赖主权重、scale、zero-point、bias、padding 与 Marlin/Triton 的 repack 状态。若某张量仍引用旧专家，服务可能返回正常 HTTP 200 但 logits 静默错误。需枚举并校验每专家 tensor、字节级 repack independence、paged/unpaged 逐层输出和 logprob 对照，并覆盖不同 K、wave、CUDA Graph、量化格式和 batch shape。",
+      "trap": "仅用端到端生成文本相似或少量 GSM8K 通过率不能证明所有量化格式数值正确。",
+      "terms": [
+        [
+          "scale",
+          "zero",
+          "量化",
+          "零点"
+        ],
+        [
+          "repack",
+          "runner",
+          "重排"
+        ],
+        [
+          "oracle",
+          "logprob",
+          "对照"
+        ],
+        [
+          "silent",
+          "错误",
+          "静默"
+        ]
+      ]
     }
   ]
 }
-

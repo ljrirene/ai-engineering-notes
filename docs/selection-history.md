@@ -41,3 +41,28 @@ permalink: /selection-history/
 - **筛选性质**：本条由用户明确指定查找并加入，**没有进行常规 10+ 候选开放竞争筛选**，不应编造其它候选或落选排名。
 - **交付**：[研究全文]({{ '/notes/2026/11/2026-11-04-cross-deployment-superagent/' | relative_url }}) · [交互架构图]({{ '/interactive/2026-11-04-superagent-map.html' | relative_url }}) · [知识星图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
 
+
+## 2026-11-07 · Paged Experts（本次正式三天一期）
+
+**扫描方式**：核对 SGLang v0.5.23 官方 Release、2 个核心 PR（#42557、#45787）及其可核实的实验，比较 vLLM、Transformers、独立论文等公开一手资料。实际记录 **11 个具体候选**，其中 5 个进行机制级对照。部分候选只是 release 中的具体特性，未独立核验全部发布日；没有虚构 Reddit 热度。
+
+| 候选 | 可核实日期 | 一手来源 | 决策 |
+|---|---|---|---|
+| SGLang Paged Experts | 2026-11-02 v0.5.23；核心 PR 10-19、量化扩展 10-25 | [来源](https://github.com/sgl-project/sglang/releases/tag/v0.5.23) | 入选：高迁移性、明确的缓存/PCIe/量化机制、详细对照和可审计 PR。 |
+| SGLang low-latency megakernel | 2026-11-02 release | [来源](https://github.com/sgl-project/sglang/pull/44945) | 落选：重要但主要集中 GB300/MI350X 特定 GPU Kernel，单卡通用迁移性较弱。 |
+| SGLang MoE TTFT optimization | 2026-11-02 release | [来源](https://github.com/sgl-project/sglang/pull/43363) | 落选：有性能提升但主要是引擎优化集合，较难独立构成统一教学单元。 |
+| SGLang quantized MoE LoRA | 2026-11-02 release | [来源](https://github.com/sgl-project/sglang/pull/45892) | 落选：值得后续单独追踪，但与本期权重管理的基础机制相比更偏格式/Adapter 扩展。 |
+| SGLang HiCache MLA L3 | 2026-11-02 release | [来源](https://github.com/sgl-project/sglang/pull/41187) | 落选：与已有 Stateful/Context 研究有一定重叠。 |
+| SGLang TPU7x TorchTPU | 2026-11-02 release | [来源](https://github.com/sgl-project/sglang-torchtpu) | 落选：新硬件支持但目标部署可迁移性次于单卡 MoE。 |
+| vLLM v0.33.0 release candidate | 2026-11-02 rc3 | [来源](https://github.com/vllm-project/vllm/releases/tag/v0.33.0rc3) | 落选：跨多功能的 RC，缺少单一问题的清晰复现实验。 |
+| vLLM v0.32.0 | 2026-10-18 | [来源](https://github.com/vllm-project/vllm/releases/tag/v0.32.0) | 落选：不如本期近期具体机制聚焦。 |
+| JAM Just-In-Time Agent Memory | 2026-09-28 arXiv | [来源](https://arxiv.org/abs/2609.34385) | 落选：记忆机制重要，但距今更久且与近期 Super-agent Context Chain 有部分重合。 |
+| Transformers 5.x Generation / Cache fixes | 近期 release 页面，单项日期未逐条核实 | [来源](https://github.com/huggingface/transformers/releases) | 落选：多个正确性修复但主题较分散。 |
+| SGLang PD Disaggregation | v0.5.22 release，确切发布日未核实 | [来源](https://github.com/sgl-project/sglang/releases/tag/v0.5.22) | 落选：有长上下文 SLO 价值，但较依赖多实例 PD 部署，当前选题优先级较低。 |
+
+**严格字典序结论**：优先岗位迁移性，其次技术机制深度，再考虑新鲜度；SGLang Paged Experts 兼具 GPU 内存层次、MoE、CUDA Graph、量化正确性与可复现 CPU Mock。与既有 ReplaySSM（SSM State I/O）和 Sticky Sessions（Session Affinity）不是重复主题，故新增一篇而非覆盖旧文。
+
+**原始日期核对**：功能主 PR 10-19 合并、量化扩展 10-25 合并，11-02 进入 v0.5.23 Release；不能写成“11-07 首次发布”。
+
+**交付**：[正文]({{ '/notes/2026/11/2026-11-07-paged-experts/' | relative_url }}) · [交互架构图]({{ '/interactive/2026-11-07-paged-experts-map.html' | relative_url }}) · [知识星图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
+

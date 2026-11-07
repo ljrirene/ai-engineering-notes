@@ -13,6 +13,7 @@ permalink: /archive.html
 
 | 研究日期 | 轨道 | 技术深读 | 交互架构图 |
 |---|---|---|---|
+| 2026-11-07 | **Cross-deployment · Inference** | [Paged Experts：MoE Expert Paging]({{ '/notes/2026/11/2026-11-07-paged-experts/' | relative_url }}) | [交互图]({{ '/interactive/2026-11-07-paged-experts-map.html' | relative_url }}) |
 | 2026-11-04 | **特别补充 · Cross-deployment** | [DeepSeek Super-agent：Router/Worker + Event-Driven]({{ '/notes/2026/11/2026-11-04-cross-deployment-superagent/' | relative_url }}) | [交互图]({{ '/interactive/2026-11-04-superagent-map.html' | relative_url }}) |
 | 2026-11-04 | On-prem | [BrowseSafe++ / Agent Security]({{ '/notes/2026/11/2026-11-04-onprem-prompt-injection/' | relative_url }}) | [Security Map]({{ '/interactive/agent-security-map.html' | relative_url }}) |
 | 2026-11-04 | Hybrid | [Spindle / RL Infrastructure]({{ '/notes/2026/11/2026-11-04-hybrid-spindle/' | relative_url }}) | [RL Map]({{ '/interactive/rl-infra-map.html' | relative_url }}) |
@@ -26,6 +27,7 @@ permalink: /archive.html
 | 2026-10-31 | Hybrid | [Perplexity SPACE：Agent Sandbox]({{ '/notes/2026/10/2026-10-31-hybrid-space/' | relative_url }}) | [交互图]({{ '/interactive/2026-10-31-space-map.html' | relative_url }}) |
 
 **筛选标准**：高端 AI Engineering 职业价值 > 技术突破和机制深度 > 新鲜度 > 可核实社区讨论 > 当日发表。过往每天原始搜索候选总数无法独立恢复；筛选记录只使用已知的历史选题与经过验证的资料，不编造当时的候选池规模。
+
 
 
 

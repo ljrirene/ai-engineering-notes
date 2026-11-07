@@ -9,7 +9,7 @@ const labels={article:'研究文章',concept:'核心概念',skill:'岗位能力'
 let data;
 try{const r=await fetch('./data/knowledge-graph.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();}catch(e){info.textContent='知识图谱数据加载失败：'+e.message;return;}
 const sourceNodes=data.nodes.map(n=>({...n})),sourceEdges=data.edges.map(e=>({...e})),byNode=new Map(sourceNodes.map(n=>[n.id,n]));
-const articleCluster={'a-replayssm':'serving','a-sticky':'serving','a-decision':'serving','a-space':'agent','a-browsesafe':'agent','a-orchestrator':'agent','a-superagent':'agent','a-retrieval':'retrieval','a-shadow':'retrieval','a-repair':'platform','a-spindle':'platform'};
+const articleCluster={'a-paged-experts':'serving','a-replayssm':'serving','a-sticky':'serving','a-decision':'serving','a-space':'agent','a-browsesafe':'agent','a-orchestrator':'agent','a-superagent':'agent','a-retrieval':'retrieval','a-shadow':'retrieval','a-repair':'platform','a-spindle':'platform'};
 const hubs={serving:{x:250,y:235,title:'INFERENCE & SERVING'},agent:{x:815,y:220,title:'AGENTS & SECURITY'},retrieval:{x:245,y:555,title:'RETRIEVAL & EVALUATION'},platform:{x:825,y:550,title:'PLATFORM & TRAINING'}};
 const counts=new Map();
 sourceNodes.forEach(n=>counts.set(n.id,0));
@@ -124,6 +124,7 @@ byId('kg-reset').onclick=()=>root.transition().duration(550).call(zoom.transform
 root.on('click',event=>{if(event.target===svg||event.target.closest('.kg-background')){selected=null;renderFocus();showDetails();}});
 updateFilters();render();root.call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));
 })();
+
 
 
 
