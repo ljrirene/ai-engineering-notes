@@ -3,13 +3,13 @@ layout: default
 title: Home
 ---
 <section class="hero">
-<div class="eyebrow">AI ENGINEERING · SYSTEMS · RESEARCH</div>
-<h1>学得更深，而不是<br>读得更多<span style="color:#08727c">.</span></h1>
-<p>每三天一个技术主题。先用两句话看懂它在解决什么问题，再选择架构图、正文或关联知识深入学习。</p>
-<div class="research-card-actions"><a href="{{ '/archive.html' | relative_url }}">全部文章 →</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系星图 →</a><a href="{{ '/study-qa/' | relative_url }}">问答复习 →</a></div>
+<div class="eyebrow">AI ENGINEERING · 技术研究</div>
+<h1>AI Engineering 技术研究库</h1>
+<p>每三天更新一个技术主题。这里提供文章概要、交互架构图和相关研究链接。</p>
+<div class="research-card-actions"><a href="{{ '/archive.html' | relative_url }}">全部文章 →</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系图 →</a><a href="{{ '/study-qa/' | relative_url }}">问答复习 →</a></div>
 </section>
-<h2 class="section-title" style="margin-top:10px">Latest Research · 两句话看懂</h2>
-<p class="muted">它解决什么问题？我能学到什么？看懂后再决定要不要点开。</p>
+<h2 class="section-title" style="margin-top:10px">最新研究</h2>
+<p class="muted">每篇列出研究问题和主要学习内容。</p>
 <section class="research-feed">
 {% for s in site.data.studies limit:6 %}
 <article class="research-card">
@@ -20,7 +20,7 @@ title: Home
 {% assign relation = s.related | first %}
 {% assign other = site.data.studies | where: "id", relation.id | first %}
 {% if other %}
-<div class="research-related"><div class="research-related-label">为什么和旧知识有关</div>
+<div class="research-related"><div class="research-related-label">相关研究</div>
 <a href="{{ other.url | relative_url }}">{{ other.title }} ↗</a>
 <p>{{ relation.why }}</p></div>{% endif %}
 <div class="research-card-actions"><a href="{{ s.url | relative_url }}">阅读正文 →</a><a href="{{ s.visual | relative_url }}">交互架构图 →</a></div>
@@ -28,10 +28,11 @@ title: Home
 {% endfor %}
 </section>
 <p style="margin-top:22px"><a href="{{ '/archive.html' | relative_url }}">查看全部 {{ site.data.studies.size }} 篇文章及关系 →</a></p>
-<h2 class="section-title">一条更简单的学习路径</h2>
+<h2 class="section-title">学习工具</h2>
 <section class="research-paths">
-<a href="{{ '/knowledge-graph.html' | relative_url }}"><b>① 看知识怎么连起来</b><span>不是靠标签关联，而是告诉你“为什么相关”。</span></a>
-<a href="{{ '/study-qa/' | relative_url }}"><b>② 用问题验证理解</b><span>检索真实证据、主动回忆并对照答案。</span></a>
-<a href="{{ '/learning-guide/' | relative_url }}"><b>③ 深入原理与实验</b><span>从一手资料到架构设计和可复现实验。</span></a>
+<a href="{{ '/knowledge-graph.html' | relative_url }}"><b>知识图谱</b><span>查看文章、概念和部署方式的关联说明。</span></a>
+<a href="{{ '/study-qa/' | relative_url }}"><b>文章检索和自测</b><span>检索研究原文，回答练习题并查看参考答案。</span></a>
+<a href="{{ '/learning-guide/' | relative_url }}"><b>学习指南</b><span>查看选题、阅读和复现实验方法。</span></a>
 </section>
+
 

@@ -3,9 +3,9 @@ layout: default
 title: Research Archive
 permalink: /archive.html
 ---
-# 所有研究 · 先理解，再深入
+# 全部研究
 
-> 每篇只有两句导读：它解决什么问题，你能从中学到什么。关联阅读会明确说明两篇之间的技术联系，而不是只标一个关系类型。
+> 按日期查看研究文章、概要、关联文章及交互架构图。
 
 [知识星图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }}) · [选题记录]({{ '/selection-history/' | relative_url }}) · [Learning Guide]({{ '/learning-guide/' | relative_url }})
 
@@ -27,4 +27,5 @@ permalink: /archive.html
 </div>
 
 **选题优先级**：职业价值 > 实质技术突破 > 新鲜度 > 可核实社区评价 > 是否当天发布。历史文章部分为按旧选题重新整理，详见[筛选记录]({{ '/selection-history/' | relative_url }})。
+
 

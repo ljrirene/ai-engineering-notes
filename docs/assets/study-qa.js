@@ -48,7 +48,8 @@ get('qa-check').onclick=()=>{if(!question)return;const box=get('qa-self-check');
 let found=0;for(const group of question.terms)if(group.some(t=>answer.includes(norm(t))))found++;
 el('p','概念覆盖提示：'+found+' / '+question.terms.length+' 组线索已提及。仅为关键词提示，不代表内容正确，更不会评判语义或逻辑。',box);
 const row=el('div',null,box,'qa-cov');question.terms.forEach(group=>{const yes=group.some(t=>answer.includes(norm(t)));el('span',(yes?'✓ ':'○ ')+group.slice(0,2).join(' / '),row,yes?'found':'');});};
-get('qa-reveal').onclick=()=>{if(!question)return;const box=get('qa-reference');box.replaceChildren();box.hidden=false;el('h4','REFERENCE ANSWER · 对照后自我修正',box);el('p',question.answer,box);el('h4','COMMON MISCONCEPTION',box);el('p',question.trap,box);const d=docs.get(question.doc);link(box,d.url,'阅读出处 ↗');box.append('　');link(box,d.visual,'交互架构图 ↗');};
+get('qa-reveal').onclick=()=>{if(!question)return;const box=get('qa-reference');box.replaceChildren();box.hidden=false;el('h4','参考答案',box);el('p',question.answer,box);el('h4','常见误区',box);el('p',question.trap,box);const d=docs.get(question.doc);link(box,d.url,'阅读出处 ↗');box.append('　');link(box,d.visual,'交互架构图 ↗');};
 get('qa-mastered').onclick=()=>{if(!question)return;mastered.add(question.id);get('qa-progress').textContent=mastered.size+' / '+bank.questions.length+' 已掌握';nextQuestion();};
 nextQuestion();
 })();
+

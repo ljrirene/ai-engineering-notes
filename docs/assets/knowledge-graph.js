@@ -97,9 +97,9 @@ function render(){
 }
 function block(parent,tag,t,className){const x=document.createElement(tag);x.textContent=t||'';if(className)x.className=className;parent.appendChild(x);return x;}
 const explanations={
-  explains:'这篇真正讲了什么',complements:'两篇合起来更完整',prerequisite:'先理解这个，再往下学',
-  extends:'在原有问题上继续深入','shares-core-problem':'同一个难题的不同解法',
-  'supports-skill':'能练到的工程能力','deploys-to':'讨论的部署场景','guided-by':'可以使用的学习方法'
+  explains:'文章介绍的概念',complements:'相关内容',prerequisite:'前置知识',
+  extends:'扩展研究','shares-core-problem':'同类问题',
+  'supports-skill':'相关工程技能','deploys-to':'讨论的部署场景','guided-by':'学习方法'
 };
 function relationLabel(e,n){
   if(e.type==='explains')return e.source===n.id?'这篇讲清的概念':'讲这个概念的文章';
@@ -110,7 +110,7 @@ function relationLabel(e,n){
 function showDetails(){
  info.replaceChildren();
  const n=byNode.get(selected);
- if(!n){block(info,'div','READ THE CONNECTIONS','kg-kind');const ill=block(info,'div','','kg-info-illustration');ill.setAttribute('aria-hidden','true');block(info,'h2','从一个问题开始');block(info,'p','点击研究文章，先看“它与哪篇有关”，再看“为什么要一起读”。图谱连线只是导航，真正有用的是背后的技术原因。');block(info,'p','你可以随时点击关联文章，也可以展开完整概念/岗位/部署关系。');return;}
+ if(!n){block(info,'div','相关内容','kg-kind');const ill=block(info,'div','','kg-info-illustration');ill.setAttribute('aria-hidden','true');block(info,'h2','选择节点');block(info,'p','点击节点查看相关内容、关联原因及阅读链接。');block(info,'p','切换视图可查看更多工程技能和部署关系。');return;}
  block(info,'div',labels[n.kind]||n.kind,'kg-kind');
  block(info,'h2',n.label);
  if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':n.track==='hybrid'?'Controlled Hybrid':'On-prem / Controlled Hybrid'),'kg-meta');
@@ -139,9 +139,9 @@ function showDetails(){
  const linkedConcepts=related.filter(e=>e.other.kind==='concept');
  const linkedDeployments=related.filter(e=>e.other.kind==='deployment');
  const linkedOther=related.filter(e=>['skill','guide'].includes(e.other.kind));
- chosen.push(...section(linkedArticles, n.kind==='article'?'RECOMMENDED · 接下来值得读':'RELATED STUDIES · 可以读哪篇',3));
- chosen.push(...section(linkedConcepts,'KEY IDEAS · 这篇涉及的关键概念',2));
- if(n.kind==='deployment')chosen.push(...section(linkedDeployments,'DEPLOYMENT · 部署场景',2));
+ chosen.push(...section(linkedArticles, n.kind==='article'?'相关文章':'相关文章',3));
+ chosen.push(...section(linkedConcepts,'相关概念',2));
+ if(n.kind==='deployment')chosen.push(...section(linkedDeployments,'部署场景',2));
  const seen=new Set(chosen);
  const rest=related.filter(e=>!seen.has(e));
  if(rest.length){
@@ -155,7 +155,7 @@ function count(){const s=visibleNodes.length+' NODES · '+visibleEdges.length+' 
 const filters=byId('kg-filters');
 function updateFilters(){filters.replaceChildren();Object.entries(labels).forEach(([kind,label])=>{const b=block(filters,'button',label+' · '+sourceNodes.filter(n=>n.kind===kind).length,'kg-filter');b.type='button';b.setAttribute('aria-pressed',String(types.has(kind)));b.onclick=()=>{if(types.has(kind)&&types.size>1)types.delete(kind);else types.add(kind);updateFilters();render()};});}
 function setMode(next){mode=next;types=next==='study'?new Set(['article','concept','skill','deployment','guide']):new Set(['article','concept','deployment']);updateFilters();selected=null;render();root.transition().duration(600).call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));}
-function updateMode(){const c=mode==='constellation';byId('kg-mode-constellation').classList.toggle('is-active',c);byId('kg-mode-study').classList.toggle('is-active',!c);byId('kg-mode-constellation').setAttribute('aria-pressed',String(c));byId('kg-mode-study').setAttribute('aria-pressed',String(!c));byId('kg-current-mode').textContent=c?'CONSTELLATION MODE':'STUDY MAP · ALL RELATIONS';}
+function updateMode(){const c=mode==='constellation';byId('kg-mode-constellation').classList.toggle('is-active',c);byId('kg-mode-study').classList.toggle('is-active',!c);byId('kg-mode-constellation').setAttribute('aria-pressed',String(c));byId('kg-mode-study').setAttribute('aria-pressed',String(!c));byId('kg-current-mode').textContent=c?'简洁视图':'全部关系';}
 byId('kg-mode-constellation').onclick=()=>setMode('constellation');
 byId('kg-mode-study').onclick=()=>setMode('study');
 byId('kg-search').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();if(query){const matches=sourceNodes.filter(n=>(n.label+' '+(n.description||'')).toLowerCase().includes(query));matches.forEach(n=>types.add(n.kind));updateFilters();}render();});
@@ -166,6 +166,7 @@ byId('kg-reset').onclick=()=>root.transition().duration(550).call(zoom.transform
 root.on('click',event=>{if(event.target===svg||event.target.closest('.kg-background')){selected=null;renderFocus();showDetails();}});
 updateFilters();render();root.call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));
 })();
+
 
 
 
