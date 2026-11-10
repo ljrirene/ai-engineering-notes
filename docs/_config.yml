@@ -1,9 +1,10 @@
-title: AI Engineering Notes
-description: First-principles research in on-prem and controlled hybrid AI systems
+title: AI, Explained
+description: AI systems explained — what they solve, how they work, and why they matter
 baseurl: "/ai-engineering-notes"
 url: "https://ljrirene.github.io"
 markdown: kramdown
 highlighter: rouge
 exclude:
   - README.md
+
 

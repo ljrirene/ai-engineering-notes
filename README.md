@@ -1,6 +1,6 @@
-# AI Engineering Notes
+# AI, Explained
 
-**Independent technical research notes across On-prem AI and Controlled Hybrid AI infrastructure.**
+**What AI systems solve, how they work, and why their engineering choices matter.**
 
 中文深度精读档案 | First Principles · Systems Design · Reproducible Experiments
 
@@ -43,6 +43,7 @@
 ## Privacy and Security
 
 仅使用公开的一手技术资料与合成示例；禁止提交企业机密、生产内网地址、凭据、个人数据、未公开架构、受版权限制的全文或敏感附件。公开资料中的模型性能数据属于来源作者声称，非独立复现。
+
 
 
 
