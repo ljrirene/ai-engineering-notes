@@ -27,7 +27,8 @@
           "detail": "权重就位后仍由 GPU 计算，速度可能受 CPU→GPU 传输和同步影响。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "固定搬运"
     },
     "after": {
       "label": "Paged Experts",
@@ -57,14 +58,16 @@
           "detail": "GPU Kernel 运行专家计算，再聚合结果。量化 scale、zero-point 必须与对应权重同步换页。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "按需换页"
     },
     "change": "搬运的依据从“固定权重位置”变成“本轮是否真正需要这个专家”。",
     "benefit": "当专家激活具有局部性、PCIe 搬运可控时，能让超出显存的 MoE 模型继续用 GPU 计算。",
     "cost": "需要主机内存和分页管理；多请求可能产生缓存抖动，量化元数据漏页还会造成计算错误。",
     "scope": "这是对 SGLang Paged Experts 的教学简化，不代表所有 CPU Offload 都会无条件复制全部专家，更不保证某一固定加速倍数。",
     "source": "SGLang 核心 PR",
-    "sourceUrl": "https://github.com/sgl-project/sglang/pull/42557"
+    "sourceUrl": "https://github.com/sgl-project/sglang/pull/42557",
+    "keyPoint": "不是把所有专家权重都搬上 GPU，而是只加载当前要用的。"
   },
   {
     "id": "a-superagent",
@@ -94,7 +97,8 @@
           "detail": "历史消息、Issue、工具结果和执行授权容易分散在多个地方。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "依赖聊天会话"
     },
     "after": {
       "label": "事件驱动 + 持久任务",
@@ -124,14 +128,16 @@
           "detail": "Ticket、授权版本、状态和报告持久化；Watchdog 是设计方向的一部分，公开原型不等于完整生产实现。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "事件驱动任务"
     },
     "change": "从“依赖一个聊天窗口”变成“由事件、任务身份与持久状态管理工作”。",
     "benefit": "能更清楚地分配长期任务、恢复上下文，并限制哪些消息可以触发行动。",
     "cost": "必须处理重复事件、权限撤销、卡死任务与执行隔离；开源原型使用操作者 OS 身份，不等于安全沙箱。",
     "scope": "DeepSeek 官方把它定位为设计探索；公开代码是范围更窄的研究原型。本图将设计目标和可核查原型区分。",
     "source": "DeepSeek 研究原型",
-    "sourceUrl": "https://github.com/deepseek-ai/dsh-superagent-prototype"
+    "sourceUrl": "https://github.com/deepseek-ai/dsh-superagent-prototype",
+    "keyPoint": "消息先确认归属和权限，再让对应任务继续执行。"
   },
   {
     "id": "a-browsesafe",
@@ -161,7 +167,8 @@
           "detail": "只有 Prompt Guard、没有独立授权执行层时，一次漏检就可能产生越权操作。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "把网页当指令"
     },
     "after": {
       "label": "检测 + 独立授权",
@@ -191,14 +198,16 @@
           "detail": "通过授权的任务仍在受限 Runtime 中执行并记审计；未经授权的调用必须拒绝。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "检测与独立授权"
     },
     "change": "检测模型识别可疑文字，执行策略决定工具是否真正有权操作；两者不能替代。",
     "benefit": "把 Prompt Injection 风险从单纯的提示词问题转化为可测试、可执行的系统边界。",
     "cost": "Guard 会误报/漏报；沙箱和授权策略也需要单独测试。这里的完整防护链是工程组合，不是 BrowseSafe++ 的单一官方产品架构。",
     "scope": "模型检测效果属于原团队报告；“Guard + Policy + Sandbox”属于本站组合式安全建议。",
     "source": "BrowseSafe++ 官方介绍",
-    "sourceUrl": "https://www.perplexity.ai/hub/blog/browsesafe-plus-plus"
+    "sourceUrl": "https://www.perplexity.ai/hub/blog/browsesafe-plus-plus",
+    "keyPoint": "网页可以提供信息，但不能代替用户给 Agent 下命令。"
   },
   {
     "id": "a-spindle",
@@ -228,7 +237,8 @@
           "detail": "Trainer 消耗算力和显存进行 Backward 与 Optimizer 更新；资源需求和采样不同。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "采样和训练混在一起"
     },
     "after": {
       "label": "分离 Sampler 与 Trainer",
@@ -258,14 +268,16 @@
           "detail": "需要明确版本切换、采样端更新滞后和训练/推理数值一致性。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "采样、训练分离"
     },
     "change": "资源不再被迫同一节奏运行，但必须管理轨迹版本和权重同步。",
     "benefit": "当采样等待或训练计算成为瓶颈时，可以分别扩容、提升设备利用率。",
     "cost": "多出网络与同步成本；过旧的 Rollout 和 MoE 路由数值不一致可能影响训练正确性。",
     "scope": "这是面向 RL 系统的教学对比；不是对任意算法都保证更优的架构。",
     "source": "Spindle 源码",
-    "sourceUrl": "https://github.com/modal-projects/spindle"
+    "sourceUrl": "https://github.com/modal-projects/spindle",
+    "keyPoint": "生成训练数据和更新模型分开运行，减少彼此等待。"
   },
   {
     "id": "a-sticky",
@@ -295,7 +307,8 @@
           "detail": "语音分段、偏移和缓存不一致可能损害连续识别质量。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "每段独立分配"
     },
     "after": {
       "label": "Sticky Session",
@@ -325,14 +338,16 @@
           "detail": "Worker 崩溃后需用 checkpoint/offset 恢复，或明确返回 Session Lost 并要求客户端按序重放。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "按会话固定实例"
     },
     "change": "路由单位从“单个请求”变成“有状态的会话”。",
     "benefit": "更适合流式 ASR、实时 Voice Agent 和其他依赖持续会话状态的服务。",
     "cost": "固定实例不保证永远在线；需要处理 Lease、Drain、内存占用和故障后重放。",
     "scope": "并非所有 ASR 都依赖这种路由；对完全无状态的短请求通常没有必要。",
     "source": "Modal Sticky Session 技术文章",
-    "sourceUrl": "https://modal.com/blog/serverless-routing-made-sticky"
+    "sourceUrl": "https://modal.com/blog/serverless-routing-made-sticky",
+    "keyPoint": "同一次语音会话的片段，尽量交给保存其状态的实例。"
   },
   {
     "id": "a-shadow",
@@ -362,7 +377,8 @@
           "detail": "这种方式适合在已有证据之后的小流量验证，而不是完全替代上线前评估。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "直接让用户试新版"
     },
     "after": {
       "label": "Shadow Traffic",
@@ -392,14 +408,16 @@
           "detail": "检查质量、延迟、Mirror Drop Rate 和输入分布偏差；通过评估后才考虑小流量试运行。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "旁路测试新模型"
     },
     "change": "增加一条不影响正式响应的镜像测试路径。生产模型继续答复，候选模型只供评估。",
     "benefit": "能在真实请求分布上发现候选模型问题，再决定是否小范围切换。",
     "cost": "镜像必须使用有界缓冲，慢候选要能被丢弃；丢弃样本会造成评估偏差。Shadow 不等于 Canary。",
     "scope": "四步按阅读顺序介绍，两条执行路径实际是并行的，不代表请求先到生产再经过候选模型。",
     "source": "Modal Endpoint Candidates",
-    "sourceUrl": "https://modal.com/blog/endpoint-candidates"
+    "sourceUrl": "https://modal.com/blog/endpoint-candidates",
+    "keyPoint": "新模型在旁路接受测试，用户仍收到旧模型的回答。"
   },
   {
     "id": "a-repair",
@@ -429,7 +447,8 @@
           "detail": "简单脚本可能不知道修复是否有效，也可能对大量节点同时重复执行。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "看到故障就重启"
     },
     "after": {
       "label": "证据驱动的修复",
@@ -459,14 +478,16 @@
           "detail": "重新健康检查，只有通过验证才恢复服务；大规模相关故障应由人工调查。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "先确认再修复"
     },
     "change": "自动修复从“看到症状就执行”变成“证据明确、动作受控、结果复验”。",
     "benefit": "降低误操作导致的集群级事故风险，并让修复有记录可回溯。",
     "cost": "故障证据可能不完整；需要人工接管、集群级熔断和操作预算。",
     "scope": "细节来自 Together AI 的工程介绍；具体修复流程需按集群环境重新设计并验证。",
     "source": "Together AI GPU 自动修复",
-    "sourceUrl": "https://www.together.ai/blog/auto-repair-for-together-gpu-clusters"
+    "sourceUrl": "https://www.together.ai/blog/auto-repair-for-together-gpu-clusters",
+    "keyPoint": "先查故障证据，再执行批准的修复，最后验证结果。"
   },
   {
     "id": "a-decision",
@@ -496,7 +517,8 @@
           "detail": "Parser 校验模型输出，再交给确定性的路由或业务策略。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "生成标签再解析"
     },
     "after": {
       "label": "直接选项评分",
@@ -526,14 +548,16 @@
           "detail": "分类结果只是建议；高风险工具动作仍需独立权限检查。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "直接给选项评分"
     },
     "change": "从生成自然语言标签，改成对有限选项评分，再由确定性代码控制操作。",
     "benefit": "在大量简单分类/路由任务上，有机会降低解码与解析开销。",
     "cost": "专用模型也会分类错误，置信度必须校准，标签分布变化需要重新评估。",
     "scope": "多家 Decision Model 的实现不同；这里只展示共同设计思路，不代表统一架构。",
     "source": "Oumi Decision Model 工程说明",
-    "sourceUrl": "https://www.oumi.ai/blog/how-to-build-a-decision-model-like-jev"
+    "sourceUrl": "https://www.oumi.ai/blog/how-to-build-a-decision-model-like-jev",
+    "keyPoint": "固定选项直接评分，不必先生成一段文字再解析。"
   },
   {
     "id": "a-orchestrator",
@@ -563,7 +587,8 @@
           "detail": "当操作边界和业务推理都交给同一个模型，回退和验证难以独立测试。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "一个 Agent 负责全部"
     },
     "after": {
       "label": "薄编排器 + 专门 Agent",
@@ -593,14 +618,16 @@
           "detail": "对于共享工作区，可以使用独立 Sandbox + Git/CAS/Outbox；这是另一篇工程案例的组合，不是 Meta 单一官方架构。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "编排器与专门 Agent 分工"
     },
     "change": "把模型负责的领域推理与必须确定执行的路由、权限和提交分开。",
     "benefit": "更容易测试、回退与扩充多个业务 Agent，减少长上下文干扰。",
     "cost": "需要为领域 Agent 设计边界；共享文件仍需事务、冲突检测和权限策略。",
     "scope": "这篇结合 Meta Thin Orchestrator 与 Perplexity Shared Workspace 两个案例；最后一步是跨案例归纳。",
     "source": "Meta Thin Orchestrator",
-    "sourceUrl": "https://engineering.fb.com/2026/10/19/ml-applications/thin-orchestrator-ai-agent-architecture/"
+    "sourceUrl": "https://engineering.fb.com/2026/10/19/ml-applications/thin-orchestrator-ai-agent-architecture/",
+    "keyPoint": "编排器负责分工，领域问题交给专门 Agent。"
   },
   {
     "id": "a-retrieval",
@@ -630,7 +657,8 @@
           "detail": "Top-K 可能包含正确一句话，但缺少版本、上下文与引用条件。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "只检索孤立片段"
     },
     "after": {
       "label": "上下文恢复 + 细粒度排序",
@@ -660,14 +688,16 @@
           "detail": "检索改进不能保证生成正确；需要引用和答案一致性检查。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "补语境、核对证据"
     },
     "change": "不只看片段的向量相似度，还要恢复它所在的语境和细粒度信息。",
     "benefit": "提高找到完整证据的机会，特别适合长 PDF、表格、跨段条件和术语消歧。",
     "cost": "多向量索引更大、检索更贵；正确检索也不能自动保证回答正确。",
     "scope": "Contextual Embedding 与 Late Interaction 是两条可以组合的路线；图示是教学组合，不是某厂商单一生产实现。",
     "source": "Perplexity Contextual Embedding",
-    "sourceUrl": "https://www.perplexity.ai/hub/blog/contextual-embedding-beyond-the-gold-passage"
+    "sourceUrl": "https://www.perplexity.ai/hub/blog/contextual-embedding-beyond-the-gold-passage",
+    "keyPoint": "找到相关句子还不够，必须找回它的限定条件。"
   },
   {
     "id": "a-space",
@@ -697,7 +727,8 @@
           "detail": "即使模型大多数时候遵守指令，一次不受控命令也可能影响主机。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "直接使用宿主权限"
     },
     "after": {
       "label": "策略 + 隔离执行环境",
@@ -727,14 +758,16 @@
           "detail": "工具响应返回 Agent；异常或越权调用需被拒绝、记录并能够追踪。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "独立授权和沙箱"
     },
     "change": "让模型决定“想做什么”，让独立系统决定“允许做什么”，再在隔离环境里执行。",
     "benefit": "降低工具执行导致的主机风险，适合需要运行代码的 Agent 产品。",
     "cost": "沙箱不等于零风险；网络出口、凭据策略、文件挂载和资源预算仍需单独评估。",
     "scope": "本图是以 Perplexity SPACE 为参考的安全执行简化模型，不代表开源项目的逐组件官方部署图。",
     "source": "Perplexity SPACE 开源仓库",
-    "sourceUrl": "https://github.com/perplexityai/SPACE"
+    "sourceUrl": "https://github.com/perplexityai/SPACE",
+    "keyPoint": "模型只能提出操作，真正能否执行由独立系统决定。"
   },
   {
     "id": "a-replayssm",
@@ -764,7 +797,8 @@
           "detail": "每步持久写回完整状态可能比部分重放计算更昂贵。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "每步写回大状态"
     },
     "after": {
       "label": "ReplaySSM：缓存输入并重放",
@@ -794,14 +828,16 @@
           "detail": "实际收益取决于状态大小、窗口长度、GPU 带宽和数值一致性。",
           "focus": false
         }
-      ]
+      ],
+      "shortLabel": "缓存输入并重算"
     },
     "change": "用一部分重复计算替换每 token 大量状态 I/O，减少显存写回压力。",
     "benefit": "当状态读写比重放计算更贵时，可能改善 SSM 的推理吞吐。",
     "cost": "重放窗口过大会增加计算与缓冲成本；机制不能直接等同于 Transformer 的 KV Cache 优化。",
     "scope": "该机制针对论文讨论的 SSM/类 SSM 结构，性能数据来自作者实验，不代表本站实测。",
     "source": "ReplaySSM 论文",
-    "sourceUrl": "https://arxiv.org/abs/2610.13778"
+    "sourceUrl": "https://arxiv.org/abs/2610.13778",
+    "keyPoint": "少写几次大状态，必要时重算最近几步。"
   }
 ]
 

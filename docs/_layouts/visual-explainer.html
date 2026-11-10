@@ -1,64 +1,92 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 {% assign lesson = site.data.visual_lessons | where: "id", page.lesson_id | first %}
 <title>{{ lesson.title | escape }} · AI, Explained</title>
-<meta name="description" content="{{ lesson.change | escape }}">
+<meta name="description" content="{{ lesson.keyPoint | escape }}">
 <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/visual-explainer.css' | relative_url }}?v=1">
+<link rel="stylesheet" href="{{ '/assets/visual-explainer.css' | relative_url }}?v=2">
 </head>
 <body>
-<header class="bar"><a class="brand" href="{{ '/' | relative_url }}">◆ AI, Explained</a><nav><a href="{{ '/' | relative_url }}">首页</a><a href="{{ '/archive.html' | relative_url }}">全部文章</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系图</a></nav></header>
-<main class="vl-page" data-lesson="{{ lesson.id }}">
-<div class="vl-breadcrumb"><a href="{{ '/' | relative_url }}">首页</a><span>›</span><a href="{{ '/archive.html' | relative_url }}">研究文章</a><span>›</span><span>原理对照</span></div>
+<header class="bar"><a class="brand" href="{{ '/' | relative_url }}">◆ AI, Explained</a><nav><a href="{{ '/' | relative_url }}">首页</a><a href="{{ '/archive.html' | relative_url }}">全部文章</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系</a></nav></header>
+<main class="vl-page">
+<nav class="vl-breadcrumb" aria-label="当前位置"><a href="{{ '/' | relative_url }}">首页</a><span aria-hidden="true">›</span><a href="{{ page.article_url | relative_url }}">文章</a><span aria-hidden="true">›</span><span>原理演示</span></nav>
 <header class="vl-head">
-<div class="vl-overline">原理对照 · 用一个例子说明</div>
+<p class="vl-overline">技术原理 · 中文解释</p>
 <h1>{{ lesson.title }}</h1>
 <p class="vl-lead">{{ lesson.problem }}</p>
-<div class="vl-example">{{ lesson.example }}</div>
 </header>
-<div class="vl-compare">
-<section class="vl-summary"><div class="vl-tag">常见做法 / 风险示例</div><h2>{{ lesson.before.label }}</h2><p>{{ lesson.before.summary }}</p></section>
-<section class="vl-summary new"><div class="vl-tag">文章方案 / 改进方法</div><h2>{{ lesson.after.label }}</h2><p>{{ lesson.after.summary }}</p></section>
-</div>
-<div class="vl-change"><strong>核心变化</strong>{{ lesson.change }}</div>
-<section class="vl-workspace" aria-label="逐步查看技术原理">
-<div class="vl-workspace-top"><h2>具体怎么做？</h2><small>选择步骤查看解释；可以切换两种做法</small></div>
-<div class="vl-tabs" role="tablist" aria-label="选择流程">
-<button type="button" id="vl-tab-after" role="tab" aria-controls="vl-flow-after" aria-selected="true" data-tab="after">{{ lesson.after.label }}</button>
-<button type="button" id="vl-tab-before" role="tab" aria-controls="vl-flow-before" aria-selected="false" data-tab="before">{{ lesson.before.label }}</button>
-</div>
-<div class="vl-flow-wrap">
-{% for flow in (1..2) %}
-{% if flow == 1 %}{% assign flow_data = lesson.after %}{% assign flow_id = "after" %}{% else %}{% assign flow_data = lesson.before %}{% assign flow_id = "before" %}{% endif %}
-<section class="vl-flow" id="vl-flow-{{ flow_id }}" role="tabpanel" aria-labelledby="vl-tab-{{ flow_id }}" data-flow="{{ flow_id }}" {% if flow_id == "before" %}hidden{% endif %}>
-<h3>{{ flow_data.summary }}</h3>
-<ol class="vl-steps" style="--step-count:{{ flow_data.steps.size }}">
-{% for step in flow_data.steps %}
-<li><button type="button" class="vl-step" data-flow="{{ flow_id }}" data-title="{{ step.title | escape }}" data-detail="{{ step.detail | escape }}" data-number="{{ forloop.index }}" aria-pressed="{% if flow_id == "after" and step.focus and forloop.index == 2 %}true{% else %}false{% endif %}">
-<span class="vl-step-index">STEP {{ forloop.index }}</span>
-<span class="vl-step-name">{{ step.title }}</span>
-<span class="vl-step-brief">{{ step.brief }}</span>
-{% if step.focus %}<span class="vl-step-mark">主要变化</span>{% endif %}
-</button></li>
-{% endfor %}
-</ol>
+<section class="vl-example" aria-label="具体例子">
+<span class="vl-label">先看一个例子</span>
+<p>{{ lesson.example | remove_first: "例子：" }}</p>
 </section>
-{% endfor %}
+<section class="vl-main-point" aria-label="核心结论">
+<span class="vl-label">一句话理解</span>
+<h2>{{ lesson.keyPoint }}</h2>
+</section>
+<section class="vl-compare" aria-label="旧做法与新做法对比">
+<div class="vl-compare-item">
+<div class="vl-label">原来的做法 / 风险</div>
+<h3>{{ lesson.before.shortLabel }}</h3>
+<p>{{ lesson.before.summary }}</p>
 </div>
-{% assign initial_step = lesson.after.steps[1] %}
-<div class="vl-detail" aria-live="polite">
-<div><div id="vl-detail-top" class="vl-detail-top">文章方案 · 第 2 步</div><h3 id="vl-detail-title">{{ initial_step.title }}</h3><p id="vl-detail-text">{{ initial_step.detail }}</p></div>
-<div class="vl-controls"><button id="vl-prev" type="button">上一步</button><button id="vl-next" type="button">下一步</button></div>
+<div class="vl-compare-item improved">
+<div class="vl-label">改进的做法</div>
+<h3>{{ lesson.after.shortLabel }}</h3>
+<p>{{ lesson.after.summary }}</p>
 </div>
 </section>
-<div class="vl-outcomes">
-<section><h2>解决了什么</h2><p>{{ lesson.benefit }}</p></section>
-<section><h2>代价与限制</h2><p>{{ lesson.cost }}</p></section>
+<section class="vl-lesson" aria-label="逐步演示技术过程">
+<div class="vl-lesson-header">
+<div><span class="vl-overline">交互演示</span><h2>分步骤看怎么实现</h2></div>
+<p>一次只看一步，点击数字可以跳转。</p>
 </div>
-<div class="vl-limit"><strong>适用范围与证据：</strong>{{ lesson.scope }}</div>
-<div class="vl-links"><a href="{{ page.article_url | relative_url }}">阅读完整技术分析 →</a><a href="{{ lesson.sourceUrl | escape }}" target="_blank" rel="noopener noreferrer">查看一手来源：{{ lesson.source }} →</a><a href="{{ '/knowledge-graph.html' | relative_url }}">相关研究 →</a></div>
-<p class="vl-info-footer">这是根据公开一手资料制作的教学简化图，不是官方系统的精确部署拓扑或本站实测。复杂实现、公式、边界条件和来源见完整文章。</p>
+<div class="vl-mode-switch" role="tablist" aria-label="选择讲解流程">
+<button type="button" id="vl-tab-after" role="tab" aria-controls="vl-flow-after" aria-selected="true" data-mode="after">新方法</button>
+<button type="button" id="vl-tab-before" role="tab" aria-controls="vl-flow-before" aria-selected="false" data-mode="before">旧方法</button>
+</div>
+{% for seq in (1..2) %}
+{% if seq == 1 %}{% assign flow = lesson.after %}{% assign mode = "after" %}{% else %}{% assign flow = lesson.before %}{% assign mode = "before" %}{% endif %}
+<div id="vl-flow-{{ mode }}" class="vl-flow" role="tabpanel" aria-labelledby="vl-tab-{{ mode }}" data-flow="{{ mode }}" {% if mode == "before" %}hidden{% endif %}>
+<div class="vl-progress" aria-label="{{ flow.shortLabel }}的步骤">
+{% for step in flow.steps %}
+<button class="vl-progress-step" type="button" data-mode="{{ mode }}" data-number="{{ forloop.index }}" data-title="{{ step.title | escape }}" data-brief="{{ step.brief | escape }}" data-detail="{{ step.detail | escape }}" data-key="{% if step.focus %}true{% else %}false{% endif %}" aria-label="第 {{ forloop.index }} 步：{{ step.title | escape }}" aria-current="{% if mode == "after" and forloop.first %}step{% else %}false{% endif %}">
+<span>{{ forloop.index }}</span>
+</button>
+{% endfor %}
+</div>
+</div>
+{% endfor %}
+<article class="vl-active-step" aria-live="polite" aria-atomic="true">
+<span class="vl-step-count" id="vl-step-count">第 1 步</span>
+<h3 id="vl-step-title">{{ lesson.after.steps[0].title }}</h3>
+<p id="vl-step-brief">{{ lesson.after.steps[0].brief }}</p>
+<details class="vl-technical" id="vl-technical">
+<summary>查看技术原理与细节</summary>
+<p id="vl-technical-text">{{ lesson.after.steps[0].detail }}</p>
+</details>
+</article>
+<div class="vl-navigation">
+<button id="vl-prev" type="button" disabled><span aria-hidden="true">←</span> 上一步</button>
+<span id="vl-counter">1 / {{ lesson.after.steps.size }}</span>
+<button id="vl-next" type="button">下一步 <span aria-hidden="true">→</span></button>
+</div>
+</section>
+<details class="vl-additional">
+<summary>查看收益、代价与适用条件</summary>
+<div class="vl-additional-grid">
+<div><h3>解决什么问题</h3><p>{{ lesson.benefit }}</p></div>
+<div><h3>有什么代价</h3><p>{{ lesson.cost }}</p></div>
+</div>
+<div class="vl-evidence"><strong>适用范围和证据：</strong>{{ lesson.scope }}</div>
+</details>
+<div class="vl-links">
+<a href="{{ page.article_url | relative_url }}">阅读完整技术分析 →</a>
+<a href="{{ lesson.sourceUrl | escape }}" target="_blank" rel="noopener noreferrer">查看原始资料 →</a>
+<a href="{{ '/knowledge-graph.html' | relative_url }}">相关文章 →</a>
+</div>
+<p class="vl-disclaimer">这是帮助理解原理的简化演示，不是官方完整架构图。论文数据和实现边界请以原文为准。</p>
 </main>
-<script defer src="{{ '/assets/visual-explainer.js' | relative_url }}?v=1"></script>
+<script src="{{ '/assets/visual-explainer.js' | relative_url }}?v=2" defer></script>
 </body></html>

@@ -1,32 +1,34 @@
 (function(){
 "use strict";
 const page=document.querySelector(".vl-page");if(!page)return;
-const tabs=[...document.querySelectorAll("[data-tab]")],flows=[...document.querySelectorAll(".vl-flow")];
-const all=[...document.querySelectorAll(".vl-step")],detailTop=document.getElementById("vl-detail-top"),detailTitle=document.getElementById("vl-detail-title"),detailText=document.getElementById("vl-detail-text");
-let flow="after",active=null;
-function select(btn,focus){
- if(!btn)return;
- active=btn;all.forEach(b=>b.setAttribute("aria-pressed",String(b===btn)));
- detailTop.textContent=(flow==="after"?"文章方案":"常见做法")+" · 第 "+btn.dataset.number+" 步";
- detailTitle.textContent=btn.dataset.title;detailText.textContent=btn.dataset.detail;
- if(focus)btn.focus();
+const tabs=[...page.querySelectorAll("[data-mode].vl-mode-switch button")];
+const flows=[...page.querySelectorAll(".vl-flow")],steps=[...page.querySelectorAll(".vl-progress-step")];
+const count=document.getElementById("vl-step-count"),title=document.getElementById("vl-step-title"),brief=document.getElementById("vl-step-brief"),technical=document.getElementById("vl-technical"),technicalText=document.getElementById("vl-technical-text"),counter=document.getElementById("vl-counter"),prev=document.getElementById("vl-prev"),next=document.getElementById("vl-next");
+let mode="after",index=0;
+const current=()=>steps.filter(s=>s.dataset.mode===mode);
+function paint(keepFocus){
+ const array=current(),step=array[index];if(!step)return;
+ steps.forEach(s=>s.setAttribute("aria-current",s===step?"step":"false"));
+ count.textContent="第 "+(index+1)+" 步";title.textContent=step.dataset.title;brief.textContent=step.dataset.brief;
+ technicalText.textContent=step.dataset.detail;technical.open=false;
+ counter.textContent=(index+1)+" / "+array.length;
+ prev.disabled=index===0;next.disabled=index===array.length-1;
+ if(keepFocus)step.focus();
 }
-function switchFlow(next){
- flow=next;
- tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===next)));
- flows.forEach(el=>el.hidden=el.dataset.flow!==next);
- const choices=all.filter(b=>b.dataset.flow===flow);
- select(choices.find(b=>b.querySelector(".vl-step-mark"))||choices[0],false);
+function selectMode(nextMode){
+ mode=nextMode;index=0;
+ tabs.forEach(t=>t.setAttribute("aria-selected",String(t.dataset.mode===mode)));
+ flows.forEach(f=>{f.hidden=f.dataset.flow!==mode;});
+ paint(false);
 }
-tabs.forEach(b=>b.addEventListener("click",()=>switchFlow(b.dataset.tab)));
-all.forEach(b=>b.addEventListener("click",()=>select(b,false)));
-function move(delta){
- const visible=all.filter(b=>b.dataset.flow===flow);
- if(!visible.length)return;
- let index=visible.indexOf(active);index=(index+delta+visible.length)%visible.length;
- select(visible[index],true);
-}
-document.getElementById("vl-prev").addEventListener("click",()=>move(-1));
-document.getElementById("vl-next").addEventListener("click",()=>move(1));
-switchFlow("after");
+tabs.forEach(t=>t.addEventListener("click",()=>selectMode(t.dataset.mode)));
+steps.forEach(s=>s.addEventListener("click",()=>{mode=s.dataset.mode;index=current().indexOf(s);paint(false);}));
+prev.addEventListener("click",()=>{if(index>0){index--;paint(false);}});
+next.addEventListener("click",()=>{if(index<current().length-1){index++;paint(false);}});
+flows.forEach(f=>f.addEventListener("keydown",e=>{
+ if(e.target.closest(".vl-progress-step")&&(e.key==="ArrowRight"||e.key==="ArrowLeft")){
+ e.preventDefault();index=Math.max(0,Math.min(current().length-1,index+(e.key==="ArrowRight"?1:-1)));paint(true);
+ }
+}));
+selectMode("after");
 })();
