@@ -12,7 +12,7 @@ permalink: /notes/2026/11/2026-11-04-cross-deployment-superagent/
 >
 > **原始设计**：DeepSeek Harness 团队《Super-agent 设计探索：迈向更自主的 Agent 系统》，2026-10-31 首发于官方公众号；部分转录/英文发布页面显示 11 月 1 日。本文优先保留官方链接与代码仓库，区分“设计构想”“公开原型”“独立工程推导”。**不是 DeepSeek 已推出生产服务的证明。**
 
-**交互式技术架构图**：[打开 Super-agent 可点击架构图（Router/Worker、事件快慢路径、记忆链、安全与部署）]({{ '/interactive/2026-11-04-superagent-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-04-superagent-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 ## 1. 原始资料与证据等级
 
@@ -233,4 +233,5 @@ print("accepted and audit logged:", len(demo.audit))
 - [Knowledge Graph]({{ '/knowledge-graph.html' | relative_url }})：从 Context Engineering → Event-driven Agent → Durable State 的关系探索。
 
 **开放问题**：Router 何时应分片？如何避免“默默浪费大量 tokens”的主动循环？跨租户的 Thread 引用是否构成信息泄漏？A2A 权限如何在 delegation 后保持不可提升？Watchdog 误判断时谁来监督 Watchdog？
+
 

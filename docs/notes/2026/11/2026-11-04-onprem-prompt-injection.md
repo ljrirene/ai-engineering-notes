@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-04-onprem-prompt-injection/
 
 > **研究日期**：2026-11-04 · **部署主线**：On-prem / Self-hosted · **目标岗位**：Applied AI、Agent Infrastructure、AI Security
 
-> **交互式架构拆解：** [点击查看 Agent Security 信任边界图]({{ '/interactive/agent-security-map.html' | relative_url }})。支持正常请求、攻击阻断与受控 Hybrid 三种视图；点击任意组件阅读输入输出、风险和信任边界。
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/agent-security-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 ## 一手来源与证据
 
@@ -107,4 +107,5 @@ Guard 模型可以输出风险分数 p(x)，再通过阈值 τ 判定是否拦�
 3. Adaptive Evaluation 比固定攻击集更接近持续变化的威胁模型，但必须报告尝试预算。
 
 本期未对内部 PDF 或中文制度执行独立测试，也未验证足够广泛的 X/LinkedIn 独立社区共识。未来研究：Guard 的 Dataset Shift、工具参数级授权及可审计拒绝策略。
+
 

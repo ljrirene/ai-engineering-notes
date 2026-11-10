@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-04-hybrid-spindle/
 
 > **研究日期**：2026-11-04 · **主要路径**：Controlled Hybrid · **目标岗位**：Research Engineering、ML Systems、AI Infrastructure
 
-> **交互式架构拆解：** [点击查看 RL Post-training 系统图]({{ '/interactive/rl-infra-map.html' | relative_url }})。支持 Monolithic、Disaggregated 与 Controlled Hybrid 切换；点击节点查看 Trainer、Sampler、Checkpoint 等职责及失败模式。
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/rl-infra-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 ## 一手来源
 
@@ -122,4 +122,5 @@ Trainer 与推理引擎即使使用相同权重，也可能因 Kernel、精度�
 3. 更高的 GPU 利用率不是目的；单位有效实验成本、正确性和可复现性才是目标。
 
 本期未获得足够可靠的跨组织独立复现与 X/LinkedIn 专业共识。后续重点：Policy Staleness 容忍上限、MoE 数值对齐和实际租户公平性。
+
 

@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-07-paged-experts/
 
 > **研究日期：2026-11-07。** 这是对 SGLang v0.5.23（2026-11-02 发布）新增的可选 Paged Experts 机制的独立技术拆解。**不是本站实测，也不是所有 GPU/模型的通用 30 倍加速承诺。**
 
-**点击式架构图**：[基线 / Paged Experts / 失败与恢复 / Controlled Hybrid 四视图]({{ '/interactive/2026-11-07-paged-experts-map.html' | relative_url }})。图是基于公开代码/PR 的**独立工程抽象，不是官方架构图**。
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-07-paged-experts-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 ## 1. 一手来源、日期与证据等级
 
@@ -207,4 +207,5 @@ for K in (8, 16, 24, 48, 92):
 开放问题：专家访问的时间局部性在长会话与多租户是否稳定？何时值得预取？如何做 NUMA-aware pinned windows、跨请求的热点专家共享、动态 K 和 SLO 驱动的流量整形？Paged Experts 与未来量化、混合 Mamba/MoE、Expert Parallel 的组合是否保持数值不变量？
 
 **旧文关联**：[ReplaySSM]({{ '/notes/2026/10/2026-10-31-onprem-replayssm/' | relative_url }})（HBM I/O 但状态不同） · [Sticky Sessions]({{ '/notes/2026/11/2026-11-03-onprem-sticky-sessions/' | relative_url }})（缓存局部性） · [Shadow Traffic]({{ '/notes/2026/11/2026-11-03-hybrid-shadow-traffic/' | relative_url }})（安全发布与回滚） · [Knowledge Graph]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
+
 
