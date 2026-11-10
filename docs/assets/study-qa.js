@@ -25,7 +25,7 @@ function link(parent,url,label){let href=safeURL(url);if(!href)return;let a=el('
 function snippet(c){let text=c.text.replace(/\n+/g,' '),at=-1;for(const t of c.matches){let i=norm(text).indexOf(t);if(i>=0&&(at<0||i<at))at=i;}if(text.length<=425)return text;let start=Math.max(0,(at<0?0:at-70));if(start>text.length-300)start=Math.max(0,text.length-370);return (start?'…':'')+text.slice(start,start+395)+(start+395<text.length?'…':'');}
 function showResults(q){const holder=get('qa-results');holder.replaceChildren();const ranked=score(q,get('qa-scope').value);if(!ranked.length){const d=el('div',null,holder,'qa-idle');el('h3','没有找到足够相关的文段',d);el('p','试试专有名词、论文名称或较短的技术问题。本功能是本地检索，不会编造答案。',d);return;}
 const intro=el('p',null,holder,'qa-result-summary');intro.append('检索到 ');el('strong',ranked.length+' 条有出处的相关文段',intro);intro.append('。下面是研究原文摘录，不是模型生成的总结。请点开文章确认上下文。');
-ranked.forEach((c,i)=>{const article=el('article',null,holder,'qa-evidence');el('span',String(i+1).padStart(2,'0'),article,'qa-rank');const body=el('div',null,article);el('h3',c.doc.title,body);el('div',c.heading+' · '+c.doc.date,body,'qa-evidence-section');el('blockquote',snippet(c),body);const links=el('div',null,body,'qa-source-links');link(links,c.doc.url,'阅读原文 ↗');link(links,c.doc.visual,'打开交互架构图 ↗');});
+ranked.forEach((c,i)=>{const article=el('article',null,holder,'qa-evidence');el('span',String(i+1).padStart(2,'0'),article,'qa-rank');const body=el('div',null,article);el('h3',c.doc.title,body);el('div',c.heading+' · '+c.doc.date,body,'qa-evidence-section');el('blockquote',snippet(c),body);const links=el('div',null,body,'qa-source-links');link(links,c.doc.url,'阅读原文 ↗');link(links,c.doc.visual,'打开原理对照图 ↗');});
 const hit=new Map();for(const c of ranked)for(const e of graph.edges){const other=e.source===c.docId?e.target:e.target===c.docId?e.source:null;if(other&&concepts.get(other)?.kind==='concept')hit.set(other,(hit.get(other)||0)+1);}
 if(hit.size){const box=el('div',null,holder,'qa-related');el('h3','沿图谱继续探索 · Related concepts',box);[...hit].sort((a,b)=>b[1]-a[1]).slice(0,7).forEach(([id])=>{const n=concepts.get(id),b=el('button',n.label,box);b.type='button';b.onclick=()=>{get('qa-query').value=n.label;get('qa-scope').value='all';showResults(n.label);};});}
 }
@@ -48,8 +48,9 @@ get('qa-check').onclick=()=>{if(!question)return;const box=get('qa-self-check');
 let found=0;for(const group of question.terms)if(group.some(t=>answer.includes(norm(t))))found++;
 el('p','概念覆盖提示：'+found+' / '+question.terms.length+' 组线索已提及。仅为关键词提示，不代表内容正确，更不会评判语义或逻辑。',box);
 const row=el('div',null,box,'qa-cov');question.terms.forEach(group=>{const yes=group.some(t=>answer.includes(norm(t)));el('span',(yes?'✓ ':'○ ')+group.slice(0,2).join(' / '),row,yes?'found':'');});};
-get('qa-reveal').onclick=()=>{if(!question)return;const box=get('qa-reference');box.replaceChildren();box.hidden=false;el('h4','参考答案',box);el('p',question.answer,box);el('h4','常见误区',box);el('p',question.trap,box);const d=docs.get(question.doc);link(box,d.url,'阅读出处 ↗');box.append('　');link(box,d.visual,'交互架构图 ↗');};
+get('qa-reveal').onclick=()=>{if(!question)return;const box=get('qa-reference');box.replaceChildren();box.hidden=false;el('h4','参考答案',box);el('p',question.answer,box);el('h4','常见误区',box);el('p',question.trap,box);const d=docs.get(question.doc);link(box,d.url,'阅读出处 ↗');box.append('　');link(box,d.visual,'原理对照图 ↗');};
 get('qa-mastered').onclick=()=>{if(!question)return;mastered.add(question.id);get('qa-progress').textContent=mastered.size+' / '+bank.questions.length+' 已掌握';nextQuestion();};
 nextQuestion();
 })();
+
 

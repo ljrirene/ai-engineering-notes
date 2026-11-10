@@ -115,7 +115,7 @@ function showDetails(){
  block(info,'h2',n.label);
  if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':n.track==='hybrid'?'Controlled Hybrid':'On-prem / Controlled Hybrid'),'kg-meta');
  block(info,'p',n.description||'点击下方知识点继续探索相关技术。');
- for(const [url,label] of [[n.url,'阅读完整研究 ↗'],[n.visual,'打开交互架构图 ↗']]){const path=safeUrl(url);if(path){const a=block(info,'a',label,'kg-read');a.href=path;}}
+ for(const [url,label] of [[n.url,'阅读完整研究 ↗'],[n.visual,'打开原理对照图 ↗']]){const path=safeUrl(url);if(path){const a=block(info,'a',label,'kg-read');a.href=path;}}
  const related=sourceEdges.filter(e=>e.source===n.id||e.target===n.id)
   .map(e=>({...e,other:byNode.get(e.source===n.id?e.target:e.source)})).filter(e=>e.other);
  if(!related.length)return;
@@ -166,6 +166,7 @@ byId('kg-reset').onclick=()=>root.transition().duration(550).call(zoom.transform
 root.on('click',event=>{if(event.target===svg||event.target.closest('.kg-background')){selected=null;renderFocus();showDetails();}});
 updateFilters();render();root.call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));
 })();
+
 
 
 
