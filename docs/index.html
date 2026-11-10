@@ -8,6 +8,22 @@ title: Home
 <p>解释复杂 AI 技术：它解决什么问题、怎么实现、有什么实际价值。每三天更新一个主题，附交互架构图和相关研究。</p>
 <div class="research-card-actions"><a href="{{ '/archive.html' | relative_url }}">全部文章 →</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系图 →</a><a href="{{ '/study-qa/' | relative_url }}">问答复习 →</a></div>
 </section>
+<h2 class="section-title">建议先读</h2>
+<p class="muted">根据 AI 系统工程的通用性、来源证据和实践价值挑选，不代表论文影响力排名。新文章不会自动进入这组。</p>
+<section class="research-feed">
+{% assign essential = site.data.studies | where: "priority", "core" %}
+{% for s in essential %}
+<article class="research-card">
+<div class="research-meta">{{ s.topic }} · 推荐精读</div>
+<h3><a href="{{ s.url | relative_url }}">{{ s.title }}</a></h3>
+<p class="research-sentence">{{ s.purpose }}</p>
+<p class="research-sentence"><strong>为什么推荐</strong>{{ s.why_priority }}</p>
+<div class="research-card-actions"><a href="{{ s.url | relative_url }}">查看解析 →</a><a href="{{ s.visual | relative_url }}">交互架构图 →</a></div>
+</article>
+{% endfor %}
+</section>
+<p style="margin-top:15px"><a href="{{ '/archive.html' | relative_url }}">其他文章：按需阅读或快速了解 →</a></p>
+
 <h2 class="section-title" style="margin-top:10px">最新技术解析</h2>
 <p class="muted">先看用途与核心原理，再决定是否深入阅读。</p>
 <section class="research-feed">
@@ -34,6 +50,7 @@ title: Home
 <a href="{{ '/study-qa/' | relative_url }}"><b>文章检索和自测</b><span>检索研究原文，回答练习题并查看参考答案。</span></a>
 <a href="{{ '/learning-guide/' | relative_url }}"><b>学习指南</b><span>查看选题、阅读和复现实验方法。</span></a>
 </section>
+
 
 
 

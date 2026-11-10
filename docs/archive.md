@@ -12,7 +12,7 @@ permalink: /archive.html
 <div class="research-archive">
 {% for s in site.data.studies %}
 <article class="research-card">
-<div class="research-meta">{{ s.date }} · {{ s.topic }}</div>
+<div class="research-meta">{{ s.date }} · {{ s.topic }} · {% case s.priority %}{% when 'core' %}推荐精读{% when 'conditional' %}按需阅读{% else %}快速了解{% endcase %}</div>
 <h3><a href="{{ s.url | relative_url }}">{{ s.title }}</a></h3>
 <p class="research-sentence"><strong>它解决</strong>{{ s.purpose }}</p>
 <p class="research-sentence"><strong>你会学到</strong>{{ s.takeaway }}</p>
@@ -27,5 +27,6 @@ permalink: /archive.html
 </div>
 
 **选题优先级**：职业价值 > 实质技术突破 > 新鲜度 > 可核实社区评价 > 是否当天发布。历史文章部分为按旧选题重新整理，详见[筛选记录]({{ '/selection-history/' | relative_url }})。
+
 
 

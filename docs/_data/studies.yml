@@ -1,4 +1,6 @@
 - id: a-paged-experts
+  priority: "core"
+  why_priority: "SGLang 已集成的 MoE 显存优化，适合研究单卡容量与推理延迟取舍。"
   date: "2026-11-07"
   title: "Paged Experts：MoE 权重分页"
   topic: "推理系统"
@@ -12,6 +14,8 @@
     - id: a-sticky
       why: "一个管 GPU 内的权重驻留，一个管会话落在哪个服务实例。"
 - id: a-superagent
+  priority: "core"
+  why_priority: "长时间运行的 Agent 涉及事件、权限和状态恢复，但公开代码仍是研究原型。"
   date: "2026-11-04"
   title: "DeepSeek Super-agent：长期运行的 Agent 怎么管理"
   topic: "Agent 系统"
@@ -25,6 +29,8 @@
     - id: a-space
       why: "持续工作的 Worker 还需要真正的执行隔离。"
 - id: a-browsesafe
+  priority: "core"
+  why_priority: "会调用工具的 Agent 必须处理不可信内容，包含可核查的攻击与误报评测。"
   date: "2026-11-04"
   title: "BrowseSafe++：怎样防住 Agent 的提示注入"
   topic: "Agent 安全"
@@ -38,6 +44,8 @@
     - id: a-superagent
       why: "长期订阅的外部事件也会携带不可信内容。"
 - id: a-spindle
+  priority: "overview"
+  why_priority: "对大规模 RL 训练系统有用；未开展 Post-training 时优先级较低。"
   date: "2026-11-04"
   title: "Spindle：RL 训练为什么要拆开采样与训练"
   topic: "训练系统"
@@ -51,6 +59,8 @@
     - id: a-replayssm
       why: "两篇都讨论计算与内存开销，作用于不同运行时。"
 - id: a-sticky
+  priority: "conditional"
+  why_priority: "适合流式 ASR 和 Voice Agent；普通无状态服务不需要专门深读。"
   date: "2026-11-03"
   title: "Sticky Sessions：为什么流式 AI 不能随便换机器"
   topic: "模型服务"
@@ -64,6 +74,8 @@
     - id: a-shadow
       why: "上线新版本时，流量镜像不能破坏会话连续性。"
 - id: a-shadow
+  priority: "conditional"
+  why_priority: "影子流量是模型发布的通用方法，可重点阅读缓冲和失败处理部分。"
   date: "2026-11-03"
   title: "Shadow Traffic：新模型上线前怎样安全试跑"
   topic: "评测与发布"
@@ -77,6 +89,8 @@
     - id: a-repair
       why: "上线与修复都需要控制风险范围和验证结果。"
 - id: a-repair
+  priority: "overview"
+  why_priority: "涉及成熟的 GPU 集群故障恢复流程；没有大规模集群时暂不必精读。"
   date: "2026-11-02"
   title: "GPU Auto-repair：为什么不能见故障就重启"
   topic: "可靠性工程"
@@ -88,6 +102,8 @@
     - id: a-shadow
       why: "两篇都强调先验证风险，再小范围推进高影响操作。"
 - id: a-decision
+  priority: "overview"
+  why_priority: "有限选项分类值得了解，但具体模型优势仍需在自己的任务上评估。"
   date: "2026-11-02"
   title: "Decision Models：分类为什么不一定需要生成文本"
   topic: "低延迟决策"
@@ -101,6 +117,8 @@
     - id: a-superagent
       why: "长期 Agent 的事件判断同样要和执行授权分开。"
 - id: a-orchestrator
+  priority: "core"
+  why_priority: "Agent 控制流、领域隔离与可靠性在实际工程中都需要；有具体生产案例。"
   date: "2026-11-01"
   title: "Thin Orchestrator：让 Agent 分工而不是包办"
   topic: "Agent 架构"
@@ -114,6 +132,8 @@
     - id: a-decision
       why: "继续看怎样低延迟地做路由决策。"
 - id: a-retrieval
+  priority: "core"
+  why_priority: "RAG 的证据质量直接影响企业知识库答案，可以用小规模评测验证。"
   date: "2026-11-01"
   title: "Contextual Embedding：RAG 为什么找到了段落还答错"
   topic: "检索与证据"
@@ -125,6 +145,8 @@
     - id: a-browsesafe
       why: "检索出的内容可能被恶意注入，证据质量与安全边界要一起看。"
 - id: a-space
+  priority: "conditional"
+  why_priority: "执行隔离对 Agent 很重要；具体实现依赖项目架构，需关注通用边界。"
   date: "2026-10-31"
   title: "Perplexity SPACE：Agent 执行命令该隔离到哪一层"
   topic: "Agent 执行安全"
@@ -138,6 +160,8 @@
     - id: a-superagent
       why: "长期 Worker 不能把工作目录当作硬安全沙箱。"
 - id: a-replayssm
+  priority: "conditional"
+  why_priority: "有论文和代码支持的推理优化，但适用性取决于模型是否使用 SSM。"
   date: "2026-10-31"
   title: "ReplaySSM：为什么缓存输入比每步写状态更快"
   topic: "推理系统"
@@ -150,4 +174,5 @@
       why: "两篇都优化推理时的数据搬运，但权重分页与状态重放不能混为一谈。"
     - id: a-sticky
       why: "模型内部状态与跨机器会话状态是两个不同层次。"
+
 
