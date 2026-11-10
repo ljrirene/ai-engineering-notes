@@ -1,0 +1,153 @@
+- id: a-paged-experts
+  date: "2026-11-07"
+  title: "Paged Experts：MoE 权重分页"
+  topic: "推理系统"
+  purpose: "MoE 模型的专家权重装不进 GPU 显存时，Paged Experts 只把当前计算需要的专家搬进显存。"
+  takeaway: "你会看懂显存容量、PCIe 传输与推理延迟怎么取舍，以及多请求为何容易出现频繁换页。"
+  url: "/notes/2026/11/2026-11-07-paged-experts/"
+  visual: "/interactive/2026-11-07-paged-experts-map.html"
+  related:
+    - id: a-replayssm
+      why: "两篇都在减少数据搬运，但这里搬专家权重，另一篇减少循环状态写回。"
+    - id: a-sticky
+      why: "一个管 GPU 内的权重驻留，一个管会话落在哪个服务实例。"
+- id: a-superagent
+  date: "2026-11-04"
+  title: "DeepSeek Super-agent：长期运行的 Agent 怎么管理"
+  topic: "Agent 系统"
+  purpose: "它把 GitHub、IM 等渠道的事件组织成持久任务，让 Router 分配工作、Worker 持续执行并恢复状态。"
+  takeaway: "你会理解长期 Agent 怎样控制主动权限、找回跨会话上下文，以及避免后台任务失控。"
+  url: "/notes/2026/11/2026-11-04-cross-deployment-superagent/"
+  visual: "/interactive/2026-11-04-superagent-map.html"
+  related:
+    - id: a-orchestrator
+      why: "先看如何分工，再看多渠道事件与长期恢复。"
+    - id: a-space
+      why: "持续工作的 Worker 还需要真正的执行隔离。"
+- id: a-browsesafe
+  date: "2026-11-04"
+  title: "BrowseSafe++：怎样防住 Agent 的提示注入"
+  topic: "Agent 安全"
+  purpose: "Agent 读取网页和文档时，攻击者可能把恶意操作指令藏进看似普通的内容里。"
+  takeaway: "你会分清检测模型、授权策略和执行沙箱各负责哪一层防护。"
+  url: "/notes/2026/11/2026-11-04-onprem-prompt-injection/"
+  visual: "/interactive/agent-security-map.html"
+  related:
+    - id: a-space
+      why: "一个识别恶意输入，一个限制实际执行权限。"
+    - id: a-superagent
+      why: "长期订阅的外部事件也会携带不可信内容。"
+- id: a-spindle
+  date: "2026-11-04"
+  title: "Spindle：RL 训练为什么要拆开采样与训练"
+  topic: "训练系统"
+  purpose: "Agentic RL 一边要生成大量轨迹，一边要更新模型权重，两种任务对 GPU 的需求并不相同。"
+  takeaway: "你会理解为什么拆分 Sampler 和 Trainer，以及权重同步、过期样本和 GPU 调度的代价。"
+  url: "/notes/2026/11/2026-11-04-hybrid-spindle/"
+  visual: "/interactive/rl-infra-map.html"
+  related:
+    - id: a-orchestrator
+      why: "同样涉及异步任务协调，但这里聚焦训练与采样资源。"
+    - id: a-replayssm
+      why: "两篇都讨论计算与内存开销，作用于不同运行时。"
+- id: a-sticky
+  date: "2026-11-03"
+  title: "Sticky Sessions：为什么流式 AI 不能随便换机器"
+  topic: "模型服务"
+  purpose: "流式语音识别依赖前面片段的状态，随机分配后续请求可能导致重复、漏词或上下文中断。"
+  takeaway: "你会学到如何保持会话与实例的亲和性，以及扩容、断线和实例故障时怎样恢复。"
+  url: "/notes/2026/11/2026-11-03-onprem-sticky-sessions/"
+  visual: "/interactive/2026-11-03-sticky-map.html"
+  related:
+    - id: a-replayssm
+      why: "都与状态有关：一个管会话路由，一个减少模型状态写回。"
+    - id: a-shadow
+      why: "上线新版本时，流量镜像不能破坏会话连续性。"
+- id: a-shadow
+  date: "2026-11-03"
+  title: "Shadow Traffic：新模型上线前怎样安全试跑"
+  topic: "评测与发布"
+  purpose: "它把真实请求复制到候选模型做测试，但仍由旧模型回答用户，避免直接影响线上结果。"
+  takeaway: "你会理解 Shadow 与 Canary 的区别，以及如何限制镜像缓冲、检查评测偏差和安排回滚。"
+  url: "/notes/2026/11/2026-11-03-hybrid-shadow-traffic/"
+  visual: "/interactive/2026-11-03-shadow-map.html"
+  related:
+    - id: a-sticky
+      why: "流式服务灰度发布时需要保护会话状态。"
+    - id: a-repair
+      why: "上线与修复都需要控制风险范围和验证结果。"
+- id: a-repair
+  date: "2026-11-02"
+  title: "GPU Auto-repair：为什么不能见故障就重启"
+  topic: "可靠性工程"
+  purpose: "GPU 节点出错后，系统先核验证据、确定修复动作，再控制执行范围和复验健康。"
+  takeaway: "你会学会如何用故障证据、审批和熔断，避免自动化操作把局部故障扩大成集群事故。"
+  url: "/notes/2026/11/2026-11-02-hybrid-gpu-auto-repair/"
+  visual: "/interactive/2026-11-02-gpu-repair-map.html"
+  related:
+    - id: a-shadow
+      why: "两篇都强调先验证风险，再小范围推进高影响操作。"
+- id: a-decision
+  date: "2026-11-02"
+  title: "Decision Models：分类为什么不一定需要生成文本"
+  topic: "低延迟决策"
+  purpose: "任务路由和分类常常只需要在有限选项里做决定，不一定需要 LLM 一字一句生成标签。"
+  takeaway: "你会理解一次前向评分与自回归生成的区别，以及置信度校准为什么不能代替授权。"
+  url: "/notes/2026/11/2026-11-02-onprem-decision-models/"
+  visual: "/interactive/2026-11-02-decisions-map.html"
+  related:
+    - id: a-orchestrator
+      why: "决策模型可辅助任务路由，但硬策略仍由编排层执行。"
+    - id: a-superagent
+      why: "长期 Agent 的事件判断同样要和执行授权分开。"
+- id: a-orchestrator
+  date: "2026-11-01"
+  title: "Thin Orchestrator：让 Agent 分工而不是包办"
+  topic: "Agent 架构"
+  purpose: "一个大 Agent 同时做路由、领域推理和状态管理容易互相干扰，薄编排器把职责交给专门 Agent。"
+  takeaway: "你会理解确定性控制、领域上下文隔离，以及多个 Agent 如何安全修改共享工作区。"
+  url: "/notes/2026/11/2026-11-01-hybrid-agents/"
+  visual: "/interactive/2026-11-01-agents-map.html"
+  related:
+    - id: a-superagent
+      why: "从单次任务分工，进一步看持续事件与状态恢复。"
+    - id: a-decision
+      why: "继续看怎样低延迟地做路由决策。"
+- id: a-retrieval
+  date: "2026-11-01"
+  title: "Contextual Embedding：RAG 为什么找到了段落还答错"
+  topic: "检索与证据"
+  purpose: "普通 RAG 可能找到含答案的片段，却漏掉限定条件、例外、页面结构和跨段上下文。"
+  takeaway: "你会理解上下文编码与多向量匹配如何改善证据召回，以及它们带来的索引成本。"
+  url: "/notes/2026/11/2026-11-01-onprem-retrieval/"
+  visual: "/interactive/2026-11-01-retrieval-map.html"
+  related:
+    - id: a-browsesafe
+      why: "检索出的内容可能被恶意注入，证据质量与安全边界要一起看。"
+- id: a-space
+  date: "2026-10-31"
+  title: "Perplexity SPACE：Agent 执行命令该隔离到哪一层"
+  topic: "Agent 执行安全"
+  purpose: "Agent 会决定调用工具，但模型的决定不该直接变成宿主操作系统里的执行权限。"
+  takeaway: "你会理解微虚拟机、网络出口、凭据隔离和权限策略各自保护什么。"
+  url: "/notes/2026/10/2026-10-31-hybrid-space/"
+  visual: "/interactive/2026-10-31-space-map.html"
+  related:
+    - id: a-browsesafe
+      why: "一个限制执行后果，一个检测不可信内容中的恶意指令。"
+    - id: a-superagent
+      why: "长期 Worker 不能把工作目录当作硬安全沙箱。"
+- id: a-replayssm
+  date: "2026-10-31"
+  title: "ReplaySSM：为什么缓存输入比每步写状态更快"
+  topic: "推理系统"
+  purpose: "部分循环模型在生成每个 token 时要反复读写很大的内部状态，显存带宽容易成为瓶颈。"
+  takeaway: "你会理解缓存近期输入、按需重放与周期性状态更新如何交换计算量和显存 I/O。"
+  url: "/notes/2026/10/2026-10-31-onprem-replayssm/"
+  visual: "/interactive/2026-10-31-replayssm-map.html"
+  related:
+    - id: a-paged-experts
+      why: "两篇都优化推理时的数据搬运，但权重分页与状态重放不能混为一谈。"
+    - id: a-sticky
+      why: "模型内部状态与跨机器会话状态是两个不同层次。"
+

@@ -1,0 +1,17 @@
+{% assign study = site.data.studies | where: "url", page.permalink | first %}
+{% if study %}
+<section class="study-brief" aria-label="先用两句话看懂这篇">
+  <div class="study-brief-label">先看懂，再深读 <span>· TWO SENTENCES</span></div>
+  <p><strong>它在解决</strong>{{ study.purpose }}</p>
+  <p><strong>你会学到</strong>{{ study.takeaway }}</p>
+  <div class="study-brief-relations"><div class="study-brief-subtitle">为什么和其他知识有关？</div>
+  {% for relation in study.related limit:2 %}
+    {% assign other = site.data.studies | where: "id", relation.id | first %}
+    {% if other %}
+    <div class="study-related-line"><a href="{{ other.url | relative_url }}">{{ other.title }} ↗</a><p>{{ relation.why }}</p></div>
+    {% endif %}
+  {% endfor %}
+  </div>
+</section>
+{% endif %}
+
