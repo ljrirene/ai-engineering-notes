@@ -1,3 +1,19 @@
+- id: a-agent-eval
+  priority: "core"
+  why_priority: "Agent 评测的环境有效性、评分可信度与失败归因是可迁移的 AI Engineering 基础能力。"
+  date: "2026-11-10"
+  title: "Agent 评测：区分模型失败与环境故障"
+  topic: "Agent 评测"
+  purpose: "Agent 没完成任务，可能是模型能力不足，也可能是环境缺工具、资源不足或评分脚本错误。"
+  takeaway: "你会学习如何锁定任务和环境版本、隔离执行与验证，并分别统计有效运行和能力失败。"
+  url: "/notes/2026/11/2026-11-10-agent-evaluation-validity/"
+  visual: "/interactive/2026-11-10-agent-evaluation-validity-map.html"
+  related:
+    - id: a-space
+      why: "SPACE 解释怎样隔离不可信执行；本篇解释怎样让隔离环境中的评测可复现、可比较。"
+    - id: a-browsesafe
+      why: "BrowseSafe++ 关注攻击检测评测；本篇关注更一般的任务环境、评分器和失败归因。"
+
 - id: a-paged-experts
   priority: "core"
   why_priority: "SGLang 已集成的 MoE 显存优化，适合研究单卡容量与推理延迟取舍。"
@@ -174,5 +190,6 @@
       why: "两篇都优化推理时的数据搬运，但权重分页与状态重放不能混为一谈。"
     - id: a-sticky
       why: "模型内部状态与跨机器会话状态是两个不同层次。"
+
 
 

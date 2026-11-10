@@ -1,5 +1,75 @@
 [
   {
+    "id": "a-agent-eval",
+    "path": "2026-11-10-agent-evaluation-validity-map.html",
+    "title": "Agent 任务失败，是模型的问题还是环境的问题？",
+    "problem": "Agent 没完成任务，可能是模型写错了，也可能是容器缺工具、内存不足或评分脚本出错。",
+    "example": "例子：Agent 生成了正确文件，但评测容器在验证前 OOM。如果记为模型失败，结果就失真。",
+    "before": {
+      "label": "只看最终通过率",
+      "shortLabel": "失败都算模型的",
+      "summary": "把模型错误、环境故障和评分错误混在同一个通过率里。",
+      "steps": [
+        {
+          "title": "发送任务",
+          "brief": "没有锁定完整环境。",
+          "detail": "任务版本、镜像摘要和资源限制缺失，无法比较不同运行条件。",
+          "focus": false
+        },
+        {
+          "title": "执行出错",
+          "brief": "OOM 也会中断任务。",
+          "detail": "工具缺失、容器启动失败和模型能力错误可能被混为一谈。",
+          "focus": false
+        },
+        {
+          "title": "统一算失败",
+          "brief": "通过率失真。",
+          "detail": "无效运行直接进入失败分母，无法估计有效环境下的任务完成能力。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "可复现 Agent 评测",
+      "shortLabel": "先确认环境有效",
+      "summary": "锁定任务和环境版本，隔离执行与评分，再按原因统计。",
+      "steps": [
+        {
+          "title": "固定版本",
+          "brief": "锁定任务、镜像和测试条件。",
+          "detail": "记录 task_id、镜像 digest、模型、Harness、Verifier、Seed、超时和资源策略。",
+          "focus": true
+        },
+        {
+          "title": "隔离执行",
+          "brief": "在受限 Sandbox 中运行。",
+          "detail": "Scheduler 分配租约，Sandbox 限制 CPU/GPU/RAM、文件和网络；启动失败/OOM 单独分类。",
+          "focus": true
+        },
+        {
+          "title": "独立验证",
+          "brief": "测试终态，不信任 Agent 自述。",
+          "detail": "可信 Verifier 读取封存的结果，Agent 不能访问或修改 Oracle 和评分脚本。",
+          "focus": true
+        },
+        {
+          "title": "分层报告",
+          "brief": "分开模型失败和环境故障。",
+          "detail": "保留全部尝试和 Trace，计算有效运行率、有效运行通过率、成本与按任务分组的不确定性。",
+          "focus": true
+        }
+      ]
+    },
+    "change": "不再把所有失败归因于模型；先确认环境和评分有效，再判断 Agent 能力。",
+    "benefit": "能定位环境故障、复现模型对照，并减少因测试基础设施错误导致的误判。",
+    "cost": "需要固定镜像、可信评分器、Trace、配额和重试管理；执行未知代码还需要安全沙箱。",
+    "scope": "基于公开 Terminal-Bench/Harbor 与 Modal/Snorkel 案例的独立工程抽象，不是官方系统部署图；20% 成本节省是供应商客户案例自报。",
+    "source": "Modal/Snorkel 2026-11-06",
+    "sourceUrl": "https://modal.com/blog/how-snorkel-runs-realistic-agent-simulations-with-modal",
+    "keyPoint": "先确认测试环境有效，再判断 Agent 有没有完成任务。"
+  },
+  {
     "id": "a-paged-experts",
     "path": "2026-11-07-paged-experts-map.html",
     "title": "MoE 专家权重装不进显存，怎么办？",
@@ -840,4 +910,3 @@
     "keyPoint": "少写几次大状态，必要时重算最近几步。"
   }
 ]
-

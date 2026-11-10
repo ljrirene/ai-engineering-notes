@@ -66,3 +66,21 @@ permalink: /selection-history/
 
 **交付**：[正文]({{ '/notes/2026/11/2026-11-07-paged-experts/' | relative_url }}) · [交互架构图]({{ '/interactive/2026-11-07-paged-experts-map.html' | relative_url }}) · [知识星图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
 
+
+
+## 2026-11-10：Agent 评测有效性与可复现执行环境
+
+本期实际扫描 11 个方向：SGLang v0.5.23 的 Paged Experts、Megakernel、MoE TTFT、量化 LoRA，vLLM 最新 KV/Hybrid/Speculative，Modal/Snorkel Agent Simulations，Modal Spindle、Sticky Sessions、Endpoint Candidates，Cloudflare Dynamic Workers，Terminal-Bench/Harbor。并非全部方向均为过去 14 天新发布，未声称查到独立社区共识。
+
+| 重点候选及一手资料 | 结论与原因 |
+|---|---|
+| [Modal/Snorkel，2026-11-06](https://modal.com/blog/how-snorkel-runs-realistic-agent-simulations-with-modal) + [Terminal-Bench/Harbor](https://github.com/harbor-framework/terminal-bench) | **入选**。模型能力与环境故障的归因高度通用，公开工具可复查；客户规模/成本为自报。 |
+| [vLLM releases](https://github.com/vllm-project/vllm/releases) | 更新丰富但涉及多个独立机制，需锁定单一有实验的技术问题。 |
+| [SGLang v0.5.23](https://github.com/sgl-project/sglang/releases/tag/v0.5.23) | Paged Experts 已于 11-07 精读；Megakernel/TTFT 较依赖硬件。 |
+| [Modal Spindle](https://modal.com/blog) | 采样与训练分离已于 11-04 研究，本期不足以再造一篇。 |
+| [Cloudflare Dynamic Workers](https://blog.cloudflare.com/dynamic-workers/) | 2026-03-24 的基础研究较旧，且与 SPACE 安全执行主题部分重合。 |
+
+已对照全部 12 篇旧研究的主题、导读与关联；最强关系是 SPACE（安全执行边界）与 BrowseSafe++（攻击检测评测），本篇新增的是环境有效性、可信 Verifier、失败归因与统计设计。原始 Snorkel 账单与私有 Trace 不公开，不能验证 20% 成本节省。
+
+[正文]({{ '/notes/2026/11/2026-11-10-agent-evaluation-validity/' | relative_url }}) · [原理演示]({{ '/interactive/2026-11-10-agent-evaluation-validity-map.html' | relative_url }}) · [知识关系图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07",
+  "updatedAt": "2026-11-10",
   "disclaimer": "Manually curated from public research notes. Keyword coverage is NOT semantic assessment.",
   "questions": [
     {
@@ -829,6 +829,92 @@
           "silent",
           "错误",
           "静默"
+        ]
+      ]
+    },
+    {
+      "id": "q-27",
+      "doc": "a-agent-eval",
+      "level": "机制",
+      "q": "为什么 Agent 评测不能把 OOM 和缺依赖直接算作模型失败？",
+      "hint": "区分模型能力 C、环境有效性 E 和验证器正确性 V。",
+      "answer": "观测到的通过率混合模型能力、环境有效性与评分器可靠性。OOM/缺依赖/启动失败应标记 invalid_infra，验证器异常为 invalid_verifier；在有效环境下未完成才是 valid_fail。必须同时报告 valid_run_rate 和 pass_rate_valid，并检查无效运行是否偏向困难任务。",
+      "trap": "只删除 OOM 样本可能造成选择偏差，不等于得到无偏的模型能力估计。",
+      "terms": [
+        [
+          "模型",
+          "能力"
+        ],
+        [
+          "环境",
+          "infra",
+          "oom"
+        ],
+        [
+          "有效",
+          "valid"
+        ],
+        [
+          "验证",
+          "verifier"
+        ]
+      ]
+    },
+    {
+      "id": "q-28",
+      "doc": "a-agent-eval",
+      "level": "系统设计",
+      "q": "设计可复现的 Agent A/B 评测，必须锁定什么、隔离什么？",
+      "hint": "任务、镜像、模型、Harness、Verifier、Seed、资源预算、Trace。",
+      "answer": "固定 task_id/version、镜像 digest、模型/Tokenizer、Agent Harness、Verifier、Seed、工具、时间和 CPU/GPU/RAM；Agent 运行在受限 Sandbox，Verifier/Oracle 不暴露给 Agent；保留所有 Attempt/Trace，按任务聚类统计并进行 A/A 测试。",
+      "trap": "仅固定模型版本不足以归因；同一任务重复运行不能当成独立任务数。",
+      "terms": [
+        [
+          "版本",
+          "digest"
+        ],
+        [
+          "sandbox",
+          "隔离"
+        ],
+        [
+          "verifier",
+          "评分"
+        ],
+        [
+          "trace",
+          "轨迹"
+        ],
+        [
+          "资源",
+          "预算"
+        ]
+      ]
+    },
+    {
+      "id": "q-29",
+      "doc": "a-agent-eval",
+      "level": "取舍",
+      "q": "为什么最便宜的 Sandbox 不一定让 Agent 评测成本最低？",
+      "hint": "考虑无效运行、OOM、重试与资源闲置。",
+      "answer": "应计算 cost_per_valid_run=总成本/有效运行数。配置太小会造成 OOM、无效运行和重试；过度配置则浪费。弹性资源需要计入突发费率和调度成本，A/B 比较还须控制资源策略。Snorkel/Modal 的约 20% 是客户自报而非通用收益。",
+      "trap": "不能把供应商案例的 20% 直接推广到所有 On-prem 环境。",
+      "terms": [
+        [
+          "成本",
+          "cost"
+        ],
+        [
+          "有效",
+          "valid"
+        ],
+        [
+          "重试",
+          "oom"
+        ],
+        [
+          "弹性",
+          "资源"
         ]
       ]
     }

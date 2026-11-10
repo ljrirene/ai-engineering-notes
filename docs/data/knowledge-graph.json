@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07",
+  "updatedAt": "2026-11-10",
   "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
     {
@@ -369,6 +369,22 @@
       "label": "Quantized Expert Contract",
       "kind": "concept",
       "description": "权重、scales、zero-points、runner、repack 必须共同分页且数值一致。"
+    },
+    {
+      "id": "a-agent-eval",
+      "label": "Agent Evaluation Validity",
+      "kind": "article",
+      "date": "2026-11-10",
+      "track": "cross-deployment",
+      "description": "区分模型能力失败、环境故障和验证器错误，锁定任务版本并记录可复现轨迹。",
+      "url": "/notes/2026/11/2026-11-10-agent-evaluation-validity/",
+      "visual": "/interactive/2026-11-10-agent-evaluation-validity-map.html"
+    },
+    {
+      "id": "c-agent-eval",
+      "label": "Evaluation validity",
+      "kind": "concept",
+      "description": "模型能力、环境有效性和评分器正确性的分离与归因。"
     }
   ],
   "edges": [
@@ -1127,6 +1143,78 @@
       "target": "g-guide",
       "type": "guided-by",
       "reason": "遵循一手证据、可复现 Mock、双部署边界与旧文关联审计。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "c-agent-eval",
+      "type": "explains",
+      "reason": "讲解评测有效性与失败归因。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "c-sandbox",
+      "type": "explains",
+      "reason": "Sandbox 提供隔离的工具和资源。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "c-trust",
+      "type": "explains",
+      "reason": "可信 Verifier 必须与 Agent 工作区分离。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "c-policy",
+      "type": "explains",
+      "reason": "执行策略控制网络、文件和资源。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "训练可信评测与统计分析能力。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "s-agent",
+      "type": "supports-skill",
+      "reason": "训练 Agent Harness 和执行边界设计。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "涉及调度租约、重试与资源隔离。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "可用本地开源模型和合成任务部署。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "仅获批公开/脱敏任务允许在受控云执行。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "遵循一手证据、可复现与跨部署审查。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "a-space",
+      "type": "complements",
+      "reason": "SPACE 关注执行安全；本文关注隔离环境下的评测有效性。"
+    },
+    {
+      "source": "a-agent-eval",
+      "target": "a-browsesafe",
+      "type": "complements",
+      "reason": "BrowseSafe++ 关注攻击检测；本文关注一般评测环境与评分归因。"
     }
   ]
 }
