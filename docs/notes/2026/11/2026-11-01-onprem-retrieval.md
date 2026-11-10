@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-01-onprem-retrieval/
 
 > **2026-11-01 的历史精读专题（2026-11-04 重新整理）** · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。
 
-**先看交互图：** [打开架构拆解、点击节点与切换视图]({{ '/interactive/2026-11-01-retrieval-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-01-retrieval-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 
@@ -58,4 +58,5 @@ Perplexity 报告的 pplx-embed-v2-late 提供 0.6B 与 9B 两种大小，跨尺
 
 ## 面试与延伸
 Why can high passage recall coexist with wrong answers? Design permission-aware multi-vector RAG for scanned PDFs with 10M pages. 三个关键点：检索目标是证据集合，不只是 gold chunk；离线文档编码与在线 query 编码资源约束不同；精度、授权和引用必须独立评估。
+
 

@@ -10,7 +10,7 @@ permalink: /notes/2026/10/2026-10-31-hybrid-space/
 
 > **2026-10-31 的历史精读专题（2026-11-04 重新整理）** · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。
 
-**先看交互图：** [打开架构拆解、点击节点与切换视图]({{ '/interactive/2026-10-31-space-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-10-31-space-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 
@@ -58,4 +58,5 @@ flowchart LR
 
 ## 系统设计面试
 Design an isolated execution plane for autonomous coding agents. 要覆盖：Planner/Policy/Runtime 分层、微 VM 生命周期、网络 Egress、Secret Broker、审计、Snapshot/Resume、单租户隔离、故障恢复。三个收获：①模型不拥有执行权限；②沙箱和出口策略必须分开；③可回放的审计是系统功能，而非“模型自述”。
+
 

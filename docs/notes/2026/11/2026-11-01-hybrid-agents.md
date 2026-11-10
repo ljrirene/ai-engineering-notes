@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-01-hybrid-agents/
 
 > **2026-11-01 的历史精读专题（2026-11-04 重新整理）** · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。
 
-**先看交互图：** [打开架构拆解、点击节点与切换视图]({{ '/interactive/2026-11-01-agents-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-01-agents-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 
@@ -71,4 +71,5 @@ def commit_patch(repo, expected_head, patch):
 
 ## 面试与总结
 Design a reliable multi-agent workflow system supporting concurrent edits. 面试至少覆盖确定性控制、上下文隔离、MVCC/乐观锁、Outbox、任务幂等、工具权限、失败恢复。核心结论：①LLM 不应决策系统不变量；②Agent 的临时运行环境与持久状态必须分离；③长期 Agent 的协作本质是并发写入和一致性问题。
+
 

@@ -10,7 +10,7 @@ permalink: /notes/2026/10/2026-10-31-onprem-replayssm/
 
 > **2026-10-31 的历史精读专题（2026-11-04 重新整理）** · 本文根据此前实际讨论的选题与公开一手资料重新组织，不声称逐字还原当天聊天原文。性能结果属于原文作者报告，未经本站独立复现。
 
-**先看交互图：** [打开架构拆解、点击节点与切换视图]({{ '/interactive/2026-10-31-replayssm-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-10-31-replayssm-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 
@@ -53,4 +53,5 @@ ReplaySSM 将状态表示为一个周期更新的 checkpoint C 及尚未合并�
 面试问题：Explain why a recurrent model can be bandwidth-bound during decode; design rollback for speculative decoding without copying an entire state.核心：①减少 HBM I/O 常比减少 FLOPs 更有效；②状态表示能决定回滚复杂度；③精度正确性与吞吐要一起测。
 
 **未覆盖**：没有本地 96GB GPU Benchmark，也没有独立复现实验结果；候选排名依据是当期选题主题，非能追溯的完整搜索清单。
+
 
