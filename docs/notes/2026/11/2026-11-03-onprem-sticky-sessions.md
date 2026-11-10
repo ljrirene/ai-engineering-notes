@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-03-onprem-sticky-sessions/
 
 > **2026-11-03 历史精读（2026-11-04 重新整理）**。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。
 
-**交互架构图**：[点击节点、切换架构与查看失效模式]({{ '/interactive/2026-11-03-sticky-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-03-sticky-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 ## 原始资料与选题原因
@@ -53,5 +53,6 @@ Python 模拟三个 Worker，随机 LB 让同一 Session 分散到不同实例�
 
 ## 求职考点与总结
 Design a multi-tenant streaming ASR system on autoscaled GPUs. 要说清 Session Affinity、State Placement、Consistent Hashing、Lease、Idle Eviction、Failover、Graceful Drain 与 Observability。三个要点：正确性依赖 session continuity；状态与运行实例生命周期需要明确关系；扩容指标应考虑并发 Session 与显存。
+
 
 

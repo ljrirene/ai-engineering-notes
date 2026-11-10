@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-02-onprem-decision-models/
 
 > **2026-11-02 历史精读（2026-11-04 重新整理）**。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。
 
-**交互架构图**：[点击节点、切换架构与查看失效模式]({{ '/interactive/2026-11-02-decisions-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-02-decisions-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 ## 选题理由与原始出处
@@ -67,5 +67,6 @@ else:
 
 ## Interview Takeaways
 **Design a low-latency, high-volume classifier and policy router.** 论述 one-pass readout、Batching、Calibration、Decision Cost、Hard Policy Boundary 与 Drift。三条结论：①分类不必输出完整自然语言；②概率是否可靠与分类准确率是两件事；③授权永远不能由模型的 Confidence 替代。未独立复现 Baseten 的延迟数据。
+
 
 

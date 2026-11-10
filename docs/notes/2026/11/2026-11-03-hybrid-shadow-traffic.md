@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-03-hybrid-shadow-traffic/
 
 > **2026-11-03 历史精读（2026-11-04 重新整理）**。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。
 
-**交互架构图**：[点击节点、切换架构与查看失效模式]({{ '/interactive/2026-11-03-shadow-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-03-shadow-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 ## 原始资料与筛选理由
@@ -61,5 +61,6 @@ flowchart LR
 
 ## 求职与总结
 Design a safe model release platform for a high-throughput inference endpoint. 必答：Control vs Data Plane、Traffic Mirroring、Backpressure、Bounded Memory、Shadow Bias、Canary、SLO Gate 与 Rollback。核心：镜像不等于放量；代理不可让慢镜像影响生产；上线证据必须兼顾质量、延迟与数据合规。
+
 
 

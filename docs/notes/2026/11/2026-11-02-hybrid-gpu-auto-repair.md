@@ -10,7 +10,7 @@ permalink: /notes/2026/11/2026-11-02-hybrid-gpu-auto-repair/
 
 > **2026-11-02 历史精读（2026-11-04 重新整理）**。依据既有选题和真实可核对的一手资料重新编写，不是逐字恢复聊天原文；作者声称的数据未经本站独立复现。
 
-**交互架构图**：[点击节点、切换架构与查看失效模式]({{ '/interactive/2026-11-02-gpu-repair-map.html' | relative_url }})
+**原理对照：** [比较常见做法和研究方案]({{ '/interactive/2026-11-02-gpu-repair-map.html' | relative_url }})。先看具体例子，再点击步骤了解机制、收益和限制。
 
 
 ## 一手资料与入选原因
@@ -62,5 +62,6 @@ Together 的设计允许每种 Error/Xid 配置批准范围，并为修复提供
 
 ## 系统设计面试
 How would you auto-remediate GPU failures without causing cascading outages? 重点：Evidence, Idempotency, Fault-domain Correlation, Policy Gates, Blast Radius, Safe Rejoin。三个结论：检测与动作需要证据隔离；复杂故障风暴应默认停止破坏性修复；动作后复验才能闭环。
+
 
 
