@@ -1,0 +1,807 @@
+[
+  {
+    "id": "a-paged-experts",
+    "path": "2026-11-07-paged-experts-map.html",
+    "title": "MoE 专家权重装不进显存，怎么办？",
+    "problem": "模型拥有很多专家，但每次推理只会使用其中一部分。把所有专家留在 GPU 里可能超出显存容量。",
+    "example": "例子：一张 GPU 只能容纳部分专家权重，其他权重需要放在主机内存里。",
+    "before": {
+      "label": "常见固定 Offload",
+      "summary": "按预先分配的权重位置进行搬运，未必考虑这次实际会调用哪些专家。",
+      "steps": [
+        {
+          "title": "请求到达",
+          "brief": "模型要处理新 token。",
+          "detail": "GPU 收到本轮输入，MoE Router 会决定要调用哪些专家。",
+          "focus": false
+        },
+        {
+          "title": "按固定配置搬权重",
+          "brief": "某些权重反复从 CPU 传回 GPU。",
+          "detail": "在部分固定 Offload 方案中，权重的搬运位置由配置决定；即使某轮并不需要对应专家，也可能支付数据搬运成本。",
+          "focus": false
+        },
+        {
+          "title": "执行专家计算",
+          "brief": "PCIe 传输占用时间。",
+          "detail": "权重就位后仍由 GPU 计算，速度可能受 CPU→GPU 传输和同步影响。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "Paged Experts",
+      "summary": "根据本轮实际调用的专家，只加载显存里还没有的权重。",
+      "steps": [
+        {
+          "title": "Router 选专家",
+          "brief": "每个 token 只选择部分专家。",
+          "detail": "MoE Router 输出本轮需要的专家 ID，先明确哪些专家真正参与计算。",
+          "focus": false
+        },
+        {
+          "title": "先看显存里有什么",
+          "brief": "命中的权重直接复用。",
+          "detail": "Residency 表记录哪些专家已经在 GPU 槽位里；命中时不需要重复搬运。",
+          "focus": true
+        },
+        {
+          "title": "缺失才加载",
+          "brief": "从主机内存拷贝缺失专家。",
+          "detail": "只为当前需要且尚未驻留的专家执行 Page-in；槽位不足时会淘汰或分 Wave。",
+          "focus": true
+        },
+        {
+          "title": "GPU 计算并复用",
+          "brief": "保留可复用的专家权重。",
+          "detail": "GPU Kernel 运行专家计算，再聚合结果。量化 scale、zero-point 必须与对应权重同步换页。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "搬运的依据从“固定权重位置”变成“本轮是否真正需要这个专家”。",
+    "benefit": "当专家激活具有局部性、PCIe 搬运可控时，能让超出显存的 MoE 模型继续用 GPU 计算。",
+    "cost": "需要主机内存和分页管理；多请求可能产生缓存抖动，量化元数据漏页还会造成计算错误。",
+    "scope": "这是对 SGLang Paged Experts 的教学简化，不代表所有 CPU Offload 都会无条件复制全部专家，更不保证某一固定加速倍数。",
+    "source": "SGLang 核心 PR",
+    "sourceUrl": "https://github.com/sgl-project/sglang/pull/42557"
+  },
+  {
+    "id": "a-superagent",
+    "path": "2026-11-04-superagent-map.html",
+    "title": "Agent 任务跨越多次会话，怎样继续执行？",
+    "problem": "一项任务可能持续很久，期间有 GitHub 评论、消息通知和新的子任务。单次聊天会话难以负责全部状态。",
+    "example": "例子：Agent 正在修复 Issue；用户关闭网页后，CI 又失败并发来新事件。",
+    "before": {
+      "label": "单次 Session 为中心",
+      "summary": "每个聊天或执行会话相对独立，用户需要自己恢复上下文与协调任务。",
+      "steps": [
+        {
+          "title": "打开会话",
+          "brief": "人工发起一个任务。",
+          "detail": "用户进入某个 Session，提供目标和上下文。",
+          "focus": false
+        },
+        {
+          "title": "执行工具",
+          "brief": "长操作占据会话。",
+          "detail": "模型等待工具或需要用户重新打开会话来继续协调。",
+          "focus": false
+        },
+        {
+          "title": "跨会话接续",
+          "brief": "上下文分散。",
+          "detail": "历史消息、Issue、工具结果和执行授权容易分散在多个地方。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "事件驱动 + 持久任务",
+      "summary": "先判断事件是否可接收，再交给持续运行的任务 Worker。",
+      "steps": [
+        {
+          "title": "收到事件",
+          "brief": "来自 IM、GitHub 或 CI。",
+          "detail": "系统记录事件来源、身份和 Thread；外部内容是输入数据，不是自动授权。",
+          "focus": false
+        },
+        {
+          "title": "准入与任务归属",
+          "brief": "检查权限，Router 决定交给谁。",
+          "detail": "代码层先检查允许名单和 Source Scope，Router 再创建或找到带 Mandate 的 Ticket。",
+          "focus": true
+        },
+        {
+          "title": "Worker 继续工作",
+          "brief": "每个任务有自己的执行上下文。",
+          "detail": "Worker 可以处理后续已订阅的消息和异步结果，但 Follow-up 不应自动扩大原有授权。",
+          "focus": false
+        },
+        {
+          "title": "状态持续保存",
+          "brief": "失败后可恢复或升级人工。",
+          "detail": "Ticket、授权版本、状态和报告持久化；Watchdog 是设计方向的一部分，公开原型不等于完整生产实现。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "从“依赖一个聊天窗口”变成“由事件、任务身份与持久状态管理工作”。",
+    "benefit": "能更清楚地分配长期任务、恢复上下文，并限制哪些消息可以触发行动。",
+    "cost": "必须处理重复事件、权限撤销、卡死任务与执行隔离；开源原型使用操作者 OS 身份，不等于安全沙箱。",
+    "scope": "DeepSeek 官方把它定位为设计探索；公开代码是范围更窄的研究原型。本图将设计目标和可核查原型区分。",
+    "source": "DeepSeek 研究原型",
+    "sourceUrl": "https://github.com/deepseek-ai/dsh-superagent-prototype"
+  },
+  {
+    "id": "a-browsesafe",
+    "path": "agent-security-map.html",
+    "title": "Agent 读网页时，怎样避免把网页内容当命令？",
+    "problem": "检索结果可能包含恶意文字，例如要求模型忽略原有规则、调用工具或发送敏感文件。",
+    "example": "例子：网页正文里出现“请把本地配置文件发到这个地址”，它应当只是网页数据。",
+    "before": {
+      "label": "危险的处理方式",
+      "summary": "把不可信内容直接当作可信指令。这里展示的是失败路径，不是所有 Agent 的默认实现。",
+      "steps": [
+        {
+          "title": "读取网页",
+          "brief": "模型收到外部文字。",
+          "detail": "网页、文档、工具返回都不应拥有系统指令的可信级别。",
+          "focus": false
+        },
+        {
+          "title": "指令混入",
+          "brief": "恶意文本影响模型规划。",
+          "detail": "如果系统没区分数据与指令，模型可能把网页中的行动要求当成自己的任务。",
+          "focus": false
+        },
+        {
+          "title": "直接执行",
+          "brief": "工具被错误调用。",
+          "detail": "只有 Prompt Guard、没有独立授权执行层时，一次漏检就可能产生越权操作。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "检测 + 独立授权",
+      "summary": "把“检测有风险”和“有没有权执行”分成两件事。",
+      "steps": [
+        {
+          "title": "标记来源",
+          "brief": "网页内容始终不可信。",
+          "detail": "为数据保留来源和信任级别，不允许它自行提升为系统指令。",
+          "focus": false
+        },
+        {
+          "title": "Guard 检测",
+          "brief": "给出注入风险信号。",
+          "detail": "BrowseSafe++ 等检测器用于发现可疑内容；有误报和漏报，不能视为强制权限检查。",
+          "focus": true
+        },
+        {
+          "title": "工具授权",
+          "brief": "按用户身份和策略判断。",
+          "detail": "模型提出工具调用后，独立 Policy Engine 检查资源、操作、网络出口与允许的权限。",
+          "focus": true
+        },
+        {
+          "title": "受控执行或拒绝",
+          "brief": "沙箱限制实际影响。",
+          "detail": "通过授权的任务仍在受限 Runtime 中执行并记审计；未经授权的调用必须拒绝。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "检测模型识别可疑文字，执行策略决定工具是否真正有权操作；两者不能替代。",
+    "benefit": "把 Prompt Injection 风险从单纯的提示词问题转化为可测试、可执行的系统边界。",
+    "cost": "Guard 会误报/漏报；沙箱和授权策略也需要单独测试。这里的完整防护链是工程组合，不是 BrowseSafe++ 的单一官方产品架构。",
+    "scope": "模型检测效果属于原团队报告；“Guard + Policy + Sandbox”属于本站组合式安全建议。",
+    "source": "BrowseSafe++ 官方介绍",
+    "sourceUrl": "https://www.perplexity.ai/hub/blog/browsesafe-plus-plus"
+  },
+  {
+    "id": "a-spindle",
+    "path": "rl-infra-map.html",
+    "title": "Agent 强化学习为什么要把采样和训练分开？",
+    "problem": "Agentic RL 一边要生成带工具调用的执行轨迹，一边要计算梯度更新模型，两种工作负载的资源需求不同。",
+    "example": "例子：Sampler 正在等工具返回，Trainer 却可能没有新轨迹可训练。",
+    "before": {
+      "label": "统一资源池 / 串行处理",
+      "summary": "采样和训练在相同或紧耦合的资源中交替运行。",
+      "steps": [
+        {
+          "title": "采样轨迹",
+          "brief": "模型执行多轮任务。",
+          "detail": "Rollout 包含大量 Decode、工具调用和环境等待。",
+          "focus": false
+        },
+        {
+          "title": "等待结果",
+          "brief": "GPU 可能闲置。",
+          "detail": "采样等待外部环境时，训练往往还没有足够完整的数据。",
+          "focus": false
+        },
+        {
+          "title": "训练更新",
+          "brief": "同一批资源轮流承担不同工作。",
+          "detail": "Trainer 消耗算力和显存进行 Backward 与 Optimizer 更新；资源需求和采样不同。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "分离 Sampler 与 Trainer",
+      "summary": "让采样和训练各自扩容，通过轨迹和模型权重交换数据。",
+      "steps": [
+        {
+          "title": "Sampler Pool",
+          "brief": "并行生成轨迹。",
+          "detail": "推理集群优先处理解码和工具 I/O，可以单独调整并发与吞吐。",
+          "focus": false
+        },
+        {
+          "title": "记录轨迹",
+          "brief": "保留奖励与生成版本。",
+          "detail": "Trajectory 要带上生成时的 Policy Version、动作和结果，便于追溯和判断是否过期。",
+          "focus": true
+        },
+        {
+          "title": "Trainer Pool",
+          "brief": "按训练节奏更新参数。",
+          "detail": "训练资源独立运行前反向计算和优化器，并处理过期样本策略。",
+          "focus": false
+        },
+        {
+          "title": "同步模型",
+          "brief": "把新版本权重给采样端。",
+          "detail": "需要明确版本切换、采样端更新滞后和训练/推理数值一致性。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "资源不再被迫同一节奏运行，但必须管理轨迹版本和权重同步。",
+    "benefit": "当采样等待或训练计算成为瓶颈时，可以分别扩容、提升设备利用率。",
+    "cost": "多出网络与同步成本；过旧的 Rollout 和 MoE 路由数值不一致可能影响训练正确性。",
+    "scope": "这是面向 RL 系统的教学对比；不是对任意算法都保证更优的架构。",
+    "source": "Spindle 源码",
+    "sourceUrl": "https://github.com/modal-projects/spindle"
+  },
+  {
+    "id": "a-sticky",
+    "path": "2026-11-03-sticky-map.html",
+    "title": "流式语音为什么不能把每个片段随便发给不同机器？",
+    "problem": "实时语音识别会保存前面片段的解码和语音活动状态。后续片段如果换到另一个副本，可能无法接上之前的内容。",
+    "example": "例子：同一段会议语音，前 7 个 chunk 在 Worker A，下一片却发到了 Worker B。",
+    "before": {
+      "label": "普通无状态负载均衡",
+      "summary": "把每个请求当作独立任务分配。",
+      "steps": [
+        {
+          "title": "第一个片段",
+          "brief": "分配给 Worker A。",
+          "detail": "Worker A 处理第一段音频并积累解码和 VAD 状态。",
+          "focus": false
+        },
+        {
+          "title": "下一个片段",
+          "brief": "可能分配给 Worker B。",
+          "detail": "如果路由器按请求随机选副本，B 不知道 A 之前的状态。",
+          "focus": false
+        },
+        {
+          "title": "结果断裂",
+          "brief": "可能出现重复或漏字。",
+          "detail": "语音分段、偏移和缓存不一致可能损害连续识别质量。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "Sticky Session",
+      "summary": "同一 Session ID 在有效期内路由到同一个 Worker。",
+      "steps": [
+        {
+          "title": "识别会话",
+          "brief": "为整段流分配 Session ID。",
+          "detail": "入口层验证客户端身份和会话租约，不信任任意声明的容器 ID。",
+          "focus": false
+        },
+        {
+          "title": "固定 Worker",
+          "brief": "查 Session→Worker 映射。",
+          "detail": "路由器让同一会话后续 chunk 回到持有热状态的副本。",
+          "focus": true
+        },
+        {
+          "title": "持续处理",
+          "brief": "复用 Decoder / VAD 状态。",
+          "detail": "Worker 保持会话上下文，避免每段都从零开始。",
+          "focus": false
+        },
+        {
+          "title": "故障恢复",
+          "brief": "不能盲目换实例。",
+          "detail": "Worker 崩溃后需用 checkpoint/offset 恢复，或明确返回 Session Lost 并要求客户端按序重放。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "路由单位从“单个请求”变成“有状态的会话”。",
+    "benefit": "更适合流式 ASR、实时 Voice Agent 和其他依赖持续会话状态的服务。",
+    "cost": "固定实例不保证永远在线；需要处理 Lease、Drain、内存占用和故障后重放。",
+    "scope": "并非所有 ASR 都依赖这种路由；对完全无状态的短请求通常没有必要。",
+    "source": "Modal Sticky Session 技术文章",
+    "sourceUrl": "https://modal.com/blog/serverless-routing-made-sticky"
+  },
+  {
+    "id": "a-shadow",
+    "path": "2026-11-03-shadow-map.html",
+    "title": "新模型上线前，怎样用真实请求测试而不影响用户？",
+    "problem": "直接把真实用户切到候选模型，可能让未验证的质量、延迟或错误影响生产。",
+    "example": "例子：你想比较新旧模型的回答质量，但不希望测试期间用户看到新版本的结果。",
+    "before": {
+      "label": "直接切换 / Canary",
+      "summary": "候选模型已经在处理一部分真实用户请求。",
+      "steps": [
+        {
+          "title": "用户发请求",
+          "brief": "平台选一个版本。",
+          "detail": "流量切换或 Canary 会让某些用户真实使用候选模型。",
+          "focus": false
+        },
+        {
+          "title": "候选返回结果",
+          "brief": "用户可能受到影响。",
+          "detail": "新模型可能出现延迟或质量回归，必须有明确的回滚条件。",
+          "focus": false
+        },
+        {
+          "title": "观察线上指标",
+          "brief": "边运行边评估风险。",
+          "detail": "这种方式适合在已有证据之后的小流量验证，而不是完全替代上线前评估。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "Shadow Traffic",
+      "summary": "复制请求给候选模型，但只用生产模型的结果回答用户。",
+      "steps": [
+        {
+          "title": "代理收到请求",
+          "brief": "真实生产请求进入 Proxy。",
+          "detail": "代理保留正式的生产路径，并在旁路创建供候选模型使用的副本。",
+          "focus": false
+        },
+        {
+          "title": "生产模型响应",
+          "brief": "用户仍看到旧模型结果。",
+          "detail": "主路径独立返回，候选的计算不应阻塞正式请求。",
+          "focus": true
+        },
+        {
+          "title": "旁路候选测试",
+          "brief": "新模型只生成离线结果。",
+          "detail": "同样输入可以镜像给候选模型，但其输出仅用于指标对照、不返回用户。",
+          "focus": true
+        },
+        {
+          "title": "评估再决定",
+          "brief": "通过门槛才考虑 Canary。",
+          "detail": "检查质量、延迟、Mirror Drop Rate 和输入分布偏差；通过评估后才考虑小流量试运行。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "增加一条不影响正式响应的镜像测试路径。生产模型继续答复，候选模型只供评估。",
+    "benefit": "能在真实请求分布上发现候选模型问题，再决定是否小范围切换。",
+    "cost": "镜像必须使用有界缓冲，慢候选要能被丢弃；丢弃样本会造成评估偏差。Shadow 不等于 Canary。",
+    "scope": "四步按阅读顺序介绍，两条执行路径实际是并行的，不代表请求先到生产再经过候选模型。",
+    "source": "Modal Endpoint Candidates",
+    "sourceUrl": "https://modal.com/blog/endpoint-candidates"
+  },
+  {
+    "id": "a-repair",
+    "path": "2026-11-02-gpu-repair-map.html",
+    "title": "GPU 节点故障，为什么不能自动先重启？",
+    "problem": "Node NotReady 只是症状，可能由驱动、网络、PCIe、显存错误或存储故障引起。",
+    "example": "例子：十台机器同时掉线，可能是共享网络故障，而不是十块 GPU 同时坏掉。",
+    "before": {
+      "label": "只按状态自动重启",
+      "summary": "看到 NotReady 就触发统一修复动作。",
+      "steps": [
+        {
+          "title": "发现异常",
+          "brief": "Node NotReady。",
+          "detail": "监控报告节点不可用，但还没有定位原因。",
+          "focus": false
+        },
+        {
+          "title": "立刻重启",
+          "brief": "没有验证故障类型。",
+          "detail": "如果是网络或存储故障，重启可能毫无帮助，甚至扩大服务中断。",
+          "focus": false
+        },
+        {
+          "title": "返回或继续失败",
+          "brief": "没有闭环确认。",
+          "detail": "简单脚本可能不知道修复是否有效，也可能对大量节点同时重复执行。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "证据驱动的修复",
+      "summary": "先确认故障与策略，再选择最轻的动作并验证结果。",
+      "steps": [
+        {
+          "title": "收集证据",
+          "brief": "看 Xid、ECC、网络和健康检查。",
+          "detail": "结合 Guest/Host 的错误证据区分可行动故障与一般告警。",
+          "focus": false
+        },
+        {
+          "title": "策略和熔断",
+          "brief": "确认允许做哪一步。",
+          "detail": "故障映射、授权、并发限额与 Circuit Breaker 决定能否自动修复。",
+          "focus": true
+        },
+        {
+          "title": "有限修复",
+          "brief": "Drain 后执行批准动作。",
+          "detail": "视故障类型选择重启、重新配置或迁移，不应无限重试。",
+          "focus": false
+        },
+        {
+          "title": "复验健康",
+          "brief": "失败就停止并升级。",
+          "detail": "重新健康检查，只有通过验证才恢复服务；大规模相关故障应由人工调查。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "自动修复从“看到症状就执行”变成“证据明确、动作受控、结果复验”。",
+    "benefit": "降低误操作导致的集群级事故风险，并让修复有记录可回溯。",
+    "cost": "故障证据可能不完整；需要人工接管、集群级熔断和操作预算。",
+    "scope": "细节来自 Together AI 的工程介绍；具体修复流程需按集群环境重新设计并验证。",
+    "source": "Together AI GPU 自动修复",
+    "sourceUrl": "https://www.together.ai/blog/auto-repair-for-together-gpu-clusters"
+  },
+  {
+    "id": "a-decision",
+    "path": "2026-11-02-decisions-map.html",
+    "title": "只需要分类结果，为什么要让模型生成一段文字？",
+    "problem": "任务分流、风险标签等决策有固定选项，传统生成式调用还要经历逐 Token 输出和格式解析。",
+    "example": "例子：系统只想判断请求属于“检索、翻译、会议总结”中的哪一类。",
+    "before": {
+      "label": "生成式分类",
+      "summary": "让 LLM 输出文字标签，再把文字解析成选项。",
+      "steps": [
+        {
+          "title": "输入问题和标签列表",
+          "brief": "Prompt 描述分类规则。",
+          "detail": "模型读取任务说明、候选标签和输入内容。",
+          "focus": false
+        },
+        {
+          "title": "逐词生成答案",
+          "brief": "产出标签文本或 JSON。",
+          "detail": "自回归解码会有额外 Token 延迟，输出还可能多出解释或格式变化。",
+          "focus": false
+        },
+        {
+          "title": "解析并检查",
+          "brief": "非法格式则重试。",
+          "detail": "Parser 校验模型输出，再交给确定性的路由或业务策略。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "直接选项评分",
+      "summary": "共享一次表示，给固定候选选项打分。",
+      "steps": [
+        {
+          "title": "准备输入和标签",
+          "brief": "定义允许的类别。",
+          "detail": "把问题转成固定候选集合，确保标签定义互不矛盾。",
+          "focus": false
+        },
+        {
+          "title": "模型计算表示",
+          "brief": "获得可用于决策的状态。",
+          "detail": "某些专门设计的 Decision Model 不需要生成完整自然语言标签。",
+          "focus": true
+        },
+        {
+          "title": "输出选项分数",
+          "brief": "获得候选得分或概率。",
+          "detail": "按模型具体接口比较有限选项，并独立测校准质量；不是所有模型都有统一分类头。",
+          "focus": false
+        },
+        {
+          "title": "业务策略执行",
+          "brief": "低信心可转人工。",
+          "detail": "分类结果只是建议；高风险工具动作仍需独立权限检查。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "从生成自然语言标签，改成对有限选项评分，再由确定性代码控制操作。",
+    "benefit": "在大量简单分类/路由任务上，有机会降低解码与解析开销。",
+    "cost": "专用模型也会分类错误，置信度必须校准，标签分布变化需要重新评估。",
+    "scope": "多家 Decision Model 的实现不同；这里只展示共同设计思路，不代表统一架构。",
+    "source": "Oumi Decision Model 工程说明",
+    "sourceUrl": "https://www.oumi.ai/blog/how-to-build-a-decision-model-like-jev"
+  },
+  {
+    "id": "a-orchestrator",
+    "path": "2026-11-01-agents-map.html",
+    "title": "为什么一个 Agent 负责所有事反而不可靠？",
+    "problem": "把路由、领域规则和代码修改都塞进同一段上下文，可能让不同业务规则互相干扰。",
+    "example": "例子：同一个 Agent 既判断数据请求类型，又要记住每个数据源不同的权限和处理规则。",
+    "before": {
+      "label": "大 Agent 包办",
+      "summary": "在同一上下文中完成分类、业务推理和执行控制。",
+      "steps": [
+        {
+          "title": "接收请求",
+          "brief": "加载大量不同规则。",
+          "detail": "单个 Agent 需要同时理解路由条件、各种业务约束和目标系统。",
+          "focus": false
+        },
+        {
+          "title": "自己决定每一步",
+          "brief": "领域上下文混在一起。",
+          "detail": "路由和专业推理交错，模型可能把一个工作流的规则应用到另一个工作流。",
+          "focus": false
+        },
+        {
+          "title": "直接执行",
+          "brief": "错误更难定位。",
+          "detail": "当操作边界和业务推理都交给同一个模型，回退和验证难以独立测试。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "薄编排器 + 专门 Agent",
+      "summary": "让路由与硬规则保持简单，复杂推理交给领域 Agent。",
+      "steps": [
+        {
+          "title": "薄编排器接收请求",
+          "brief": "识别目标与必要字段。",
+          "detail": "Orchestrator 做有限路由、状态机和前置检查，不承担每个领域的全部推理。",
+          "focus": true
+        },
+        {
+          "title": "专门 Agent 推理",
+          "brief": "只处理自己的领域任务。",
+          "detail": "不同 Specialist 使用隔离上下文和明确工具范围，减少规则互相干扰。",
+          "focus": false
+        },
+        {
+          "title": "结果独立校验",
+          "brief": "先确认结构与权限。",
+          "detail": "程序化验证返回结果与工作流不变量，不把校验完全交给模型。",
+          "focus": false
+        },
+        {
+          "title": "版本化提交",
+          "brief": "多人改文件时检查冲突。",
+          "detail": "对于共享工作区，可以使用独立 Sandbox + Git/CAS/Outbox；这是另一篇工程案例的组合，不是 Meta 单一官方架构。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "把模型负责的领域推理与必须确定执行的路由、权限和提交分开。",
+    "benefit": "更容易测试、回退与扩充多个业务 Agent，减少长上下文干扰。",
+    "cost": "需要为领域 Agent 设计边界；共享文件仍需事务、冲突检测和权限策略。",
+    "scope": "这篇结合 Meta Thin Orchestrator 与 Perplexity Shared Workspace 两个案例；最后一步是跨案例归纳。",
+    "source": "Meta Thin Orchestrator",
+    "sourceUrl": "https://engineering.fb.com/2026/10/19/ml-applications/thin-orchestrator-ai-agent-architecture/"
+  },
+  {
+    "id": "a-retrieval",
+    "path": "2026-11-01-retrieval-map.html",
+    "title": "RAG 找到相关段落，为什么还是回答错？",
+    "problem": "单个 Chunk 可能提到答案，却没有包含版本、例外条款或它在整篇文档中的定义。",
+    "example": "例子：合同第 8 页说“允许”，但真正的限制条件写在第 7 页。",
+    "before": {
+      "label": "只按 Chunk 语义相似度搜索",
+      "summary": "切文档 → 生成每块向量 → 选最相近的几段。",
+      "steps": [
+        {
+          "title": "文档切块",
+          "brief": "上下文可能被截断。",
+          "detail": "长文档被拆成独立 Chunk，限定条件和正文可能分散到不同片段。",
+          "focus": false
+        },
+        {
+          "title": "每块一个向量",
+          "brief": "信息被压缩。",
+          "detail": "Dense Embedding 把整块压成单个表示，局部词或细粒度表格匹配可能丢失。",
+          "focus": false
+        },
+        {
+          "title": "相似度排序",
+          "brief": "命中不等于证据齐全。",
+          "detail": "Top-K 可能包含正确一句话，但缺少版本、上下文与引用条件。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "上下文恢复 + 细粒度排序",
+      "summary": "结合文档语境和更细粒度的匹配策略，再核对证据范围。",
+      "steps": [
+        {
+          "title": "保留文档上下文",
+          "brief": "编码时考虑临近段落。",
+          "detail": "Contextual Embedding 在生成块表示时利用整体文档的语境，减少脱离上下文的歧义。",
+          "focus": true
+        },
+        {
+          "title": "更细粒度匹配",
+          "brief": "按 Token / Patch 比较。",
+          "detail": "Late Interaction / Multi-vector 可保留更多局部匹配信号；它是可选的另一种检索机制，不是 Contextual Embedding 的必需后续。",
+          "focus": true
+        },
+        {
+          "title": "取回完整证据",
+          "brief": "恢复定义、版本与例外。",
+          "detail": "对命中结果扩展上下文，检查是否需要其他段落、表格或权限可见的证据。",
+          "focus": false
+        },
+        {
+          "title": "生成并校验",
+          "brief": "答案必须忠于证据。",
+          "detail": "检索改进不能保证生成正确；需要引用和答案一致性检查。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "不只看片段的向量相似度，还要恢复它所在的语境和细粒度信息。",
+    "benefit": "提高找到完整证据的机会，特别适合长 PDF、表格、跨段条件和术语消歧。",
+    "cost": "多向量索引更大、检索更贵；正确检索也不能自动保证回答正确。",
+    "scope": "Contextual Embedding 与 Late Interaction 是两条可以组合的路线；图示是教学组合，不是某厂商单一生产实现。",
+    "source": "Perplexity Contextual Embedding",
+    "sourceUrl": "https://www.perplexity.ai/hub/blog/contextual-embedding-beyond-the-gold-passage"
+  },
+  {
+    "id": "a-space",
+    "path": "2026-10-31-space-map.html",
+    "title": "Agent 能调用终端，怎样防止它访问不该碰的文件？",
+    "problem": "模型会提出工具调用，但模型生成了一个 Shell 命令，不代表它被授权读取主机、访问内网或泄露凭据。",
+    "example": "例子：Agent 只需要修改测试仓库，却试图读取宿主机上的配置文件。",
+    "before": {
+      "label": "直接操作宿主环境",
+      "summary": "工具进程继承过多宿主权限。这里是需要避免的风险示例。",
+      "steps": [
+        {
+          "title": "模型提出命令",
+          "brief": "LLM 决定想执行什么。",
+          "detail": "这只是模型的操作意图，不是强制性的授权。",
+          "focus": false
+        },
+        {
+          "title": "宿主 Shell 执行",
+          "brief": "与主机共享身份和文件。",
+          "detail": "如果直接用高权限用户运行工具，项目目录和 Command Blocklist 不能限制所有可达资源。",
+          "focus": false
+        },
+        {
+          "title": "副作用不可控",
+          "brief": "越权访问或网络传输。",
+          "detail": "即使模型大多数时候遵守指令，一次不受控命令也可能影响主机。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "策略 + 隔离执行环境",
+      "summary": "将模型决策与有权执行的环境分开。",
+      "steps": [
+        {
+          "title": "模型提出工具请求",
+          "brief": "明确操作与目标资源。",
+          "detail": "LLM 只能通过受控工具接口请求执行，而不是获得宿主机完整 Shell 权限。",
+          "focus": false
+        },
+        {
+          "title": "授权与网络策略",
+          "brief": "检查身份和允许范围。",
+          "detail": "独立控制层评估操作、路径、凭据 Scope 和允许的出口。",
+          "focus": true
+        },
+        {
+          "title": "隔离沙箱执行",
+          "brief": "只暴露任务需要的资源。",
+          "detail": "微虚拟机/受限 Runtime 减少宿主文件和进程暴露；Secret Broker 应只提供短期凭据。",
+          "focus": true
+        },
+        {
+          "title": "审计与回传",
+          "brief": "记录结果和阻断原因。",
+          "detail": "工具响应返回 Agent；异常或越权调用需被拒绝、记录并能够追踪。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "让模型决定“想做什么”，让独立系统决定“允许做什么”，再在隔离环境里执行。",
+    "benefit": "降低工具执行导致的主机风险，适合需要运行代码的 Agent 产品。",
+    "cost": "沙箱不等于零风险；网络出口、凭据策略、文件挂载和资源预算仍需单独评估。",
+    "scope": "本图是以 Perplexity SPACE 为参考的安全执行简化模型，不代表开源项目的逐组件官方部署图。",
+    "source": "Perplexity SPACE 开源仓库",
+    "sourceUrl": "https://github.com/perplexityai/SPACE"
+  },
+  {
+    "id": "a-replayssm",
+    "path": "2026-10-31-replayssm-map.html",
+    "title": "为什么 SSM 推理要反复写入大量状态？",
+    "problem": "部分递归状态模型每生成一个 token 都需要更新状态；状态很大时，GPU 显存读写可能成为性能瓶颈。",
+    "example": "例子：每次生成新 token，都要从 HBM 读入并写回持续增长或较大的内部状态。",
+    "before": {
+      "label": "每步更新与写回状态",
+      "summary": "计算下一 Token 的同时频繁同步循环状态。",
+      "steps": [
+        {
+          "title": "输入 token",
+          "brief": "送入状态更新计算。",
+          "detail": "每轮生成依据当前 token 和之前的 recurrent state 继续计算。",
+          "focus": false
+        },
+        {
+          "title": "读写状态",
+          "brief": "反复访问 HBM。",
+          "detail": "当 recurrent state 的 I/O 成本占主导时，显存带宽会限制 Decode 吞吐。",
+          "focus": false
+        },
+        {
+          "title": "继续下一 token",
+          "brief": "状态成为瓶颈。",
+          "detail": "每步持久写回完整状态可能比部分重放计算更昂贵。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "ReplaySSM：缓存输入并重放",
+      "summary": "减少完整状态写回次数，必要时重算短窗口内的状态。",
+      "steps": [
+        {
+          "title": "缓存近期输入",
+          "brief": "保留最近 token 的输入。",
+          "detail": "把用于状态演化的输入序列留在便于复用的 Buffer 中。",
+          "focus": true
+        },
+        {
+          "title": "按需 Replay",
+          "brief": "从 Checkpoint 重建局部状态。",
+          "detail": "需要输出时，通过近期输入和已保存的状态快照重新计算部分递归过程。",
+          "focus": true
+        },
+        {
+          "title": "周期性更新快照",
+          "brief": "减少大状态同步频率。",
+          "detail": "并非完全不需要状态，保存周期性 Checkpoint 以限制重放窗口。",
+          "focus": false
+        },
+        {
+          "title": "输出并继续",
+          "brief": "以多一些计算换少一些数据搬运。",
+          "detail": "实际收益取决于状态大小、窗口长度、GPU 带宽和数值一致性。",
+          "focus": false
+        }
+      ]
+    },
+    "change": "用一部分重复计算替换每 token 大量状态 I/O，减少显存写回压力。",
+    "benefit": "当状态读写比重放计算更贵时，可能改善 SSM 的推理吞吐。",
+    "cost": "重放窗口过大会增加计算与缓冲成本；机制不能直接等同于 Transformer 的 KV Cache 优化。",
+    "scope": "该机制针对论文讨论的 SSM/类 SSM 结构，性能数据来自作者实验，不代表本站实测。",
+    "source": "ReplaySSM 论文",
+    "sourceUrl": "https://arxiv.org/abs/2610.13778"
+  }
+]
+
