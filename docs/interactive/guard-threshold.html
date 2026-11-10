@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guard Threshold Lab · AI Engineering Notes</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Guard Threshold Lab · AI, Explained</title>
 <link rel="stylesheet" href="../assets/site.css"><style>
 .meter{height:10px;background:#deebf1;border-radius:99px;overflow:hidden;margin-top:13px}
 .meter span{height:100%;display:block;background:#08727c;width:0;transition:width .16s}
@@ -10,7 +10,7 @@
 .conf strong{display:block;font-size:25px;color:#16283b}
 .small{font-size:13px;color:#4b6075}
 </style></head><body>
-<header class="bar"><a class="brand" href="../">◆ AI Engineering Notes</a><nav><a href="../">首页</a><a href="https://github.com/ljrirene/ai-engineering-notes">Source</a></nav></header>
+<header class="bar"><a class="brand" href="../">◆ AI, Explained</a><nav><a href="../">首页</a><a href="https://github.com/ljrirene/ai-engineering-notes">Source</a></nav></header>
 <main class="lab"><div class="eyebrow">INTERACTIVE LAB · SYNTHETIC DATA ONLY · NO API</div><h1>Guard Threshold Explorer</h1><p class="muted">调整检测阈值，观察漏报与误报之间的权衡。这是一组确定性的合成分数，不是 BrowseSafe++ 的实验分布，也不代表真实 Guard Model 性能。</p>
 <div class="controls"><label for="threshold"><b>Detection threshold τ</b> <span id="t" class="num">0.50</span></label><input id="threshold" class="control" type="range" min="0" max="100" value="50" step="1"><p class="muted">分数 ≥ τ → 预测为注入攻击。数据：200 个正常页面 + 25 个攻击页面。</p><button id="reset" type="button">重置 0.50</button></div>
 <h2>Classification Metrics</h2><div class="grid2">
@@ -34,4 +34,5 @@ put('t',t.toFixed(2));put('tp',tp);put('fp',fp);put('tn',tn);put('fn',fn);metric
 slider.addEventListener('input',render);document.getElementById('reset').addEventListener('click',function(){slider.value=50;render()});render();
 })();
 </script></body></html>
+
 

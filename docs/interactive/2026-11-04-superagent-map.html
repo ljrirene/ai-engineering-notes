@@ -32,7 +32,7 @@
 .sa-links{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;border-top:1px solid #dbe6ed;padding-top:20px;margin-top:20px}
 @media(max-width:900px){.sa-columns{grid-template-columns:1fr}.sa-panel{min-height:0}.sa-page{padding:24px 12px 70px}}
 </style></head><body>
-<header class="bar"><a class="brand" href="../">◆ AI Engineering Notes</a><nav><a href="../">首页</a><a href="../knowledge-graph.html">知识星图</a><a href="../study-qa/">学习问答</a></nav></header>
+<header class="bar"><a class="brand" href="../">◆ AI, Explained</a><nav><a href="../">首页</a><a href="../knowledge-graph.html">知识星图</a><a href="../study-qa/">学习问答</a></nav></header>
 <main class="sa-page"><div class="sa-kicker">INTERACTIVE ARCHITECTURE · RESEARCH EXPLAINER · 2026-11-04</div>
 <h1>Super-agent · 从 Session 到持续协作者</h1>
 <p class="sa-sub">切换四个系统视角，点击任一节点查看职责、输入输出与风险。每条连线代表一次数据或控制关系，不是原版架构图的复刻。</p>
@@ -53,4 +53,5 @@ function emphasise(){const v=data.views[active],related=new Set([chosen]);v.edge
 function redraw(){svg.replaceChildren();const v=data.views[active];caption.textContent=v.desc;tabs.replaceChildren();data.views.forEach((d,i)=>{let b=document.createElement('button');b.type='button';b.textContent=d.label;b.setAttribute('aria-pressed',String(i===active));b.onclick=()=>{active=i;chosen=null;redraw()};tabs.appendChild(b)});let defs=E('defs',{},svg),marker=E('marker',{id:'sa-arrow',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:5,markerHeight:5,orient:'auto'},defs);E('path',{d:'M0 0 L10 5 L0 10z',fill:'#759cab'},marker);E('rect',{x:0,y:0,width:920,height:560,rx:12,fill:'#fff'},svg);T(E('text',{x:22,y:36,fill:'#466477','font-size':14,'font-weight':750,'letter-spacing':'.03em'},svg),v.caption);let links=E('g',{},svg),nodes=E('g',{},svg),map=new Map(v.nodes.map(n=>[n[0],n]));v.edges.forEach((e,i)=>{let a=map.get(e[0]),b=map.get(e[1]);if(!a||!b)return;let x1=a[2]+85,y1=a[3]+35,x2=b[2]+85,y2=b[3]+35,dx=x2-x1,dy=y2-y1,dist=Math.hypot(dx,dy)||1,sx=x1,sy=y1,ex=x2,ey=y2;if(Math.abs(dx)>Math.abs(dy)*.7){sx+=Math.sign(dx)*82;ex-=Math.sign(dx)*88}else{sy+=Math.sign(dy)*32;ey-=Math.sign(dy)*38}let bend=((i%3)-1)*24+10,curve='M'+sx+' '+sy+' Q'+((sx+ex)/2-dy/dist*bend).toFixed(1)+' '+((sy+ey)/2+dx/dist*bend).toFixed(1)+' '+ex+' '+ey;const p=E('path',{class:'sa-edge',d:curve,'marker-end':'url(#sa-arrow)'},links);p.dataset.a=e[0];p.dataset.b=e[1]});v.nodes.forEach(n=>makeNode(nodes,n));show(null);emphasise()}
 redraw()})();
 </script></body></html>
+
 
