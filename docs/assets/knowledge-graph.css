@@ -93,3 +93,13 @@
 @media(prefers-reduced-motion:reduce){.kg-node .kg-label,.kg-link{transition:none!important}}
 
 
+
+/* Make relationship reasons primary and reveal secondary edges progressively */
+.kg-info .kg-related-open{display:inline-block;font-size:11px;margin:7px 0 0;font-weight:750;color:#0d747f}
+.kg-info h3{letter-spacing:.08em}
+.kg-info .kg-edge-kind{font-weight:850;color:#087580}
+.kg-info .kg-edge-reason{color:#496b7c;line-height:1.67;font-size:12px}
+.kg-info .kg-more{border-top:1px solid #e4edf1;margin-top:16px;padding-top:12px}
+.kg-info .kg-more summary{cursor:pointer;font-size:12px;color:#60808f;font-weight:750;list-style:revert}
+.kg-info .kg-more[open] ul{margin-top:10px}
+

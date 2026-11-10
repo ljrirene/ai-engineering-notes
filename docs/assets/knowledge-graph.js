@@ -96,17 +96,59 @@ function render(){
  count();renderFocus();showDetails();updateMode();
 }
 function block(parent,tag,t,className){const x=document.createElement(tag);x.textContent=t||'';if(className)x.className=className;parent.appendChild(x);return x;}
-const reasons={explains:'解释',complements:'互补',prerequisite:'前置',extends:'扩展','shares-core-problem':'共享底层问题','supports-skill':'对应能力','deploys-to':'部署路径','guided-by':'学习方法'};
+const explanations={
+  explains:'这篇真正讲了什么',complements:'两篇合起来更完整',prerequisite:'先理解这个，再往下学',
+  extends:'在原有问题上继续深入','shares-core-problem':'同一个难题的不同解法',
+  'supports-skill':'能练到的工程能力','deploys-to':'讨论的部署场景','guided-by':'可以使用的学习方法'
+};
+function relationLabel(e,n){
+  if(e.type==='explains')return e.source===n.id?'这篇讲清的概念':'讲这个概念的文章';
+  if(e.type==='extends')return e.source===n.id?'先读这篇背景':'这篇是进一步的研究';
+  if(e.type==='prerequisite')return e.source===n.id?'在这个基础上继续学':'先学它更容易理解';
+  return explanations[e.type]||'技术关联';
+}
 function showDetails(){
  info.replaceChildren();
  const n=byNode.get(selected);
- if(!n){block(info,'div','THE CONNECTIONS','kg-kind');const ill=block(info,'div','','kg-info-illustration');ill.setAttribute('aria-hidden','true');block(info,'h2','从一个知识点出发');block(info,'p','点亮任意一颗星，沿着弧线探索它的前置概念、技术实现与能力关联。');block(info,'p','默认星图显示文章、核心概念与部署路径。点击 On-prem / Controlled Hybrid 可点亮关联文章；切换「学习地图」展开求职能力与方法论。');return;}
- block(info,'div',labels[n.kind]||n.kind,'kg-kind');block(info,'h2',n.label);if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':n.track==='hybrid'?'Controlled Hybrid':'On-prem / Controlled Hybrid'),'kg-meta');block(info,'p',n.description||'');
+ if(!n){block(info,'div','READ THE CONNECTIONS','kg-kind');const ill=block(info,'div','','kg-info-illustration');ill.setAttribute('aria-hidden','true');block(info,'h2','从一个问题开始');block(info,'p','点击研究文章，先看“它与哪篇有关”，再看“为什么要一起读”。图谱连线只是导航，真正有用的是背后的技术原因。');block(info,'p','你可以随时点击关联文章，也可以展开完整概念/岗位/部署关系。');return;}
+ block(info,'div',labels[n.kind]||n.kind,'kg-kind');
+ block(info,'h2',n.label);
+ if(n.date)block(info,'div',n.date+' · '+(n.track==='onprem'?'On-prem':n.track==='hybrid'?'Controlled Hybrid':'On-prem / Controlled Hybrid'),'kg-meta');
+ block(info,'p',n.description||'点击下方知识点继续探索相关技术。');
  for(const [url,label] of [[n.url,'阅读完整研究 ↗'],[n.visual,'打开交互架构图 ↗']]){const path=safeUrl(url);if(path){const a=block(info,'a',label,'kg-read');a.href=path;}}
- const related=sourceEdges.filter(e=>e.source===n.id||e.target===n.id).map(e=>({...e,other:byNode.get(e.source===n.id?e.target:e.source)})).filter(e=>e.other);
- block(info,'h3','RELATED KNOWLEDGE · '+related.length);
- const list=block(info,'ul','');related.sort((a,b)=>(important(b)?1:0)-(important(a)?1:0));
- related.forEach(e=>{const li=block(list,'li','');block(li,'span',reasons[e.type]||e.type,'kg-edge-kind');const b=block(li,'button',e.other.label);b.type='button';b.onclick=()=>{if(!types.has(e.other.kind)){types.add(e.other.kind);updateFilters();render()}selected=e.other.id;showDetails();renderFocus();focusNode(e.other)};block(li,'div',e.reason||'','kg-edge-reason');});
+ const related=sourceEdges.filter(e=>e.source===n.id||e.target===n.id)
+  .map(e=>({...e,other:byNode.get(e.source===n.id?e.target:e.source)})).filter(e=>e.other);
+ if(!related.length)return;
+ function entry(ul,e){
+  const li=block(ul,'li','');
+  block(li,'span',relationLabel(e,n),'kg-edge-kind');
+  const b=block(li,'button',e.other.label);b.type='button';
+  b.onclick=()=>{if(!types.has(e.other.kind)){types.add(e.other.kind);updateFilters();render()}selected=e.other.id;showDetails();renderFocus();focusNode(e.other);};
+  block(li,'div',e.reason||'与当前知识有对应的系统设计关系。','kg-edge-reason');
+  if(e.other.kind==='article'){const href=safeUrl(e.other.url);if(href){const a=block(li,'a','直接阅读这篇文章 ↗','kg-related-open');a.href=href;}}
+ }
+ function section(list,name,limit){
+  if(!list.length)return [];
+  block(info,'h3',name);
+  const ul=block(info,'ul','');
+  list.slice(0,limit).forEach(e=>entry(ul,e));
+  return list.slice(0,limit);
+ }
+ const chosen=[];
+ const linkedArticles=related.filter(e=>e.other.kind==='article');
+ const linkedConcepts=related.filter(e=>e.other.kind==='concept');
+ const linkedDeployments=related.filter(e=>e.other.kind==='deployment');
+ const linkedOther=related.filter(e=>['skill','guide'].includes(e.other.kind));
+ chosen.push(...section(linkedArticles, n.kind==='article'?'RECOMMENDED · 接下来值得读':'RELATED STUDIES · 可以读哪篇',3));
+ chosen.push(...section(linkedConcepts,'KEY IDEAS · 这篇涉及的关键概念',2));
+ if(n.kind==='deployment')chosen.push(...section(linkedDeployments,'DEPLOYMENT · 部署场景',2));
+ const seen=new Set(chosen);
+ const rest=related.filter(e=>!seen.has(e));
+ if(rest.length){
+  const d=block(info,'details','','kg-more'),su=block(d,'summary','其余 '+rest.length+' 条关联（展开查看）');
+  const ul=block(d,'ul','');
+  rest.forEach(e=>entry(ul,e));
+ }
 }
 function focusNode(n){if(!n)return;const t=d3.zoomIdentity.translate(W/2-n.x*.92,H/2-n.y*.92).scale(.92);root.transition().duration(600).call(zoom.transform,t);}
 function count(){const s=visibleNodes.length+' NODES · '+visibleEdges.length+' LINKS';byId('kg-count').textContent=s;byId('kg-stats').textContent=data.nodes.filter(n=>n.kind==='article').length+' STUDIES · '+data.nodes.length+' NODES';}
@@ -124,6 +166,7 @@ byId('kg-reset').onclick=()=>root.transition().duration(550).call(zoom.transform
 root.on('click',event=>{if(event.target===svg||event.target.closest('.kg-background')){selected=null;renderFocus();showDetails();}});
 updateFilters();render();root.call(zoom.transform,d3.zoomIdentity.translate(20,4).scale(.88));
 })();
+
 
 
 
