@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 const page=document.querySelector(".vl-page");if(!page)return;
-const tabs=[...page.querySelectorAll("[data-mode].vl-mode-switch button")];
+const tabs=[...page.querySelectorAll(".vl-mode-switch button[data-mode]")];
 const flows=[...page.querySelectorAll(".vl-flow")],steps=[...page.querySelectorAll(".vl-progress-step")];
 const count=document.getElementById("vl-step-count"),title=document.getElementById("vl-step-title"),brief=document.getElementById("vl-step-brief"),technical=document.getElementById("vl-technical"),technicalText=document.getElementById("vl-technical-text"),counter=document.getElementById("vl-counter"),prev=document.getElementById("vl-prev"),next=document.getElementById("vl-next");
 let mode="after",index=0;
@@ -32,3 +32,4 @@ flows.forEach(f=>f.addEventListener("keydown",e=>{
 }));
 selectMode("after");
 })();
+
