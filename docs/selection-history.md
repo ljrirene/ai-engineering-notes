@@ -84,3 +84,18 @@ permalink: /selection-history/
 
 [正文]({{ '/notes/2026/11/2026-11-10-agent-evaluation-validity/' | relative_url }}) · [原理演示]({{ '/interactive/2026-11-10-agent-evaluation-validity-map.html' | relative_url }}) · [知识关系图]({{ '/knowledge-graph.html' | relative_url }}) · [Study QA]({{ '/study-qa/' | relative_url }})。
 
+
+## 2026-11-13 · KVGuard：KV Cache 请求级安全
+
+实际扫描 11 个方向：KVGuard、MORTIS、Fairway、Modal gVisor、Modal Sandbox Events、vLLM Releases、SGLang Roadmap、Hugging Face CWE-bench v2、Hugging Face Document Field Extraction、Modal/Snorkel Eval、Modal Sidecars。重点核查五个候选；优先比较岗位迁移价值与技术深度，再看新鲜度。
+
+| 候选（一手资料） | 决定 |
+|---|---|
+| [KVGuard（11/04）](https://arxiv.org/abs/2611.06138) | **入选**。请求级 KV 内存安全通用；跨 vLLM/SGLang 有缺陷回放与实验设置。作者实现的独立开源仓库未确认。 |
+| [MORTIS（11/05）](https://arxiv.org/abs/2611.08638) | Agent Prompt 缓存编译器协同很有深度，但依赖 Typed Program，迁移范围较窄。 |
+| [Fairway（11/01）](https://arxiv.org/abs/2611.02082) | KV 命中与队列公平性重要，适合后续独立研究。 |
+| [Modal gVisor（11/11）](https://modal.com/blog/modal-gvisor-maintainer) | 工程内容丰富，但与旧 SPACE Sandbox 的执行隔离主题重合，优先旧文修订。 |
+| [Modal Sandbox Events（11/12）](https://modal.com/changelog) | 可用性更新，技术原理不足以成为单独深读主题。 |
+
+已对照 13 篇旧文；Paged Experts 管权重容量、KVGuard 管 KV 请求权限，Agent Eval 关注失败归因，存在真实互补。作者数据未经本站复现；本期保留所有旧文/QA/图谱内容。新增 3 道 QA 题与 11 个按新增 Markdown 章节抽取的片段。
+

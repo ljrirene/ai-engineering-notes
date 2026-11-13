@@ -1,3 +1,19 @@
+- id: a-kvguard
+  priority: "core"
+  why_priority: "KV Cache 的请求级内存安全是通用 Serving 问题，论文提供跨 vLLM/SGLang 的可核查故障证据。"
+  date: "2026-11-13"
+  title: "KVGuard：为什么 KV Cache 会悄悄串写其他请求"
+  topic: "推理系统安全"
+  purpose: "多个请求共享 GPU KV Cache 时，错误映射即使没有 CUDA 越界，也可能污染其他请求的数据。"
+  takeaway: "你会掌握 KV Block 所有权、初始化标记与 CPU/GPU 五个检查点，并学习故障注入和调试取舍。"
+  url: "/notes/2026/11/2026-11-13-kv-cache-safety/"
+  visual: "/interactive/2026-11-13-kv-cache-safety-map.html"
+  related:
+    - id: a-paged-experts
+      why: "两篇都涉及 GPU 内存管理，但 Paged Experts 管理 MoE 权重容量，KVGuard 管理请求 KV 的权限和生命周期。"
+    - id: a-agent-eval
+      why: "Agent 评测要区分环境故障与模型能力；KV Cache 污染是可能被误判成模型错误的底层故障。"
+
 - id: a-agent-eval
   priority: "core"
   why_priority: "Agent 评测的环境有效性、评分可信度与失败归因是可迁移的 AI Engineering 基础能力。"
@@ -190,6 +206,7 @@
       why: "两篇都优化推理时的数据搬运，但权重分页与状态重放不能混为一谈。"
     - id: a-sticky
       why: "模型内部状态与跨机器会话状态是两个不同层次。"
+
 
 
 

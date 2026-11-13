@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10",
+  "updatedAt": "2026-11-13",
   "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
     {
@@ -385,6 +385,34 @@
       "label": "Evaluation validity",
       "kind": "concept",
       "description": "模型能力、环境有效性和评分器正确性的分离与归因。"
+    },
+    {
+      "id": "a-kvguard",
+      "label": "KVGuard / KV Cache Safety",
+      "kind": "article",
+      "date": "2026-11-13",
+      "track": "cross-deployment",
+      "description": "PagedAttention 软件块级请求隔离与 KV 生命周期检查。",
+      "url": "/notes/2026/11/2026-11-13-kv-cache-safety/",
+      "visual": "/interactive/2026-11-13-kv-cache-safety-map.html"
+    },
+    {
+      "id": "c-kv-ownership",
+      "label": "KV Block Ownership",
+      "kind": "concept",
+      "description": "请求对物理 KV 块的读写权限和生命周期。"
+    },
+    {
+      "id": "c-kv-shadow",
+      "label": "KV Shadow Metadata",
+      "kind": "concept",
+      "description": "按请求权限与按条目初始化状态的影子记录。"
+    },
+    {
+      "id": "c-kv-table",
+      "label": "KV Block Table",
+      "kind": "concept",
+      "description": "CPU/GPU 逻辑块到物理块映射与提交一致性。"
     }
   ],
   "edges": [
@@ -1215,6 +1243,72 @@
       "target": "a-browsesafe",
       "type": "complements",
       "reason": "BrowseSafe++ 关注攻击检测；本文关注一般评测环境与评分归因。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "c-kv-ownership",
+      "type": "explains",
+      "reason": "区分合法地址与请求级块所有权。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "c-kv-shadow",
+      "type": "explains",
+      "reason": "记录请求权限和逐条初始化位。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "c-kv-table",
+      "type": "explains",
+      "reason": "检查 CPU/GPU 块表映射一致性。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "c-trust",
+      "type": "explains",
+      "reason": "共享 GPU Buffer 内的请求隔离边界。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "s-dist",
+      "type": "supports-skill",
+      "reason": "训练并发状态、生命周期和竞态调试。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "训练故障注入与回归检查。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "本地 Serving 测试分支插桩。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "仅获批测试任务出域并限制 Trace。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "遵循一手证据和可复现验证。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "a-paged-experts",
+      "type": "contrasts",
+      "reason": "同属显存管理，但权重容量与 KV 请求权限是不同问题。"
+    },
+    {
+      "source": "a-kvguard",
+      "target": "a-agent-eval",
+      "type": "complements",
+      "reason": "为区分模型失败与运行时污染提供底层故障证据。"
     }
   ]
 }

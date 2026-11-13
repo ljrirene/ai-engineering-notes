@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-10",
+  "updatedAt": "2026-11-13",
   "disclaimer": "Manually curated from public research notes. Keyword coverage is NOT semantic assessment.",
   "questions": [
     {
@@ -915,6 +915,89 @@
         [
           "弹性",
           "资源"
+        ]
+      ]
+    },
+    {
+      "id": "q-30",
+      "doc": "a-kvguard",
+      "level": "机制",
+      "q": "为什么 CUDA 地址合法仍可能读写其他请求的 KV Cache？",
+      "hint": "CUDA 大 allocation 与 PagedAttention 软件块是同一个边界吗？",
+      "answer": "PagedAttention 将一次 cudaMalloc 划为多个软件 KV Block。错误映射仍可能指向合法 GPU 地址，但当前请求没有该块的读写权限。Shadow Block 记录 per-request permission 和 per-entry initialization，在 C1–C5 检查。",
+      "trap": "地址合法不代表已授权，也不能说传统 GPU Sanitizer 对所有错误都无用。",
+      "terms": [
+        [
+          "cuda",
+          "allocation"
+        ],
+        [
+          "kv",
+          "block"
+        ],
+        [
+          "权限",
+          "request"
+        ],
+        [
+          "shadow",
+          "初始化"
+        ]
+      ]
+    },
+    {
+      "id": "q-31",
+      "doc": "a-kvguard",
+      "level": "系统设计",
+      "q": "为什么共享 Prefix KV Cache 只用引用计数还不够？C1–C5 各保护什么？",
+      "hint": "考虑只读共享、CPU/GPU 表不一致、未初始化 KV 条目。",
+      "answer": "Refcount 无法完整表示每个请求的读写权限或逐条初始化状态。C1 管 alloc/share/free；C2 检查 CPU Block Table；C3 比较 CPU/GPU 表；C4 检查 Kernel 查表范围；C5 检查实际 KV Entry 的权限与初始化。",
+      "trap": "共享 Prefix 不等于可写；不能只靠引用计数保护 KV。",
+      "terms": [
+        [
+          "引用",
+          "refcount"
+        ],
+        [
+          "共享",
+          "只读"
+        ],
+        [
+          "c1",
+          "c2",
+          "c3"
+        ],
+        [
+          "c4",
+          "c5",
+          "初始化"
+        ]
+      ]
+    },
+    {
+      "id": "q-32",
+      "doc": "a-kvguard",
+      "level": "取舍",
+      "q": "为什么不能把 KVGuard 在 Qwen 14B 上的低开销直接推广到所有模型？",
+      "hint": "对比小模型和长上下文的每步计算与检查成本。",
+      "answer": "作者在 H100 的 Qwen 2.5 14B 上报告 3.0%/7.4% TPOT 几何均值开销；小模型高负载约 3.5–3.7 倍，长上下文更高。检查器定位 CI/开发，生产需独立测量 TTFT/TPOT、显存和并发。",
+      "trap": "论文的平均开销和无误报观察都不是所有配置的保证。",
+      "terms": [
+        [
+          "tpot",
+          "开销"
+        ],
+        [
+          "qwen",
+          "14b"
+        ],
+        [
+          "长上下文",
+          "小模型"
+        ],
+        [
+          "ci",
+          "调试"
         ]
       ]
     }

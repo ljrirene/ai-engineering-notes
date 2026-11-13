@@ -908,5 +908,81 @@
     "source": "ReplaySSM 论文",
     "sourceUrl": "https://arxiv.org/abs/2610.13778",
     "keyPoint": "少写几次大状态，必要时重算最近几步。"
+  },
+  {
+    "id": "a-kvguard",
+    "path": "2026-11-13-kv-cache-safety-map.html",
+    "title": "为什么 KV Cache 会串写其他请求？",
+    "problem": "多个请求的 KV Cache 在同一块 GPU 大内存中复用。错误映射即使没有 CUDA 越界，也可能污染其他请求。",
+    "example": "例子：A、B 共用只读前缀 PB0，B 本该写自己的 PB2，却错误写入 PB0，A 的后续回答可能被改变。",
+    "before": {
+      "label": "只检查 CUDA 地址",
+      "shortLabel": "地址合法就放行",
+      "summary": "地址在 GPU 大 Buffer 内，不代表请求拥有其中的 KV Block。",
+      "steps": [
+        {
+          "title": "分配 GPU Buffer",
+          "brief": "所有请求共享一块大内存。",
+          "detail": "cudaMalloc 创建大区域，软件分配器再切成多个 KV 物理块。",
+          "focus": false
+        },
+        {
+          "title": "按 Block Table 寻址",
+          "brief": "每个请求有自己的映射表。",
+          "detail": "异步调度或过期表可能指向其他请求的物理块。",
+          "focus": true
+        },
+        {
+          "title": "Kernel 读写",
+          "brief": "错误地址仍可能落在合法大 Buffer 内。",
+          "detail": "普通 CUDA 地址检查不具备请求级权限语义，可能遗漏跨请求写入。",
+          "focus": true
+        }
+      ]
+    },
+    "after": {
+      "label": "KVGuard：按请求和条目检查",
+      "shortLabel": "检查权限和初始化",
+      "summary": "用 Shadow Block 记录请求权限与条目有效性，检查 CPU 和 GPU 五个边界。",
+      "steps": [
+        {
+          "title": "记录 Shadow 状态",
+          "brief": "保存谁能读写、哪些 KV 条目有效。",
+          "detail": "每个物理块的 Permission 按请求区分，Initialization 按 Entry 区分。",
+          "focus": true
+        },
+        {
+          "title": "检查分配与共享",
+          "brief": "C1 检查 Alloc/Share/Free。",
+          "detail": "阻止错误释放、重复释放和仍被持有时的重新分配。",
+          "focus": false
+        },
+        {
+          "title": "核对 CPU/GPU 表",
+          "brief": "C2/C3 检查授权和映射一致性。",
+          "detail": "检查 CPU 表归属以及 GPU 表是否等于已提交的有效快照。",
+          "focus": true
+        },
+        {
+          "title": "检查 Kernel 访问",
+          "brief": "C4/C5 检查行、索引、权限和初始化。",
+          "detail": "在实际读写时发现越权访问和未初始化数据。",
+          "focus": true
+        },
+        {
+          "title": "定位首次违规",
+          "brief": "在 CI 和调试时报告错误源头。",
+          "detail": "论文定位开发期检查；小模型和长上下文开销可能很高。",
+          "focus": false
+        }
+      ]
+    },
+    "keyPoint": "地址合法，不代表这个 KV Block 属于当前请求。",
+    "change": "从检查 CUDA 地址范围，升级为检查请求所有权、块生命周期与数据是否真正写入。",
+    "benefit": "更早定位跨请求写入、过早释放和未初始化读取，减少隐蔽输出污染。",
+    "cost": "需要 Shadow 同步、Kernel 插桩；小模型和长上下文可能有明显性能开销。",
+    "scope": "论文 2026-11-04；性能、29 个历史缺陷和 8 个新发现均为作者报告。本站未独立复现。",
+    "source": "KVGuard 论文",
+    "sourceUrl": "https://arxiv.org/abs/2611.06138"
   }
 ]
