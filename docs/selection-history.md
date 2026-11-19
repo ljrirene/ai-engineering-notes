@@ -7,6 +7,22 @@ permalink: /selection-history/
 
 > **重要说明**：下表不是对当时搜索日志的复刻。既有对话确认了当日选题，但部分原始候选列表与搜索数量无法恢复。这里依据保留的研究主题和经重新核查的一手来源总结“入选理由”，不虚构候选搜索总数、实时社区讨论或当时逐一淘汰的排名。
 
+## 2026-11-19：候选核查记录（未新增技术精读）
+
+本期实际检查 10 个项目/方向的公开资料入口：Qdrant、Qdrant Helm、LangGraph Python、LangGraph JS、vLLM GPU、vLLM TPU、SGLang、Modal、Cloudflare、Hugging Face TGI。并非所有方向都取得了符合时窗的完整原始资料；没有声称逐个完成源码或 benchmark 复现。已有知识库最新专题为 11/13 的 KVGuard，故首先排除内容重叠。
+
+| 进入重点比较的候选 | 可核实的一手资料 | 结论 |
+|---|---|---|
+| Qdrant 1.20.1：HNSW 大段建图与磁盘冷读优化 | [11/13 Release](https://github.com/qdrant/qdrant/releases/tag/v1.20.1) | **暂缓，最值得进一步核查**。RAG 检索系统价值高，发行说明涉及 PiPNN 建图、冷盘多条件过滤、减少 HNSW 读次数；但本轮没有核实完整 benchmark、索引大小/磁盘条件与代码差异，不应凭 Release 直接写性能结论。与旧 RAG 文章主题不同，若证据充分可作为独立专题。 |
+| LangGraph 1.2.20：strict resume | [11/05 Release](https://github.com/langchain-ai/langgraph/releases/tag/1.2.20) | **旧文修订候选**。过期人工批准不能直接恢复的设计值得补入长期 Agent 的安全边界，但目前更像 Super-agent / Agent 运行时文章的具体增量，不单开新篇。 |
+| LangGraph JS 1.7.3：取消流时停止运行 | [11/09 Release](https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain%2Flanggraph%401.7.3) | **旧文修订候选**。取消订阅后后台执行是否继续，是 Agent 生命周期问题，适合与 strict resume 合并讨论；本次没有验证跨语言实现细节。 |
+| Modal Sandbox resourcing | [官方博客目录](https://modal.com/blog) | **暂缓**。Burst/Reserve 容量经济性重要，但尚未核实单篇原始发布时间、定量工作负载与 On-prem 对照，不能把厂商定价思路当作通用实验结论。 |
+| SGLang 0.5.23：MoE 与 Prefill | [11/02 Release](https://github.com/sgl-project/sglang/releases/tag/v0.5.23) | **落选**。大量优化与既有 Paged Experts / ReplaySSM 文章重叠，且其中部分结果绑定高端 GPU；单一新原理尚未充分隔离。 |
+
+其他排查：vLLM [GPU 项目](https://github.com/vllm-project/vllm/releases)与[TPU 项目](https://github.com/vllm-project/tpu-inference/releases)（需区分两者，不可混称）；[Qdrant Helm 1.20.1](https://github.com/qdrant/qdrant-helm/releases/tag/qdrant-1.20.1)主要是部署更新；[Hugging Face TGI](https://github.com/huggingface/text-generation-inference) 已归档，不能当作本期活跃发布；Cloudflare 检索未取得足够明确的近期原始研究资料。
+
+**本期结论：不凑新文章。** 已检查现有研究元数据、图谱、QA 索引与题库的结构入口；本次未改变知识分类、文章或图谱，不触发新文章的 QA 增量。下一轮优先对 Qdrant HNSW 冷盘检索进行 PR、算法和可复现实验的深入核查；如果不具备足够一手证据，优先修订现有 Agent 长任务恢复与取消语义文章。此处只是候选研究记录，不宣称实测或生产验证。
+
 ## 固定筛选原则
 优先级是严格顺序：**岗位相关性（可移植至 On-prem/Hybrid）→ 真实技术价值 → 时间上的新鲜度 → 可核实社区评价 → 是否当天发布**。同一原理跨两种部署合并，互补问题则保持双路径。
 
