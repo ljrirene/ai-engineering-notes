@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-13",
+  "updatedAt": "2026-11-22",
   "disclaimer": "Manually curated from public research notes. Keyword coverage is NOT semantic assessment.",
   "questions": [
     {
@@ -998,6 +998,68 @@
         [
           "ci",
           "调试"
+        ]
+      ]
+    },
+    {
+      "id": "q-33",
+      "doc": "a-qdrant-cold-hnsw",
+      "level": "机制",
+      "q": "为什么 HNSW offsets 预取可以让 query 更快，却让 cold total 更慢？",
+      "hint": "把 open、query、total 分开，考虑两次依赖性 I/O 与预热成本。",
+      "answer": "旧实现每次访问邻居可能先 fetch offset 再 fetch links；新实现提前在 graph open 预取 offsets，降低 query 期间的 offset miss，但增加 open 的 I/O。作者 Serverless 中位数 open 53.6→215.1ms，query 199.3→133.8ms，total 251.7→345.7ms，完整首次请求更慢。",
+      "trap": "不能只用 query latency 宣称端到端更快，也不能把两个实验配置混算。",
+      "terms": [
+        [
+          "offset",
+          "偏移"
+        ],
+        [
+          "预取",
+          "prefetch"
+        ],
+        [
+          "open",
+          "启动"
+        ],
+        [
+          "query",
+          "查询"
+        ],
+        [
+          "total",
+          "总时间"
+        ]
+      ]
+    },
+    {
+      "id": "q-34",
+      "doc": "a-qdrant-cold-hnsw",
+      "level": "系统设计",
+      "q": "如何判断是否在企业 RAG 中启用 HNSW offset 预取？",
+      "hint": "分别考虑冷热比、p99、Recall、过滤、SSD/缓存和网络边界。",
+      "answer": "锁定索引/量化/ef/查询集，分别测冷 open、冷 query、total、热态 RPS、p95/p99、RSS/IOPS 与 Recall@k；按冷启动频率、page cache、远端读取成本、租户 ACL 和合规边界决策。预取不是 GPU 优化，且需要证明每种后端的 populate 行为。",
+      "trap": "不能把 PR 作者的 1.06–1.09× RPS 外推到所有数据集、存储和 Serverless 首次请求。",
+      "terms": [
+        [
+          "冷启动",
+          "cold"
+        ],
+        [
+          "召回",
+          "recall"
+        ],
+        [
+          "p99",
+          "延迟"
+        ],
+        [
+          "缓存",
+          "cache"
+        ],
+        [
+          "权限",
+          "acl"
         ]
       ]
     }

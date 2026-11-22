@@ -1,3 +1,19 @@
+- id: a-qdrant-cold-hnsw
+  priority: "core"
+  why_priority: "以有源码和反例 benchmark 的具体优化，训练端到端性能分析、存储缓存与检索系统设计；机制可迁移，但性能结论仅限作者配置。"
+  date: "2026-11-22"
+  title: "Qdrant 冷盘 HNSW：为什么查询变快，首次请求反而更慢？"
+  topic: "RAG 检索系统与存储 I/O"
+  purpose: "向量索引在冷盘搜索时要先查邻居地址再读取邻居，提前加载地址表可能减少查询等待，却增加冷启动成本。"
+  takeaway: "你会学会区分索引打开、查询和完整请求耗时，并根据缓存、I/O 与召回率决定是否预取。"
+  url: "/notes/2026/11/2026-11-22-qdrant-cold-hnsw/"
+  visual: "/interactive/2026-11-22-qdrant-cold-hnsw-map.html"
+  related:
+    - id: a-retrieval
+      why: "旧文优化语义表示和召回质量，本篇优化检索图的存储读取；两者分别决定找到什么和多快找到。"
+    - id: a-paged-experts
+      why: "两篇都在有限快速存储与较慢存储间权衡预取和按需加载，但对象分别是图邻接数据与 MoE 权重。"
+
 - id: a-kvguard
   priority: "core"
   why_priority: "KV Cache 的请求级内存安全是通用 Serving 问题，论文提供跨 vLLM/SGLang 的可核查故障证据。"
@@ -206,7 +222,3 @@
       why: "两篇都优化推理时的数据搬运，但权重分页与状态重放不能混为一谈。"
     - id: a-sticky
       why: "模型内部状态与跨机器会话状态是两个不同层次。"
-
-
-
-

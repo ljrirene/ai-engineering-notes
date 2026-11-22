@@ -3,6 +3,22 @@ layout: default
 title: 选题筛选与历史记录
 permalink: /selection-history/
 ---
+
+## 2026-11-22：Qdrant 冷盘 HNSW I/O 取舍（新增一篇精读）
+
+本期公开入口实际扫描 **10 个方向**：Qdrant Core/Helm、LangGraph Python/JS、SGLang、vLLM GPU/TPU、Hugging Face Transformers、Modal、Cloudflare。并非每个方向都取得 7–14 天内完整的一手实验；重点对下列 5 项核实了发布记录与机制。字典序优先工程迁移价值和可验证机制，随后考虑新鲜度。没有把仓库 release、PR 或作者 benchmark 冒充独立复现。
+
+| 候选 | 一手来源及日期 | 决策 |
+|---|---|---|
+| **Qdrant v1.20.1 / #10743 HNSW offsets prefetch** | [11/13 Release](https://github.com/qdrant/qdrant/releases/tag/v1.20.1)、[PR #10743](https://github.com/qdrant/qdrant/pull/10743)（09/23 创建、10/23 合并） | **入选**。有具体 Rust diff、冷启动反例与不同并发 RPS 数据；学习 I/O 预取和端到端性能归因比单纯版本公告更可迁移。新版本发布不等于机制当天首次出现。 |
+| Qdrant PiPNN 大段建图 | [11/13 Release](https://github.com/qdrant/qdrant/releases/tag/v1.20.1)、[milestone 56](https://github.com/qdrant/qdrant/milestone/56) | 暂缓。建图吞吐与冷查询属于不同问题，本轮未完成对应实验配置的源码与复现核查。 |
+| LangGraph strict resume | [11/05 Release](https://github.com/langchain-ai/langgraph/releases/tag/1.2.20) | 不单独成篇；与旧 Super-agent 的任务恢复/人工批准机制重叠，适合修订旧文。 |
+| LangGraph JS stream cancellation | [11/09 Release](https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain/langgraph%401.7.3) | 工程上重要，但改动范围相对窄，适合作为 Agent 生命周期补充。 |
+| SGLang v0.5.23 / Paged Experts | [11/02 Release](https://github.com/sgl-project/sglang/releases/tag/v0.5.23) | 已有专篇，不重复；相同数据搬运思想可建立跨层对照。 |
+
+已回查当前 **14 篇**研究元数据、文章图谱 ID、QA 文档 ID 和原有交互图链接；新文连到 RAG 检索和 Paged Experts，分别说明语义质量 vs I/O、权重分页 vs 图偏移预取。无旧文覆盖或删除；未修改 Guide 分类规则。
+
+
 # 2026-10-31 至 2026-11-04：历史选题筛选说明
 
 > **重要说明**：下表不是对当时搜索日志的复刻。既有对话确认了当日选题，但部分原始候选列表与搜索数量无法恢复。这里依据保留的研究主题和经重新核查的一手来源总结“入选理由”，不虚构候选搜索总数、实时社区讨论或当时逐一淘汰的排名。
@@ -114,4 +130,3 @@ permalink: /selection-history/
 | [Modal Sandbox Events（11/12）](https://modal.com/changelog) | 可用性更新，技术原理不足以成为单独深读主题。 |
 
 已对照 13 篇旧文；Paged Experts 管权重容量、KVGuard 管 KV 请求权限，Agent Eval 关注失败归因，存在真实互补。作者数据未经本站复现；本期保留所有旧文/QA/图谱内容。新增 3 道 QA 题与 11 个按新增 Markdown 章节抽取的片段。
-

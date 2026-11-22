@@ -984,5 +984,87 @@
     "scope": "论文 2026-11-04；性能、29 个历史缺陷和 8 个新发现均为作者报告。本站未独立复现。",
     "source": "KVGuard 论文",
     "sourceUrl": "https://arxiv.org/abs/2611.06138"
+  },
+  {
+    "id": "a-qdrant-cold-hnsw",
+    "path": "2026-11-22-qdrant-cold-hnsw-map.html",
+    "title": "为什么 HNSW 查询变快，首次请求反而变慢？",
+    "problem": "冷盘图搜索要先读偏移量再读邻居。提前加载偏移量能加速查询，却会增加打开索引的等待。",
+    "example": "例子：一台刚启动的检索服务首次查询，预取后查询阶段少等 65ms，但加载阶段多花约 162ms，最终用户反而更晚收到结果。数字取自作者两组中位数的差值，不是同一请求逐项追踪。",
+    "before": {
+      "label": "按需读 offset 和 links",
+      "shortLabel": "每次访问先找地址",
+      "summary": "打开索引较快，但冷查询访问邻居时可能串联两次 I/O。",
+      "steps": [
+        {
+          "title": "接收检索请求",
+          "brief": "HNSW 从入口点开始搜索。",
+          "detail": "输入 query vector、top-k、ef 与过滤条件；索引数据须有授权。",
+          "focus": false
+        },
+        {
+          "title": "读取节点偏移量",
+          "brief": "冷盘先查邻接表在哪。",
+          "detail": "node ID 到 graph links offset 的一次读取，可能等待远端/磁盘缓存。",
+          "focus": true
+        },
+        {
+          "title": "读取邻居",
+          "brief": "拿到 offset 后才能读 links。",
+          "detail": "依赖性读使关键路径包含两次潜在 fetch，随后还要读向量和计算距离。",
+          "focus": true
+        },
+        {
+          "title": "返回结果",
+          "brief": "open 快，但 query 可能慢。",
+          "detail": "必须同时计量 query latency、端到端 cold total、Recall 与过滤正确性。",
+          "focus": false
+        }
+      ]
+    },
+    "after": {
+      "label": "在打开索引时预取 offsets",
+      "shortLabel": "先把地址表准备好",
+      "summary": "图打开时预热 offsets，查询阶段直接用本地地址；代价是冷启动更慢。",
+      "steps": [
+        {
+          "title": "打开索引",
+          "brief": "检查图文件、格式与版本。",
+          "detail": "Graph open 仍有元数据读取与缓存初始化成本；不能跳过完整性检查。",
+          "focus": false
+        },
+        {
+          "title": "预取 offsets",
+          "brief": "把邻居地址表提前加载。",
+          "detail": "PR #10743 在 graph open 阶段安排 offsets 预热，某些 Universal I/O 后端执行缓存填充，另一些为 no-op。",
+          "focus": true
+        },
+        {
+          "title": "HNSW 遍历",
+          "brief": "直接从本地偏移量找到邻居。",
+          "detail": "避免每次先发 offset fetch，再发 links fetch；并不消除 links、vector 或 filter I/O。",
+          "focus": true
+        },
+        {
+          "title": "读取邻居并评分",
+          "brief": "用向量距离和候选队列选点。",
+          "detail": "HNSW 的 ef、量化、filter 与 Recall 仍需单独测量。",
+          "focus": false
+        },
+        {
+          "title": "比较完整耗时",
+          "brief": "同时看 open、query 和 total。",
+          "detail": "作者 Serverless 冷启动中位数：open 53.6→215.1ms，query 199.3→133.8ms，total 251.7→345.7ms。",
+          "focus": true
+        }
+      ]
+    },
+    "keyPoint": "把等待从查询阶段移到启动阶段，不代表用户一定等得更少。",
+    "change": "预热节点偏移量，减少 HNSW 图遍历时的依赖性读取；同时增加 cold open 成本。",
+    "benefit": "作者在 server+io_uring 测试中报告 1.06–1.09 倍 RPS，在 Serverless 冷查询中报告更低 query latency。",
+    "cost": "冷启动时需要额外读 offsets；作者 Serverless cold total 中位数反而增加。",
+    "scope": "2026-11-13 Release 收录 2026-10-23 合并的 PR #10743。性能是作者特定设置报告；本站未复现，教学示例不代表真实 Qdrant benchmark。",
+    "source": "Qdrant PR #10743",
+    "sourceUrl": "https://github.com/qdrant/qdrant/pull/10743"
   }
 ]

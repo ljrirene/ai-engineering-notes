@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-13",
+  "updatedAt": "2026-11-22",
   "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
     {
@@ -413,6 +413,28 @@
       "label": "KV Block Table",
       "kind": "concept",
       "description": "CPU/GPU 逻辑块到物理块映射与提交一致性。"
+    },
+    {
+      "id": "a-qdrant-cold-hnsw",
+      "label": "Qdrant HNSW Cold I/O",
+      "kind": "article",
+      "date": "2026-11-22",
+      "track": "cross-deployment",
+      "description": "预取 HNSW 邻接偏移量以降低查询 I/O，代价是增加冷启动时间；比较 open/query/total 与 Recall。",
+      "url": "/notes/2026/11/2026-11-22-qdrant-cold-hnsw/",
+      "visual": "/interactive/2026-11-22-qdrant-cold-hnsw-map.html"
+    },
+    {
+      "id": "c-hnsw-offset-prefetch",
+      "label": "HNSW Offset Prefetch",
+      "kind": "concept",
+      "description": "提前加载节点邻接偏移量以减少查询时的依赖性存储读取。"
+    },
+    {
+      "id": "c-cold-latency-budget",
+      "label": "Cold-start Latency Budget",
+      "kind": "concept",
+      "description": "区分索引打开、首次查询、总请求时间与长期吞吐，避免局部优化误导。"
     }
   ],
   "edges": [
@@ -1309,6 +1331,60 @@
       "target": "a-agent-eval",
       "type": "complements",
       "reason": "为区分模型失败与运行时污染提供底层故障证据。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "c-hnsw-offset-prefetch",
+      "type": "explains",
+      "reason": "通过提前加载节点邻接表偏移量减少查询时的 offset fetch。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "c-cold-latency-budget",
+      "type": "explains",
+      "reason": "作者 cold open 增加但 cold query 降低，必须看端到端总时间。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "a-retrieval",
+      "type": "complements",
+      "reason": "语义召回与 HNSW 存储 I/O 是检索质量和延迟的不同层次。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "a-paged-experts",
+      "type": "contrasts",
+      "reason": "两者都研究缓存与数据搬运，但分别管理 HNSW 邻接图和 MoE 专家权重。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "内网 SSD、page cache、io_uring 与受控测试数据。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "合规匿名查询、远端缓存与跨域 I/O 需额外治理。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "使用一手 PR、锁定 benchmark 与明确作者数据边界。"
+    },
+    {
+      "source": "c-hnsw-offset-prefetch",
+      "target": "c-cold-latency-budget",
+      "type": "contrasts",
+      "reason": "减少查询阶段等待可能增加图打开阶段的预取成本。"
+    },
+    {
+      "source": "a-qdrant-cold-hnsw",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "区分 benchmark 测试条件、端到端耗时与作者报告的局限。"
     }
   ]
 }
