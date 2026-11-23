@@ -4,6 +4,16 @@ title: 选题筛选与历史记录
 permalink: /selection-history/
 ---
 
+## 2026-11-23：交互教程旧方法与新方法同时展示（全库更新）
+
+读者明确要求每篇的旧方法和新方法同时出现，而非切换 tab 后只能看到其中一方。**本次是可视化 UI 维护，不是新增论文，不改变每三天选题节奏。**
+
+**影响范围**：原有 16 个研究条目、16 个共享模板 Wrapper、16 个 `visual_lessons.json` 讲解对象；旧方法均为 3–4 步，新方法为 4–5 步。保留独立顺序、不强行配对不同算法阶段。改动共享 `docs/_layouts/visual-explainer.html`、`docs/assets/visual-explainer.css` 和 `docs/assets/visual-explainer.js`：从二选一标签变为桌面双列（移动单列堆叠）；全部步骤标题、简述始终可见，步骤详情原生折叠，一键展开两侧所有细节为可选增强；在比较末尾固定呈现 lesson.change 的“最重要的改变”。主要贡献和创新边界仍在第一屏。
+
+**静态检查结果**：16 个研究 / 16 个 visual lessons / 16 个 Graph article / 16 个 QA documents / 37 个现有 QA 题对齐；Graph 边端点和相关旧文关系一致；16 个原理演示 Wrapper 已逐一读取并确认使用共享布局；`before`、`after` 步骤字段无缺失。Graph、语料、旧题、文章 ID/路径均未修改，因为此次仅修展示方法。未在真实移动设备上完成交互测试；GitHub 代码提交不等于 Pages 构建已上线。
+
+
+
 ## 2026-11-23：全库“主要贡献 / 创新点 / 证据边界”教学修订
 
 用户发现 AutoRAGBench 原理演示只讲流程，没有先讲论文真正贡献。核对 [AutoRAGBench arXiv v1](https://arxiv.org/pdf/2611.25582) Section I 的 Contributions 后，明确其贡献是开放代码空间 Benchmark、系统与开发轨迹的联合评测、九任务×九 Agent 实证及公开资源；**不是新检索算法**。
