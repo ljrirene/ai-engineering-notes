@@ -1,3 +1,19 @@
+- id: a-autoragbench
+  priority: "core"
+  why_priority: "开放代码 RAG 开发、隐藏评测与过拟合归因是可迁移的 Agent/ML Systems 技能；论文有源码但没有本站独立 H800 复现，本篇为用户指定提前发布。"
+  date: "2026-11-23"
+  title: "AI 能自己优化 RAG 吗？从自动写代码到验证检索质量"
+  topic: "RAG 自动研发与 Agent 评测"
+  purpose: "让 Agent 自动设计和修改检索代码可以降低试错成本，但反复在开发问题上测试也可能让指标失真。"
+  takeaway: "你会理解怎样隔离训练与隐藏测试、冻结代码并使用固定回答模型判断 RAG 修改是否真正有效。"
+  url: "/notes/2026/11/2026-11-23-autoragbench/"
+  visual: "/interactive/2026-11-23-autoragbench-map.html"
+  related:
+    - id: a-agent-eval
+      why: "旧文说明 Agent 失败时怎样排除环境和评分器故障；本篇把评测扩展到 Agent 自己交付的整个 RAG 系统。"
+    - id: a-retrieval
+      why: "旧文深入解释语义检索怎样改善证据召回；本篇研究如何让 Agent 选择并验证这些检索方法的组合。"
+
 - id: a-qdrant-cold-hnsw
   priority: "core"
   why_priority: "以有源码和反例 benchmark 的具体优化，训练端到端性能分析、存储缓存与检索系统设计；机制可迁移，但性能结论仅限作者配置。"
