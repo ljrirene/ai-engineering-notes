@@ -6,6 +6,13 @@
   topic: "RAG 自动研发与 Agent 评测"
   purpose: "让 Agent 自动设计和修改检索代码可以降低试错成本，但反复在开发问题上测试也可能让指标失真。"
   takeaway: "你会理解怎样隔离训练与隐藏测试、冻结代码并使用固定回答模型判断 RAG 修改是否真正有效。"
+  contribution_type: "研究论文 / Benchmark"
+  contributions:
+    - "建立九项任务的开放代码 RAG 开发基准：Agent 从零编写可运行的检索服务，而非只在固定参数组合中搜索。"
+    - "把最终系统评测与 Agent 开发轨迹评测结合：冻结代码、验证证据、使用隐藏测试和五个固定回答模型比较质量与延迟。"
+    - "对九种 Agent 配置进行跨任务对照，并分析早期、最佳和最终版本的分数差异；公开代码与数据以支持后续核查。"
+  innovation: "把评测对象从“某条 RAG 管线效果好不好”扩展为“Agent 能否自主研发、迭代并交付一个可验证的 RAG 系统”。"
+  innovation_boundary: "不是发明新的检索算法、隐藏测试或多模型评分；新意主要在任务定义与组合评测协议。论文分数属于作者报告，未独立复现；“首个”为作者主张。"
   url: "/notes/2026/11/2026-11-23-autoragbench/"
   visual: "/interactive/2026-11-23-autoragbench-map.html"
   related:
@@ -22,6 +29,13 @@
   topic: "RAG 检索系统与存储 I/O"
   purpose: "向量索引在冷盘搜索时要先查邻居地址再读取邻居，提前加载地址表可能减少查询等待，却增加冷启动成本。"
   takeaway: "你会学会区分索引打开、查询和完整请求耗时，并根据缓存、I/O 与召回率决定是否预取。"
+  contribution_type: "开源工程改动 / PR"
+  contributions:
+    - "在打开 HNSW 图索引时提前读取节点邻接表的偏移量（offsets）。"
+    - "把原本查询阶段可能先读 offset、再读 links 的串行磁盘等待，部分转移到索引打开阶段。"
+    - "公开比较查询延迟、冷启动与完整请求耗时，展示局部提速可能使首次请求更慢。"
+  innovation: "在 Qdrant 的特定图存储与 I/O 路径中实现 offset 预取，以减少图遍历时依赖性的存储读取。"
+  innovation_boundary: "不是发明 HNSW 或预取原理；仅部分后端实际预热，性能数值来自 PR 作者条件，不代表所有 SSD 或负载。"
   url: "/notes/2026/11/2026-11-22-qdrant-cold-hnsw/"
   visual: "/interactive/2026-11-22-qdrant-cold-hnsw-map.html"
   related:
@@ -38,6 +52,13 @@
   topic: "推理系统安全"
   purpose: "多个请求共享 GPU KV Cache 时，错误映射即使没有 CUDA 越界，也可能污染其他请求的数据。"
   takeaway: "你会掌握 KV Block 所有权、初始化标记与 CPU/GPU 五个检查点，并学习故障注入和调试取舍。"
+  contribution_type: "研究论文 / 检查器"
+  contributions:
+    - "把 KV Cache 错误从一般 GPU 地址越界，推进到跨请求的逻辑所有权和初始化状态错误。"
+    - "设计块所有权、shadow metadata 与 CPU/GPU 关键路径检查，覆盖调度、映射及实际读写。"
+    - "在 vLLM 和 SGLang 场景评估缺陷检测能力与运行开销，给出作者报告的案例和边界。"
+  innovation: "检查 GPU 地址合法但“访问了别的请求的合法 KV 块”的语义安全错误，这是普通地址越界工具难以识别的。"
+  innovation_boundary: "不是新发明 PagedAttention 或 CUDA 内存安全；缺陷数量和性能来自论文，适合作为调试/CI 思路而非默认生产零成本防护。"
   url: "/notes/2026/11/2026-11-13-kv-cache-safety/"
   visual: "/interactive/2026-11-13-kv-cache-safety-map.html"
   related:
@@ -54,6 +75,13 @@
   topic: "Agent 评测"
   purpose: "Agent 没完成任务，可能是模型能力不足，也可能是环境缺工具、资源不足或评分脚本错误。"
   takeaway: "你会学习如何锁定任务和环境版本、隔离执行与验证，并分别统计有效运行和能力失败。"
+  contribution_type: "跨来源工程综合"
+  contributions:
+    - "把 Agent 任务失败拆为模型能力错误、执行环境失效和评分器错误，避免所有错误统一扣给模型。"
+    - "用固定任务、容器镜像、资源与 Verifier 版本建立可复现的独立执行与评分链。"
+    - "将追踪、失败归因、资源突发与成本指标整合为面向 Agent 评测平台的审计清单。"
+  innovation: "本站的增量是把公开 Terminal-Bench、Harbor 和 Modal/Snorkel 经验组织成分层归因的方法，不是某个团队联合发表的新算法。"
+  innovation_boundary: "这是跨项目独立工程抽象，并非官方联合框架；供应商规模和节费数据没有独立复核。"
   url: "/notes/2026/11/2026-11-10-agent-evaluation-validity/"
   visual: "/interactive/2026-11-10-agent-evaluation-validity-map.html"
   related:
@@ -70,6 +98,13 @@
   topic: "推理系统"
   purpose: "MoE 模型的专家权重装不进 GPU 显存时，Paged Experts 只把当前计算需要的专家搬进显存。"
   takeaway: "你会看懂显存容量、PCIe 传输与推理延迟怎么取舍，以及多请求为何容易出现频繁换页。"
+  contribution_type: "开源推理引擎改动"
+  contributions:
+    - "针对 MoE 专家权重远超单卡显存的问题，在 GPU 与较慢存储之间按当前所需专家管理 Residency。"
+    - "利用专家加载、缓存/驱逐及执行规划，让一部分专家按需搬入显存执行，而不是要求全部权重常驻。"
+    - "关注量化权重和 scale 等参数协同搬运、正确性与多请求换页抖动。"
+  innovation: "把通用分页/缓存思想落实到 SGLang 的 MoE 专家执行路径，具体处理权重格式、GPU 计算与专家驻留调度。"
+  innovation_boundary: "不是通用发明 GPU 分页或 MoE；收益依赖专家命中率、PCIe/内存带宽、量化布局与并发，作者数字未独立复现。"
   url: "/notes/2026/11/2026-11-07-paged-experts/"
   visual: "/interactive/2026-11-07-paged-experts-map.html"
   related:
@@ -85,6 +120,13 @@
   topic: "Agent 系统"
   purpose: "它把 GitHub、IM 等渠道的事件组织成持久任务，让 Router 分配工作、Worker 持续执行并恢复状态。"
   takeaway: "你会理解长期 Agent 怎样控制主动权限、找回跨会话上下文，以及避免后台任务失控。"
+  contribution_type: "官方设计探索 / 开源原型"
+  contributions:
+    - "提出事件驱动的长期 Agent：跨渠道事件经过权限与语义过滤，再交给 Router 和持续运行的 Worker。"
+    - "把跨 Session 的线程状态、可恢复任务与召回记忆从有限上下文窗口中分离。"
+    - "公开部分原型，用于分析主动操作、异步任务以及权限撤销和持久状态的工程边界。"
+  innovation: "相比一次性的聊天 Session，核心设计变化是持续事件订阅、路由与跨会话状态恢复的协作模型。"
+  innovation_boundary: "不是已证实上线的生产系统；事件总线、Router/Worker 和状态机是已知组件，公开设计与原型实现范围不能混同。"
   url: "/notes/2026/11/2026-11-04-cross-deployment-superagent/"
   visual: "/interactive/2026-11-04-superagent-map.html"
   related:
@@ -100,6 +142,13 @@
   topic: "Agent 安全"
   purpose: "Agent 读取网页和文档时，攻击者可能把恶意操作指令藏进看似普通的内容里。"
   takeaway: "你会分清检测模型、授权策略和执行沙箱各负责哪一层防护。"
+  contribution_type: "安全研究 / 厂商发布"
+  contributions:
+    - "围绕真实网页/文档中的提示注入，公开检测数据、Guard 和可复查的评测入口。"
+    - "把防守评测从静态示例延伸到自适应攻击，强调攻击者会根据防护机制调整内容。"
+    - "解释误报、漏报和阈值取舍，并在工程架构中区分检测建议和真正的工具授权。"
+  innovation: "BrowseSafe++ 研究的增量在于针对真实浏览内容与自适应攻击的检测/评测方案，而不是把 Prompt Guard 当成权限系统。"
+  innovation_boundary: "不是新发明 Prompt Injection、规则过滤或沙箱；模型指标属于发布方，Guard 通过也不能授权执行。"
   url: "/notes/2026/11/2026-11-04-onprem-prompt-injection/"
   visual: "/interactive/agent-security-map.html"
   related:
@@ -115,6 +164,13 @@
   topic: "训练系统"
   purpose: "Agentic RL 一边要生成大量轨迹，一边要更新模型权重，两种任务对 GPU 的需求并不相同。"
   takeaway: "你会理解为什么拆分 Sampler 和 Trainer，以及权重同步、过期样本和 GPU 调度的代价。"
+  contribution_type: "开源训练系统 / 跨来源综合"
+  contributions:
+    - "把 Agentic RL 的轨迹采样（Inference/Sampler）与权重更新（Trainer）拆成不同的 GPU 工作负载。"
+    - "围绕版本同步、样本新鲜度和资源调度，讨论两侧异步运行时的吞吐与偏差取舍。"
+    - "结合另一来源的数值一致性讨论，强调训练和推理路径的结果不能随意混用。"
+  innovation: "Spindle 的工程重点是让采样与训练能够独立扩缩、再协调参数版本和任务调度；本站组合了不同来源的证据。"
+  innovation_boundary: "分离 Actor/Learner 不是新概念；Fireworks 的数值对齐研究不是 Spindle 官方联合实现，吞吐数字为厂商条件下报告。"
   url: "/notes/2026/11/2026-11-04-hybrid-spindle/"
   visual: "/interactive/rl-infra-map.html"
   related:
@@ -130,6 +186,13 @@
   topic: "模型服务"
   purpose: "流式语音识别依赖前面片段的状态，随机分配后续请求可能导致重复、漏词或上下文中断。"
   takeaway: "你会学到如何保持会话与实例的亲和性，以及扩容、断线和实例故障时怎样恢复。"
+  contribution_type: "基础设施工程案例"
+  contributions:
+    - "解释为什么有状态流式推理的后续片段需要尽量回到保存会话状态的实例。"
+    - "分析会话亲和路由与服务扩缩容、节点故障、重连和状态恢复的冲突。"
+    - "给出路由键、状态失效与迁移约束的本地可模拟设计。"
+  innovation: "案例的具体工程价值在于将会话亲和引入可扩缩的 Serverless 路由层，而不是只要求客户端固定连一台机器。"
+  innovation_boundary: "Sticky session、哈希路由与会话状态并非新发明；本站的 ASR 扩展是独立迁移分析，不是厂商宣称的实验结果。"
   url: "/notes/2026/11/2026-11-03-onprem-sticky-sessions/"
   visual: "/interactive/2026-11-03-sticky-map.html"
   related:
@@ -145,6 +208,13 @@
   topic: "评测与发布"
   purpose: "它把真实请求复制到候选模型做测试，但仍由旧模型回答用户，避免直接影响线上结果。"
   takeaway: "你会理解 Shadow 与 Canary 的区别，以及如何限制镜像缓冲、检查评测偏差和安排回滚。"
+  contribution_type: "基础设施工程案例"
+  contributions:
+    - "让候选推理端点接收生产请求的镜像，但不把候选响应交还给用户。"
+    - "说明 Shadow 和真正向用户返回结果的 Canary 是不同风险等级的发布阶段。"
+    - "分析镜像队列积压、慢消费者、采样偏差和可观察指标，防止评测影响生产。"
+  innovation: "工程实现的增量是将候选端点的镜像评估、限流/缓冲和提升决策纳入统一发布流程。"
+  innovation_boundary: "Shadow traffic 和 Canary 不是新概念；未被用户看到的候选响应不能单独证明线上体验或安全性。"
   url: "/notes/2026/11/2026-11-03-hybrid-shadow-traffic/"
   visual: "/interactive/2026-11-03-shadow-map.html"
   related:
@@ -160,6 +230,13 @@
   topic: "可靠性工程"
   purpose: "GPU 节点出错后，系统先核验证据、确定修复动作，再控制执行范围和复验健康。"
   takeaway: "你会学会如何用故障证据、审批和熔断，避免自动化操作把局部故障扩大成集群事故。"
+  contribution_type: "GPU 集群工程案例"
+  contributions:
+    - "将 GPU 节点健康异常与修复动作分离，先结合 Host/Guest、Xid 和驱动等证据归因。"
+    - "为重启、驱逐、修复和复验定义有边界的状态转换与审批条件。"
+    - "加入集群级限流与熔断，避免自动化修复扩大故障范围。"
+  innovation: "Together AI 案例的工程价值是把证据驱动的 GPU 故障诊断接入闭环修复与集群级风险控制。"
+  innovation_boundary: "状态机、熔断和自动运维并非新算法；厂商案例未证明对所有 GPU 故障都能自动修复。"
   url: "/notes/2026/11/2026-11-02-hybrid-gpu-auto-repair/"
   visual: "/interactive/2026-11-02-gpu-repair-map.html"
   related:
@@ -173,6 +250,13 @@
   topic: "低延迟决策"
   purpose: "任务路由和分类常常只需要在有限选项里做决定，不一定需要 LLM 一字一句生成标签。"
   takeaway: "你会理解一次前向评分与自回归生成的区别，以及置信度校准为什么不能代替授权。"
+  contribution_type: "跨来源模型与工程综合"
+  contributions:
+    - "比较有限类别判定与逐 token 文本生成的不同计算接口，解释何时不需要自回归生成。"
+    - "梳理直接评分/专门决策模型与置信度校准、分类成本和延迟的取舍。"
+    - "说明模型输出的概率或标签只负责建议，业务权限必须由可信策略层独立控制。"
+  innovation: "多个公开工作共同展示“把有限决策做成评分而非文字生成”的方向；本站的贡献是工程对照与部署边界。"
+  innovation_boundary: "不是本站提出一个统一新模型，也不能把不同厂商的 benchmark 当作同一实验；校准不等于授权。"
   url: "/notes/2026/11/2026-11-02-onprem-decision-models/"
   visual: "/interactive/2026-11-02-decisions-map.html"
   related:
@@ -188,6 +272,13 @@
   topic: "Agent 架构"
   purpose: "一个大 Agent 同时做路由、领域推理和状态管理容易互相干扰，薄编排器把职责交给专门 Agent。"
   takeaway: "你会理解确定性控制、领域上下文隔离，以及多个 Agent 如何安全修改共享工作区。"
+  contribution_type: "跨来源架构综合"
+  contributions:
+    - "Meta Thin Orchestrator 思路将路由/控制与领域推理解耦，避免编排器背负过多上下文和职责。"
+    - "Perplexity Shared Workspace 思路把多 Agent 的协作落到可版本化、可冲突检测的共同工作区。"
+    - "综合讨论确定性路由、并发写入、权限与长期 Agent 的状态一致性。"
+  innovation: "两个独立案例分别改进任务分工和共享状态；本站创新性解读在于揭示这两个不同层面的互补关系。"
+  innovation_boundary: "不是 Meta 与 Perplexity 联合提出的新 Agent 平台；thin router 与 Git 并发控制都是可复用的工程思想。"
   url: "/notes/2026/11/2026-11-01-hybrid-agents/"
   visual: "/interactive/2026-11-01-agents-map.html"
   related:
@@ -203,6 +294,13 @@
   topic: "检索与证据"
   purpose: "普通 RAG 可能找到含答案的片段，却漏掉限定条件、例外、页面结构和跨段上下文。"
   takeaway: "你会理解上下文编码与多向量匹配如何改善证据召回，以及它们带来的索引成本。"
+  contribution_type: "跨来源检索研究综合"
+  contributions:
+    - "Contextual Embedding 让被切开的段落重新获得文章或文档的限定语境，减少孤立片段误召回。"
+    - "多向量 Late Interaction 用查询与文档内部多个 token 级向量比较，而不是每文档只保留一个向量。"
+    - "拆解召回提升与索引容量、查询成本、跨段引用和重排复杂度之间的取舍。"
+  innovation: "两项来源分别在“给段落补回语境”和“保留细粒度匹配信号”上改进单段落/单向量检索；不是一个联合新算法。"
+  innovation_boundary: "不是本站发明 Contextual Embedding 或 ColBERT；不同来源的模型与评测条件不可直接横向推算增益。"
   url: "/notes/2026/11/2026-11-01-onprem-retrieval/"
   visual: "/interactive/2026-11-01-retrieval-map.html"
   related:
@@ -216,6 +314,13 @@
   topic: "Agent 执行安全"
   purpose: "Agent 会决定调用工具，但模型的决定不该直接变成宿主操作系统里的执行权限。"
   takeaway: "你会理解微虚拟机、网络出口、凭据隔离和权限策略各自保护什么。"
+  contribution_type: "开源安全基础设施 / 分析"
+  contributions:
+    - "把 Agent 选择工具与执行未知代码的权限域分离，用独立沙箱减少宿主机受影响范围。"
+    - "说明微虚拟机、网络出口、密钥作用域和生命周期限制承担不同的安全职责。"
+    - "结合公开攻防案例区分沙箱隔离、代理策略与 Prompt Guard 的实际边界。"
+  innovation: "SPACE 的工程落点在于把隔离执行、管理接口和出口政策提供为可复用 Agent 运行环境，而不是模型层安全提示。"
+  innovation_boundary: "MicroVM 和 egress 过滤并非新发明；特定漏洞演示不意味着所有环境都已被验证安全。"
   url: "/notes/2026/10/2026-10-31-hybrid-space/"
   visual: "/interactive/2026-10-31-space-map.html"
   related:
@@ -231,6 +336,13 @@
   topic: "推理系统"
   purpose: "部分循环模型在生成每个 token 时要反复读写很大的内部状态，显存带宽容易成为瓶颈。"
   takeaway: "你会理解缓存近期输入、按需重放与周期性状态更新如何交换计算量和显存 I/O。"
+  contribution_type: "研究论文 / 推理算法"
+  contributions:
+    - "识别递归 SSM 推理中每步大规模隐状态写回造成的 HBM 带宽瓶颈。"
+    - "提出缓存近期输入并在需要时重放计算，配合周期性状态 checkpoint 以减少高成本写回。"
+    - "分析 Replay Window 与重复计算、显存占用、吞吐和数值正确性之间的取舍，并提供公开实现。"
+  innovation: "核心变化是用较小的输入缓存与局部重算替代频繁写回完整 recurrent state，把部分内存带宽成本转换为计算。"
+  innovation_boundary: "不是所有模型都使用 SSM，也不是把 Transformer KV Cache 改为相同方法；加速依赖状态规模与硬件，作者结果未独立复现。"
   url: "/notes/2026/10/2026-10-31-onprem-replayssm/"
   visual: "/interactive/2026-10-31-replayssm-map.html"
   related:
