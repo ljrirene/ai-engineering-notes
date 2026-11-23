@@ -4,6 +4,19 @@ title: 选题筛选与历史记录
 permalink: /selection-history/
 ---
 
+## 2026-11-23：AutoRAGBench（用户指定，提前单篇发布）
+
+**候选来源与决策**：本次不是常规三天期的广搜竞争；用户明确指定论文 [AutoRAGBench，2026-11-19 arXiv v1](https://arxiv.org/abs/2611.25582) 优先研究，所以本次**正式重点候选只有 1 项**，没有声称检查了 10 个新候选。核对了作者 [开源仓库](https://github.com/ZhanGHanG9991/AutoRAGBench) 的 README、目录和论文 Section III–VI。其方法是让 Agent 从零编写 /retrieve 服务，通过开发 self_check、代码冻结、禁止测试数据泄漏、原语料证据校验和五个隐藏 Reader 评分；论文数字未经本站独立复现。
+
+| 主题与一手来源 | 与既有研究对照 | 本期决定 |
+|---|---|---|
+| **AutoRAGBench**，[论文](https://arxiv.org/pdf/2611.25582)、[代码](https://github.com/ZhanGHanG9991/AutoRAGBench) | 从 Agent 任务评测扩展到 Agent 自己写出的 RAG 服务；引入开放代码空间、开发轨迹与隐藏 Reader 评测 | **用户特选提前发布**；职业可迁移性和评测机制强，但预印本，来源为作者实验 |
+| **Agent Evaluation Validity**，[既有研究]({{ '/notes/2026/11/2026-11-10-agent-evaluation-validity/' | relative_url }}) | 旧文重点为模型失败、环境故障和评分器错误的归因 | 不重复；建立前置联系 |
+| **Contextual Embeddings / ColBERT**，[既有研究]({{ '/notes/2026/11/2026-11-01-onprem-retrieval/' | relative_url }}) | 旧文重点为如何改善具体检索模块的证据召回 | 不重复；解释自动优化可能改变哪些组件 |
+| **Qdrant Cold HNSW**，[既有研究]({{ '/notes/2026/11/2026-11-22-qdrant-cold-hnsw/' | relative_url }}) | 旧文针对 HNSW I/O、冷启动与查询延迟的取舍 | 不重复；建立“组件性能 vs RAG 端到端评测”联系 |
+
+**本期回查与审计**：对现有 15 篇文章在 studies.yml、Graph article 节点、Study QA documents/questions 的 ID、链接和导航字段进行一致性检查；新篇建立语义文章间边与跨层解释，原有文章与题库不删除。共享 visual-explainer Layout 未改动，新增 Wrapper 与 lesson；Guide 分类规则未变更，故未触发 Guide 全库重构。新增 3 道核验题和按真实新增 Markdown 抽取的分章节片段，不声称自动语义评分。尚未执行原论文 H800 实验，Pages 成功需在 GitHub Actions/实际站点另行确认。
+
 ## 2026-11-22：Qdrant 冷盘 HNSW I/O 取舍（新增一篇精读）
 
 本期公开入口实际扫描 **10 个方向**：Qdrant Core/Helm、LangGraph Python/JS、SGLang、vLLM GPU/TPU、Hugging Face Transformers、Modal、Cloudflare。并非每个方向都取得 7–14 天内完整的一手实验；重点对下列 5 项核实了发布记录与机制。字典序优先工程迁移价值和可验证机制，随后考虑新鲜度。没有把仓库 release、PR 或作者 benchmark 冒充独立复现。
