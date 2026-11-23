@@ -1,9 +1,17 @@
 {% assign study = site.data.studies | where: "url", page.permalink | first %}
 {% if study %}
-<section class="study-brief" aria-label="先用两句话看懂这篇">
+<section class="study-brief" aria-label="文章概要、主要贡献与技术创新">
   <div class="study-brief-label">文章概要</div>
   <p><strong>它在解决</strong>{{ study.purpose }}</p>
   <p><strong>你会学到</strong>{{ study.takeaway }}</p>
+  {% if study.contributions %}
+  <div class="study-main-contributions" aria-label="主要贡献和创新">
+    <h2>主要贡献</h2>
+    <ol>{% for contribution in study.contributions %}<li>{{ contribution }}</li>{% endfor %}</ol>
+    <div class="study-innovation"><strong>创新在哪里</strong><p>{{ study.innovation }}</p></div>
+    <details class="study-innovation-boundary"><summary>哪些不是新发明？证据边界</summary><p>{{ study.innovation_boundary }}</p></details>
+  </div>
+  {% endif %}
   <div class="study-brief-relations"><div class="study-brief-subtitle">相关文章</div>
   {% for relation in study.related limit:2 %}
     {% assign other = site.data.studies | where: "id", relation.id | first %}
