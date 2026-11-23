@@ -16,6 +16,7 @@ permalink: /archive.html
 <h3><a href="{{ s.url | relative_url }}">{{ s.title }}</a></h3>
 <p class="research-sentence"><strong>它解决</strong>{{ s.purpose }}</p>
 <p class="research-sentence"><strong>你会学到</strong>{{ s.takeaway }}</p>
+<p class="research-sentence"><strong>创新在哪里</strong>{{ s.innovation }}</p>
 {% assign relation = s.related | first %}
 {% assign other = site.data.studies | where: "id", relation.id | first %}
 {% if other %}
