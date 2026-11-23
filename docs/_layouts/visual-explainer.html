@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 {% assign lesson = site.data.visual_lessons | where: "id", page.lesson_id | first %}
+{% assign study = site.data.studies | where: "id", page.lesson_id | first %}
 <title>{{ lesson.title | escape }} · AI, Explained</title>
 <meta name="description" content="{{ lesson.keyPoint | escape }}">
 <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
@@ -25,6 +26,17 @@
 <span class="vl-label">一句话理解</span>
 <h2>{{ lesson.keyPoint }}</h2>
 </section>
+{% if study and study.contributions %}
+<section class="vl-research-value" aria-label="主要贡献与技术创新">
+<div class="vl-research-kicker">研究贡献 · {{ study.contribution_type }}</div>
+<h2>主要贡献：具体做了什么？</h2>
+<ol class="vl-contribution-list">
+{% for item in study.contributions %}<li>{{ item }}</li>{% endfor %}
+</ol>
+<div class="vl-innovation"><h3>创新到底在哪里？</h3><p>{{ study.innovation }}</p></div>
+<details class="vl-novelty-limit"><summary>哪些不是新发明？证据有哪些限制？</summary><p>{{ study.innovation_boundary }}</p></details>
+</section>
+{% endif %}
 <section class="vl-compare" aria-label="旧做法与新做法对比">
 <div class="vl-compare-item">
 <div class="vl-label">原来的做法 / 风险</div>
