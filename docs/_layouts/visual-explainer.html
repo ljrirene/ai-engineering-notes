@@ -7,7 +7,7 @@
 <title>{{ lesson.title | escape }} · AI, Explained</title>
 <meta name="description" content="{{ lesson.keyPoint | escape }}">
 <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/visual-explainer.css' | relative_url }}?v=3">
+<link rel="stylesheet" href="{{ '/assets/visual-explainer.css' | relative_url }}?v=4">
 </head>
 <body>
 <header class="bar"><a class="brand" href="{{ '/' | relative_url }}">◆ AI, Explained</a><nav><a href="{{ '/' | relative_url }}">首页</a><a href="{{ '/archive.html' | relative_url }}">全部文章</a><a href="{{ '/knowledge-graph.html' | relative_url }}">知识关系</a></nav></header>
@@ -49,41 +49,71 @@
 <p>{{ lesson.after.summary }}</p>
 </div>
 </section>
-<section class="vl-lesson" aria-label="逐步演示技术过程">
-<div class="vl-lesson-header">
-<div><span class="vl-overline">交互演示</span><h2>分步骤看怎么实现</h2></div>
-<p>一次只看一步，点击数字可以跳转。</p>
-</div>
-<div class="vl-mode-switch" role="tablist" aria-label="选择讲解流程">
-<button type="button" id="vl-tab-after" role="tab" aria-controls="vl-flow-after" aria-selected="true" data-mode="after">新方法</button>
-<button type="button" id="vl-tab-before" role="tab" aria-controls="vl-flow-before" aria-selected="false" data-mode="before">旧方法</button>
-</div>
-{% for seq in (1..2) %}
-{% if seq == 1 %}{% assign flow = lesson.after %}{% assign mode = "after" %}{% else %}{% assign flow = lesson.before %}{% assign mode = "before" %}{% endif %}
-<div id="vl-flow-{{ mode }}" class="vl-flow" role="tabpanel" aria-labelledby="vl-tab-{{ mode }}" data-flow="{{ mode }}" {% if mode == "before" %}hidden{% endif %}>
-<div class="vl-progress" aria-label="{{ flow.shortLabel }}的步骤">
-{% for step in flow.steps %}
-<button class="vl-progress-step" type="button" data-mode="{{ mode }}" data-number="{{ forloop.index }}" data-title="{{ step.title | escape }}" data-brief="{{ step.brief | escape }}" data-detail="{{ step.detail | escape }}" data-key="{% if step.focus %}true{% else %}false{% endif %}" aria-label="第 {{ forloop.index }} 步：{{ step.title | escape }}" aria-current="{% if mode == "after" and forloop.first %}step{% else %}false{% endif %}">
-<span>{{ forloop.index }}</span>
-</button>
-{% endfor %}
-</div>
-</div>
-{% endfor %}
-<article class="vl-active-step" aria-live="polite" aria-atomic="true">
-<span class="vl-step-count" id="vl-step-count">第 1 步</span>
-<h3 id="vl-step-title">{{ lesson.after.steps[0].title }}</h3>
-<p id="vl-step-brief">{{ lesson.after.steps[0].brief }}</p>
-<details class="vl-technical" id="vl-technical">
-<summary>查看技术原理与细节</summary>
-<p id="vl-technical-text">{{ lesson.after.steps[0].detail }}</p>
-</details>
-</article>
-<div class="vl-navigation">
-<button id="vl-prev" type="button" disabled><span aria-hidden="true">←</span> 上一步</button>
-<span id="vl-counter">1 / {{ lesson.after.steps.size }}</span>
-<button id="vl-next" type="button">下一步 <span aria-hidden="true">→</span></button>
-</div>
+
+<section class="vl-lesson" aria-label="传统做法和新方法同时比较">
+  <div class="vl-lesson-header">
+    <div>
+      <span class="vl-overline">完整方法对照</span>
+      <h2>旧方法和新方法，并排看懂每一步</h2>
+    </div>
+    <p>左右两列都完整展示。每列按自身顺序阅读；步骤数不同，不代表同一行必须一一对应。</p>
+  </div>
+  <div class="vl-compare-controls">
+    <span class="vl-compare-hint">点击任意“查看技术细节”可展开该步骤。</span>
+    <button class="vl-expand-all" type="button" hidden aria-expanded="false" aria-controls="vl-flow-before vl-flow-after">展开两侧全部细节</button>
+  </div>
+  <div class="vl-side-by-side">
+    <section class="vl-method vl-before" id="vl-flow-before" aria-labelledby="vl-before-title">
+      <header class="vl-method-head">
+        <span class="vl-method-tag">原来的做法 / 常见风险</span>
+        <h3 id="vl-before-title">{{ lesson.before.shortLabel }}</h3>
+        <p>{{ lesson.before.summary }}</p>
+      </header>
+      <ol class="vl-method-steps">
+      {% for step in lesson.before.steps %}
+        <li class="vl-method-step {% if step.focus %}vl-focus{% endif %}">
+          <div class="vl-step-labels">
+            <span class="vl-step-index">步骤 {{ forloop.index }}</span>
+            {% if step.focus %}<span class="vl-step-marker">重点</span>{% endif %}
+          </div>
+          <h4>{{ step.title }}</h4>
+          <p>{{ step.brief }}</p>
+          <details class="vl-step-detail">
+            <summary>查看技术细节</summary>
+            <p>{{ step.detail }}</p>
+          </details>
+        </li>
+      {% endfor %}
+      </ol>
+    </section>
+    <section class="vl-method vl-after" id="vl-flow-after" aria-labelledby="vl-after-title">
+      <header class="vl-method-head">
+        <span class="vl-method-tag">改进后的做法 / 研究方案</span>
+        <h3 id="vl-after-title">{{ lesson.after.shortLabel }}</h3>
+        <p>{{ lesson.after.summary }}</p>
+      </header>
+      <ol class="vl-method-steps">
+      {% for step in lesson.after.steps %}
+        <li class="vl-method-step {% if step.focus %}vl-focus{% endif %}">
+          <div class="vl-step-labels">
+            <span class="vl-step-index">步骤 {{ forloop.index }}</span>
+            {% if step.focus %}<span class="vl-step-marker">关键机制</span>{% endif %}
+          </div>
+          <h4>{{ step.title }}</h4>
+          <p>{{ step.brief }}</p>
+          <details class="vl-step-detail">
+            <summary>查看技术细节</summary>
+            <p>{{ step.detail }}</p>
+          </details>
+        </li>
+      {% endfor %}
+      </ol>
+    </section>
+  </div>
+  <section class="vl-change-summary" aria-label="新旧方案的主要差异">
+    <span class="vl-label">最重要的改变</span>
+    <p>{{ lesson.change }}</p>
+  </section>
 </section>
 <details class="vl-additional">
 <summary>查看收益、代价与适用条件</summary>
@@ -98,7 +128,7 @@
 <a href="{{ lesson.sourceUrl | escape }}" target="_blank" rel="noopener noreferrer">查看原始资料 →</a>
 <a href="{{ '/knowledge-graph.html' | relative_url }}">相关文章 →</a>
 </div>
-<p class="vl-disclaimer">这是帮助理解原理的简化演示，不是官方完整架构图。论文数据和实现边界请以原文为准。</p>
+<p class="vl-disclaimer">这是一份帮助理解新旧机制的公开资料独立工程抽象，不是官方完整架构图。论文数据和实现边界请以原文为准。</p>
 </main>
-<script src="{{ '/assets/visual-explainer.js' | relative_url }}?v=2" defer></script>
+<script src="{{ '/assets/visual-explainer.js' | relative_url }}?v=4" defer></script>
 </body></html>
