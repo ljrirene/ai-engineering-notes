@@ -4,6 +4,16 @@ title: 选题筛选与历史记录
 permalink: /selection-history/
 ---
 
+## 2026-11-23：全库“主要贡献 / 创新点 / 证据边界”教学修订
+
+用户发现 AutoRAGBench 原理演示只讲流程，没有先讲论文真正贡献。核对 [AutoRAGBench arXiv v1](https://arxiv.org/pdf/2611.25582) Section I 的 Contributions 后，明确其贡献是开放代码空间 Benchmark、系统与开发轨迹的联合评测、九任务×九 Agent 实证及公开资源；**不是新检索算法**。
+
+修订覆盖当前 **16 篇**历史及新研究元数据（`studies.yml`）：逐篇新增 `contribution_type`、2–3 条 `contributions`、`innovation`、`innovation_boundary`。通过一个数据源在所有研究正文的概要与全部共享原理演示中展现，首页/归档显示明确创新摘要，不分别硬编码旧页。调整统一模板和样式，不重做互动步骤，也不改变原文 URL、`visual_lessons.json` 的现有原理和证据表述。特别区分论文创新、工程 PR、厂商案例以及跨来源综合。
+
+**全库检查**：原有 16 个 `studies.yml` ID、16 个教学 lesson、16 个 Graph article、16 个 QA documents 和 37 道 QA 题一致；所有 `related` 目标与 article-to-article Graph 边均有效，没有发现现存数据 ID 断链。历史正文主要算法/PR 不在本次编辑范围，不宣称对所有外部网站进行了独立复现。此次只增加解读元数据与展示方式，没有修改论文实测数字或提升优先级。若后续发现某项贡献表述无法对应作者一手证据，应以原资料为准纠正。
+
+
+
 ## 2026-11-23：AutoRAGBench（用户指定，提前单篇发布）
 
 **候选来源与决策**：本次不是常规三天期的广搜竞争；用户明确指定论文 [AutoRAGBench，2026-11-19 arXiv v1](https://arxiv.org/abs/2611.25582) 优先研究，所以本次**正式重点候选只有 1 项**，没有声称检查了 10 个新候选。核对了作者 [开源仓库](https://github.com/ZhanGHanG9991/AutoRAGBench) 的 README、目录和论文 Section III–VI。其方法是让 Agent 从零编写 /retrieve 服务，通过开发 self_check、代码冻结、禁止测试数据泄漏、原语料证据校验和五个隐藏 Reader 评分；论文数字未经本站独立复现。
