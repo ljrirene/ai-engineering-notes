@@ -35,3 +35,16 @@
 .prose .study-related-line p{font-size:12px;margin:2px 0;color:#5e7989;line-height:1.65}
 @media(max-width:780px){.research-feed,.research-paths{grid-template-columns:1fr}.study-brief{padding:18px}}
 
+
+/* Central contribution metadata rendered for every old and new note */
+.study-main-contributions{margin-top:18px;padding-top:13px;border-top:1px solid #d3e4e8}
+.prose .study-main-contributions h2{font-size:22px;line-height:1.35;margin:0 0 11px;color:#1c4355}
+.study-main-contributions ol{margin:0 0 13px;padding-left:1.6em;display:grid;gap:6px}
+.prose .study-main-contributions li{font-size:18px;line-height:1.65;color:#2b4d5a}
+.study-main-contributions li::marker{font-weight:750;color:#087984}
+.study-innovation{border-top:1px solid #e4edef;padding-top:13px}
+.study-innovation strong{font-size:18px;color:#08727c}
+.prose .study-innovation p{font-size:18px;line-height:1.6;margin:5px 0 8px;color:#284657}
+.study-innovation-boundary{margin-top:8px}
+.study-innovation-boundary summary{cursor:pointer;color:#386577;font-size:17px;font-weight:680}
+.prose .study-innovation-boundary p{font-size:17px;line-height:1.65;color:#486575}
