@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-22",
+  "updatedAt": "2026-11-23",
   "description": "Independent technical research graph based exclusively on publicly documented sources. Typed edges have explicit reasons. DeepSeek Super-agent added as user-requested supplementary study on 2026-11-04; design != prototype.",
   "nodes": [
     {
@@ -435,6 +435,40 @@
       "label": "Cold-start Latency Budget",
       "kind": "concept",
       "description": "区分索引打开、首次查询、总请求时间与长期吞吐，避免局部优化误导。"
+    },
+    {
+      "id": "a-autoragbench",
+      "label": "AutoRAGBench / RAG 自动研发评测",
+      "kind": "article",
+      "date": "2026-11-23",
+      "track": "cross-deployment",
+      "description": "Agent 在开放代码空间内构建 RAG，通过开发自检、冻结产物、语料核验和隐藏多 Reader 评分检验泛化。预印本作者结果未独立复现。",
+      "url": "/notes/2026/11/2026-11-23-autoragbench/",
+      "visual": "/interactive/2026-11-23-autoragbench-map.html"
+    },
+    {
+      "id": "c-rag-open-code",
+      "label": "Open-Code RAG Development",
+      "kind": "concept",
+      "description": "Agent 可以修改索引、召回、重排、图遍历和证据选择代码，而不是只搜索预设管线参数。"
+    },
+    {
+      "id": "c-rag-heldout-reader",
+      "label": "Frozen RAG / Held-out Readers",
+      "kind": "concept",
+      "description": "冻结检索服务；验证原始语料证据；与开发阶段隔离的多个固定回答模型处理隐藏测试题。"
+    },
+    {
+      "id": "c-rag-dev-overfit",
+      "label": "RAG Development Overfitting",
+      "kind": "concept",
+      "description": "重复观察和优化同一开发问题产生虚假的提升，需要从 peak、last 和独立 holdout 分离结果。"
+    },
+    {
+      "id": "s-agentic-rag-dev",
+      "label": "Agentic RAG System Design",
+      "kind": "skill",
+      "description": "受控开发 Agent、实验预算、检索代码版本、独立评分和上线门禁的系统设计能力。"
     }
   ],
   "edges": [
@@ -1385,6 +1419,84 @@
       "target": "s-eval",
       "type": "supports-skill",
       "reason": "区分 benchmark 测试条件、端到端耗时与作者报告的局限。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "a-agent-eval",
+      "type": "extends",
+      "reason": "原研究关注 Agent 任务环境和评分器有效性；AutoRAGBench 进一步把 Agent 所构建的 RAG 检索系统作为被测交付物，并隔离隐藏题。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "a-retrieval",
+      "type": "complements",
+      "reason": "语境嵌入与多向量匹配是候选检索组件，AutoRAGBench 则研究怎样让 Agent 选择和验证检索管线的组合。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "a-qdrant-cold-hnsw",
+      "type": "complements",
+      "reason": "Qdrant 文章测检索索引 I/O 的局部延迟，AutoRAGBench 用独立回答质量、检索延迟共同约束完整 RAG 的设计。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "c-rag-open-code",
+      "type": "explains",
+      "reason": "论文让 Agent 在无预设代码和固定管线的环境里设计检索系统。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "c-rag-heldout-reader",
+      "type": "explains",
+      "reason": "冻结的检索服务返回可核验原始语料证据，由五个不参与开发的模型独立评分。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "c-rag-dev-overfit",
+      "type": "explains",
+      "reason": "77 个有可比开发版本的构建表明开发峰值与最终得分可能分离。"
+    },
+    {
+      "source": "c-rag-open-code",
+      "target": "c-rag-dev-overfit",
+      "type": "contrasts",
+      "reason": "更大的代码搜索空间带来创新策略，同时增加反复试题和选择偏差风险。"
+    },
+    {
+      "source": "c-rag-dev-overfit",
+      "target": "c-rag-heldout-reader",
+      "type": "prerequisite",
+      "reason": "理解开发集重复使用的偏差后，才能解释冻结产物和隐藏测试为何是必要隔离。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "s-agentic-rag-dev",
+      "type": "supports-skill",
+      "reason": "将 Agent 的代码执行、检索实验、版本与复现报告整合为可审计 RAG 研发闭环。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "s-eval",
+      "type": "supports-skill",
+      "reason": "需要区分 Builder 过程指标、独立 Reader 的最终答案得分以及检索延迟。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "d-onprem",
+      "type": "deploys-to",
+      "reason": "可用本地 Coding Agent、Sandbox、Reader 与合成语料复刻评测隔离；不得移植论文外部 API 实验分数。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "d-hybrid",
+      "type": "deploys-to",
+      "reason": "允许经审批的外部模型作为 Builder，但内部语料与测试集不应默认越过组织边界。"
+    },
+    {
+      "source": "a-autoragbench",
+      "target": "g-guide",
+      "type": "guided-by",
+      "reason": "预印本和作者源码属于公开一手资料；论文得分不等于本站复现，用户点名是特殊优先研究而非常规广搜优胜。"
     }
   ]
 }
